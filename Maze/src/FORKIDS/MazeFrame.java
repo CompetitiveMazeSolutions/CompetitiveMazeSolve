@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyListener {
@@ -21,6 +22,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	private static final int CPU = 1, P2 = 2;
 	private int mode;
 	private int aispeed;
+	private int startTime;
 	private double mazeFidelity;
 
 	private JPanel controls, maze;
@@ -72,7 +74,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		instantiateCells();// give birth to all the mazeCells & get them onto the screen
 		// carveALameMaze();//this will knock down walls to create a maze
 		carveARandomMaze();
-		// if(mode==P2)carveARandomMaze();
 
 		// finishing touches
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -185,7 +186,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 			double i = 0;
 			double t = 0;
 			int sizzle = tex.size();
-			while (!tex.isEmpty()) {
+			while (!tex.isEmpty() && φρ) {
 				t = i / sizzle;
 				i++;
 				tex.pop()
@@ -193,10 +194,12 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 								(int) (Color.BLACK.getGreen() * t + Color.WHITE.getGreen() * (1 - t)),
 								(int) (Color.BLACK.getBlue() * t + Color.WHITE.getBlue() * (1 - t))));
 			}
+			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			JOptionPane.showMessageDialog(this, matchTime);
 			φρ = false;
 			return true;
 		}
-		if ((tex.isEmpty() || (!mex.isEmpty() && mex.peek() == begi))) {
+		if ((tex.isEmpty() || (!mex.isEmpty() && mex.peek() == begi)) && φρ) {
 			double i = 0;
 			double t = 0;
 			int sizzle = mex.size();
@@ -207,7 +210,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						.setGrad(new Color((int) (beg.getRed() * t + plead.getRed() * (1 - t)),
 								(int) (beg.getGreen() * t + plead.getGreen() * (1 - t)),
 								(int) (beg.getBlue() * t + plead.getBlue() * (1 - t))));
+
 			}
+			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			JOptionPane.showMessageDialog(this, matchTime);
 			φρ = false;
 			return false;
 		}
@@ -406,6 +412,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						new Color((int) (beg.getRed() * t + badiddle.getRed() * (1 - t)),
 								(int) (beg.getGreen() * t + badiddle.getGreen() * (1 - t)),
 								(int) (beg.getBlue() * t + badiddle.getBlue() * (1 - t))));
+				int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+				JOptionPane.showMessageDialog(this, matchTime);
 			}
 		} else {
 			double i = 0;
@@ -420,15 +428,20 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						new Color((int) (plead.getRed() * t + badiddle.getRed() * (1 - t)),
 								(int) (plead.getGreen() * t + badiddle.getGreen() * (1 - t)),
 								(int) (plead.getBlue() * t + badiddle.getBlue() * (1 - t))));
+				int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+				JOptionPane.showMessageDialog(this, matchTime);
 			}
 		}
 	}
 
 	// This gets called any time that you press a button
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == solve)
+		if (e.getSource() == solve) {
+			startTime = (int) (System.currentTimeMillis() / 1000);
 			if (mode == CPU)
 				(new Thread(this)).start();
+		}
+
 		if (e.getSource() == carb) {
 			this.setVisible(false);
 			new MazeFrame();
