@@ -81,10 +81,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	/* 1111111111111111    PHASE 1 STUFF    1111111111111111111111 */
 	private void instantiateCells(){
 
-		mode = P2;
+		mode = CPU;
 		φρ = true;
-		mazeFidelity=0.75;
-		aispeed=(int)(200*mazeFidelity);
+		mazeFidelity=.8;
+		aispeed=(int)(250-(250*(1-mazeFidelity)));
 
 
 		p1t=false;
@@ -133,7 +133,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 			pause(aispeed);
 	}
 	public boolean solveStep(){//takes the next step in solving the maze
-		if(mode==CPU && !tex.isEmpty() && isLast(tex.peek())){
+		if(isLast(tex.peek())){
 			double i=0;
 			double t=0;
 			int sizzle = tex.size();
@@ -144,7 +144,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 			}
 			φρ = false;
 			return true;}
-		if(tex.isEmpty() || (!mex.isEmpty() && mex.peek()==begi)){
+		if((tex.isEmpty() || (!mex.isEmpty() && mex.peek()==begi))){
 			double i=0;
 			double t=0;
 			int sizzle = mex.size();
