@@ -451,6 +451,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	// This gets called any time that you press a button
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == solve) {
+			for(MazeCell[] out : cells)
+				for(MazeCell in : out)
+					in.go();
 			startTime = (int) (System.currentTimeMillis() / 1000);
 			if (mode == CPU)
 				(new Thread(this)).start();
