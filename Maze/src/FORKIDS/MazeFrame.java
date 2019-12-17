@@ -30,11 +30,13 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	private JPanel controls, maze;
 	private JButton solve, hic, carb;
 	private MazeCell[][] cells;
+
 	private CellStack tex;
 	private CellStack mex;
-
 	private boolean φρ;
 	private boolean p1t, p2t, p1b, p2b;
+	private boolean p1C, p2C;
+	private boolean p1R, p2R;
 
 	private MazeCell begi, end;
 	// *** you will need a 2DArray of MazeCells****
@@ -100,6 +102,12 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		p2t = false;
 		p1b = false;
 		p2b = false;
+
+		p1C = false;
+		p2C = false;
+
+		p1R = false;
+		p2R = false;
 
 		tex = new CellStack();
 		mex = new CellStack();
@@ -704,26 +712,46 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 				}
 				break;
+
+			case KeyEvent.VK_CONTROL:
+				p1C = true;
+				if (p1C && p2C) {
+					resetMaze();
+				}
+				break;
+
 			case KeyEvent.VK_NUMPAD0:
-				setVisible(false);
-				new MazeFrame();
-
+				p2C = true;
+				if (p1C && p2C) {
+					resetMaze();
+				}
 				break;
+			case KeyEvent.VK_SHIFT:
+				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
 
-			case KeyEvent.VK_Q:
-				setVisible(false);
-				new MazeFrame();
-
-				break;
+				}
 			}
 
 		}
 
 	}
 
+	public void resetMaze() {
+		setVisible(false);
+		new MazeFrame();
+	}
+
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_CONTROL:
+			p1C = false;
+			break;
+
+		case KeyEvent.VK_NUMPAD0:
+			p2C = false;
+			break;
+		}
 
 	}
 
