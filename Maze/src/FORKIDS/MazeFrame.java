@@ -87,13 +87,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	/* 1111111111111111 PHASE 1 STUFF 1111111111111111111111 */
 	private void instantiateCells() {
 
+		stagePreset = BORING;
 		mode = CPU;
-		stagePreset = BOXES;
-		mode = P2;
 		φρ = true;
 		mazeFidelity = .85;
-		aispeed = (int) (250 - (250 * (1 - mazeFidelity)));
-		mazeFidelity = .8;
 		aispeed = (int) (250 - (250 * (1 - mazeFidelity)));
 
 		p1t = false;
@@ -188,7 +185,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	}
 
 	public boolean solveStep() {// takes the next step in solving the maze
-		if (isLast(tex.peek())) {
+		if (φρ && isLast(tex.peek())) {
 			double i = 0;
 			double t = 0;
 			int sizzle = tex.size();
@@ -225,7 +222,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		}
 
 		for (int dir = 0; dir <= 3; dir++) { // for all directions
-			if (getNeighbor(tex.peek(), getBetDir(tex.peek(), end)[dir]) != null
+			if (φρ && getNeighbor(tex.peek(), getBetDir(tex.peek(), end)[dir]) != null
 					&& !(tex.peek().isBlockedDir(getBetDir(tex.peek(), end)[dir]))
 					&& getNeighbor(tex.peek(), getBetDir(tex.peek(), end)[dir]).getStatus() == MazeCell.BLANK) { // if
 																													// cell
@@ -242,8 +239,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 				return true;
 			}
 		}
-		tex.pop().setStatus(MazeCell.DEAD); // if not able to move, kill
-		return true;
+		if(φρ)tex.pop().setStatus(MazeCell.DEAD); // if not able to move, kill
+		return φρ;
 	}
 
 	public void pause(int t) {
