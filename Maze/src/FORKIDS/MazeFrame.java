@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 
 public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyListener {
 	private static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
-	private static int ROWS = 50, COLS = 75;
+	private static int ROWS = 20, COLS = 35;
 
 	private static final int CPU = 1, P2 = 2;
 	private int mode;
@@ -91,7 +91,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		mode = CPU;
 		φρ = true;
 		mazeFidelity = .85;
-		aispeed = (int) (250 - (250 * (1 - mazeFidelity)));
+		aispeed = (int) (200 - (200 * (1 - mazeFidelity)));
 
 		p1t = false;
 		p2t = false;
