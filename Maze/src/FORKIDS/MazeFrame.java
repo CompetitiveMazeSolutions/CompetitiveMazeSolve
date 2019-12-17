@@ -85,7 +85,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	/* 1111111111111111 PHASE 1 STUFF 1111111111111111111111 */
 	private void instantiateCells() {
 
-		mode = CPU;
+		mode = P2;
 		φρ = true;
 		mazeFidelity = .8;
 		aispeed = (int) (250 - (250 * (1 - mazeFidelity)));
@@ -412,9 +412,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						new Color((int) (beg.getRed() * t + badiddle.getRed() * (1 - t)),
 								(int) (beg.getGreen() * t + badiddle.getGreen() * (1 - t)),
 								(int) (beg.getBlue() * t + badiddle.getBlue() * (1 - t))));
-				int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
-				JOptionPane.showMessageDialog(this, matchTime);
 			}
+			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			JOptionPane.showMessageDialog(this, matchTime);
 		} else {
 			double i = 0;
 			double t = 0;
@@ -428,9 +428,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						new Color((int) (plead.getRed() * t + badiddle.getRed() * (1 - t)),
 								(int) (plead.getGreen() * t + badiddle.getGreen() * (1 - t)),
 								(int) (plead.getBlue() * t + badiddle.getBlue() * (1 - t))));
-				int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
-				JOptionPane.showMessageDialog(this, matchTime);
 			}
+			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			JOptionPane.showMessageDialog(this, matchTime);
 		}
 	}
 
@@ -695,9 +695,22 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 					for (int i = 0; i < ROWS / 5; i++)
 						tex.pop().setPly(0, null);
 					p1t = false;
+
 				}
 				break;
+			case KeyEvent.VK_NUMPAD0:
+				setVisible(false);
+				new MazeFrame();
+
+				break;
+
+			case KeyEvent.VK_Q:
+				setVisible(false);
+				new MazeFrame();
+
+				break;
 			}
+
 		}
 
 	}
