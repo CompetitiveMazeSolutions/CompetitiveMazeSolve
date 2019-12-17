@@ -15,12 +15,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyListener{
 	private static final int UP = 0, RIGHT = 1, DOWN=2, LEFT = 3;
-	private static int ROWS=20, COLS=30;
+	private static int ROWS=50, COLS=75;
 
 	private static final int CPU = 1, P2 = 2;
 	private int mode;
 	private int aispeed;
 	private double mazeFidelity;
+	private int stagePreset;
+	private static final int BORING=0, BOXES=1;
 
 	private JPanel controls, maze;
 	private JButton solve, hic, carb;
@@ -82,8 +84,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	private void instantiateCells(){
 
 		mode = CPU;
+		stagePreset = BOXES;
 		φρ = true;
-		mazeFidelity=.8;
+		mazeFidelity=.85;
 		aispeed=(int)(250-(250*(1-mazeFidelity)));
 
 
