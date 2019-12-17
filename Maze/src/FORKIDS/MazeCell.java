@@ -25,6 +25,7 @@ public class MazeCell extends JPanel{
 	private int ply;
 	private Color plyCo;
 	private int needPly;
+	private boolean hide;
 
 	private int status;
 	private boolean pStat;
@@ -43,6 +44,7 @@ public class MazeCell extends JPanel{
 		pStat= false;
 		pHead = false;
 		needPly=mode;
+		hide = true;
 	}
 
 	public int row(){return row;}
@@ -71,6 +73,11 @@ public class MazeCell extends JPanel{
 		colorsP[status]=beep;
 		this.paint(this.getGraphics());
 	}
+	public void go(){
+		hide = false;
+		this.paint(this.getGraphics());
+	}
+
 	public boolean isBlank(){return status==BLANK;}
 	public boolean isVisited(){return status==VISITED;}
 	public boolean isDead(){return status==DEAD;}
@@ -103,12 +110,18 @@ public class MazeCell extends JPanel{
 		if(pHead){c=Color.ORANGE;pHead=false;g.setColor(c);}
 		}else{
 			if(ply!=0){
-			c = new Color(plyCo.getRed(),plyCo.getGreen(),plyCo.getBlue(),200);
-			g.setColor(c);}
+				c = new Color(plyCo.getRed(),plyCo.getGreen(),plyCo.getBlue(),200);
+				g.setColor(c);}
 		}
 		int roll = (int)(Math.random()*35)+130;
 
-		if(status==BLANK && !(pStat) && ply==0)g.setColor(new Color(roll,roll,roll));
+		if(status==BLANK && !(pStat) && ply==0){
+			if(hide){
+				g.setColor(Color.WHITE);
+			}else{
+				g.setColor(new Color(roll,roll,roll));
+			}
+		}
 		g.fillRect( 0, 0, this.getWidth(), this.getHeight());
 
 		//g.fillOval(this.getWidth()/3,this.getHeight()/3,this.getWidth()/3,this.getHeight()/3 );
