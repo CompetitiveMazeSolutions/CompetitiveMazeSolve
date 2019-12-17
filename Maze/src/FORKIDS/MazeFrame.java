@@ -34,7 +34,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	private CellStack tex;
 	private CellStack mex;
 	private boolean φρ;
-	private boolean p1t, p2t, p1b, p2b;
+	//private boolean p1t, p2t, p1b, p2b;
 	private boolean p1C, p2C;
 	public boolean p1R, p2R;
 
@@ -128,21 +128,16 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	/* 1111111111111111 PHASE 1 STUFF 1111111111111111111111 */
 	private void instantiateCells() {
 
-<<<<<<< HEAD
-		stagePreset = BOXES;
-		mode = P2;
-=======
 		stagePreset = BORING;
-		mode = CPU;
->>>>>>> refs/remotes/origin/master
+		mode = P2;
 		φρ = true;
 		mazeFidelity = .85;
 		aispeed = (int) (200 - (200 * (1 - mazeFidelity)));
 
-		p1t = false;
+		/*p1t = false;
 		p2t = false;
 		p1b = false;
-		p2b = false;
+		p2b = false;*/
 
 		p1C = false;
 		p2C = false;
@@ -629,13 +624,13 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						if (!tex.isEmpty())
 							tex.pop().setPly(0, null);
 				}
-				if (mex.peek().row() == ROWS - 1)
+				/*if (mex.peek().row() == ROWS - 1)
 					p2b = true;
 				if (p2t && p2b) {
 					for (int i = 0; i < ROWS / 5; i++)
 						mex.pop().setPly(0, null);
 					p2b = false;
-				}
+				}*/
 				break;
 			case KeyEvent.VK_UP:
 				if (getNeighbor(mex.peek(), UP) != null && getNeighbor(mex.peek(), UP).getPly() == 0
@@ -655,13 +650,13 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						if (!tex.isEmpty())
 							tex.pop().setPly(0, null);
 				}
-				if (mex.peek().row() == 0)
+				/*if (mex.peek().row() == 0)
 					p2t = true;
 				if (p2t && p2b) {
 					for (int i = 0; i < ROWS / 5; i++)
 						mex.pop().setPly(0, null);
 					p2t = false;
-				}
+				}*/
 				break;
 			case KeyEvent.VK_D:
 				if (getNeighbor(tex.peek(), RIGHT) != null && getNeighbor(tex.peek(), RIGHT).getPly() == 0
@@ -721,13 +716,13 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						if (!mex.isEmpty())
 							mex.pop().setPly(0, null);
 				}
-				if (tex.peek().row() == ROWS - 1)
+				/*if (tex.peek().row() == ROWS - 1)
 					p1b = true;
 				if (p1t && p1b) {
 					for (int i = 0; i < ROWS / 5; i++)
 						tex.pop().setPly(0, null);
 					p1b = false;
-				}
+				}*/
 				break;
 			case KeyEvent.VK_W:
 				if (getNeighbor(tex.peek(), UP) != null && getNeighbor(tex.peek(), UP).getPly() == 0
@@ -747,14 +742,14 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						if (!mex.isEmpty())
 							mex.pop().setPly(0, null);
 				}
-				if (tex.peek().row() == 0)
+				/*if (tex.peek().row() == 0)
 					p1t = true;
 				if (p1t && p1b) {
 					for (int i = 0; i < ROWS / 5; i++)
 						tex.pop().setPly(0, null);
 					p1t = false;
 
-				}
+				}*/
 				break;
 
 			case KeyEvent.VK_CONTROL:
