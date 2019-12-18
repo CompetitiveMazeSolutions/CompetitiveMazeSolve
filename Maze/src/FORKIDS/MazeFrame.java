@@ -423,8 +423,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		 * for(int i=0; i<ROWS; i++){ cells[i][0].setStatus(MazeCell.DEAD);
 		 * cells[i][COLS-1].setStatus(MazeCell.DEAD); }
 		 */
-		begi = cells[(int) (Math.random() * ROWS)][0];
-		end = cells[(int) (Math.random() * ROWS)][COLS - 1];
+		begi = cells[(int) (Math.random() * (ROWS*.5)+ROWS*.25)][0];
+		end = cells[(int) (Math.random() * (ROWS*.5)+ROWS*.25)][COLS - 1];
 		begi.setStatus(MazeCell.VISITED);
 		end.setStatus(MazeCell.BLANK);
 		begi.clearWallLeft();
