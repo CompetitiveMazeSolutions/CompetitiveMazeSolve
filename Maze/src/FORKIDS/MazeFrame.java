@@ -87,12 +87,14 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_SHIFT:
 					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
 						p1R = true;
 					} else {
 						p2R = true;
 					}
+					break;
 				}
 				if (p1R && p2R) {
 					solve.requestFocus();
@@ -105,14 +107,15 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_SHIFT:
 					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
 						p1R = false;
 					} else {
 						p2R = false;
 					}
+					break;
 				}
-
 			}
 		};
 
@@ -128,15 +131,11 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	/* 1111111111111111 PHASE 1 STUFF 1111111111111111111111 */
 	private void instantiateCells() {
 
-<<<<<<< HEAD
 		stagePreset = BOXES;
 		mode = P2;
-=======
-		stagePreset = BORING;
-		mode = CPU;
->>>>>>> refs/remotes/origin/master
+
 		φρ = true;
-		mazeFidelity = .85;
+		mazeFidelity = .68;
 		aispeed = (int) (200 - (200 * (1 - mazeFidelity)));
 
 		p1t = false;
@@ -291,7 +290,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 				return true;
 			}
 		}
-		if(φρ)tex.pop().setStatus(MazeCell.DEAD); // if not able to move, kill
+		if (φρ)
+			tex.pop().setStatus(MazeCell.DEAD); // if not able to move, kill
 		return φρ;
 	}
 
@@ -756,7 +756,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 				}
 				break;
-
 			case KeyEvent.VK_CONTROL:
 				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
 					p1C = true;
@@ -768,7 +767,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 				}
 				break;
 			}
-
+			if (p1C && p2C) {
+				resetMaze();
+			}
 		}
 
 	}
@@ -789,7 +790,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 			}
 			break;
 		}
-
 	}
 
 	@Override
