@@ -511,8 +511,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 				for (MazeCell in : out)
 					in.go();
 			startTime = (int) (System.currentTimeMillis());
-			System.out.println((int) (System.currentTimeMillis()));
-			System.out.println(System.currentTimeMillis());
 			if (mode == CPU)
 				(new Thread(this)).start();
 		}
