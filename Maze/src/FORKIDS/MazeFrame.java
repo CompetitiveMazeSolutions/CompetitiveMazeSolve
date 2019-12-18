@@ -111,7 +111,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 					for (MazeCell[] out : cells)
 						for (MazeCell in : out)
 							in.go();
-					startTime = (int) (System.currentTimeMillis() / 1000);
+					startTime = (int) (System.currentTimeMillis());
 				}
 			}
 
@@ -263,7 +263,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 								(int) (Color.BLACK.getGreen() * t + Color.WHITE.getGreen() * (1 - t)),
 								(int) (Color.BLACK.getBlue() * t + Color.WHITE.getBlue() * (1 - t))));
 			}
-			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			int matchTime = (int) (((int)(System.currentTimeMillis()) - startTime) / 1000);
 			JOptionPane.showMessageDialog(this, matchTime);
 			φρ = false;
 			return true;
@@ -281,7 +281,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 								(int) (beg.getBlue() * t + plead.getBlue() * (1 - t))));
 
 			}
-			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			int matchTime = (int) (((int)(System.currentTimeMillis()) - startTime) / 1000);
 			JOptionPane.showMessageDialog(this, matchTime);
 			φρ = false;
 			return false;
@@ -483,7 +483,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 								(int) (beg.getGreen() * t + badiddle.getGreen() * (1 - t)),
 								(int) (beg.getBlue() * t + badiddle.getBlue() * (1 - t))));
 			}
-			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			int matchTime = (int) (((int)(System.currentTimeMillis()) - startTime) / 1000);
 			JOptionPane.showMessageDialog(this, matchTime);
 		} else {
 			double i = 0;
@@ -499,7 +499,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 								(int) (plead.getGreen() * t + badiddle.getGreen() * (1 - t)),
 								(int) (plead.getBlue() * t + badiddle.getBlue() * (1 - t))));
 			}
-			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			int matchTime = (int) (((int)(System.currentTimeMillis()) - startTime) / 1000);
 			JOptionPane.showMessageDialog(this, matchTime);
 		}
 	}
@@ -510,7 +510,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 			for (MazeCell[] out : cells)
 				for (MazeCell in : out)
 					in.go();
-			startTime = (int) (System.currentTimeMillis() / 1000);
+			startTime = (int) (System.currentTimeMillis());
+			System.out.println((int) (System.currentTimeMillis()));
+			System.out.println(System.currentTimeMillis());
 			if (mode == CPU)
 				(new Thread(this)).start();
 		}
