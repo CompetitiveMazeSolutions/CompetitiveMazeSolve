@@ -649,6 +649,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 				}
 				if (mex.peek().col() == 0 && !mex.peek().isBlockedDir(LEFT))
 					win(2);
+				if (mex.peek().col() == 1 && getNeighbor(mex.peek(),LEFT).getPly()==1)
+					win(2);
 				break;
 			case KeyEvent.VK_DOWN:
 				if (getNeighbor(mex.peek(), DOWN) != null && getNeighbor(mex.peek(), DOWN).getPly() == 0
@@ -754,6 +756,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 					}
 				}
 				if (tex.peek().col() == COLS - 1 && !tex.peek().isBlockedDir(RIGHT))
+					win(1);
+				if (tex.peek().col() == COLS - 2 && getNeighbor(tex.peek(),RIGHT).getPly()==2)
 					win(1);
 				break;
 			case KeyEvent.VK_A:
