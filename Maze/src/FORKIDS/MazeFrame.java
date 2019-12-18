@@ -95,6 +95,16 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						p2R = true;
 					}
 					break;
+				case KeyEvent.VK_CONTROL:
+					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+						p1C = true;
+					} else {
+						p2C = true;
+					}
+					break;
+				}
+				if (p1C && p2C) {
+					resetMaze();
 				}
 				if (p1R && p2R) {
 					solve.requestFocus();
@@ -113,6 +123,13 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						p1R = false;
 					} else {
 						p2R = false;
+					}
+					break;
+				case KeyEvent.VK_CONTROL:
+					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+						p1C = false;
+					} else {
+						p2C = false;
 					}
 					break;
 				}
@@ -504,9 +521,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 		}
 		if (e.getSource() == hic) {
-			for (MazeCell[] c : cells)
-				for (MazeCell c2 : c)
-					c2.setStatus(c2.getStatus());
+			openSettings();
 		}
 	}// end action performed
 
@@ -853,9 +868,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 				} else {
 					p2C = true;
 				}
-				if (p1C && p2C) {
-					resetMaze();
-				}
 				break;
 			}
 			if (p1C && p2C) {
@@ -866,8 +878,12 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	}
 
 	public void resetMaze() {
-		setVisible(false);
+		this.setVisible(false);
 		new MazeFrame();
+	}
+
+	public static void openSettings() {
+
 	}
 
 	@Override
