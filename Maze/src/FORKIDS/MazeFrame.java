@@ -167,7 +167,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		tex = new CellStack();
 		mex = new CellStack();
 		maze = new JPanel();
-		maze.setBackground(Color.WHITE);
+		maze.setBackground(Color.BLACK);
 		maze.setLayout(new GridLayout(ROWS, COLS));
 
 		cells = new MazeCell[ROWS][COLS];
@@ -456,7 +456,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 			tex.peek().setPly(1, p1);
 			mex.peek().setPly(2, p2);
 
-			for (int i = 0; i < ROWS; i++) {
+			for (int i = (int)(ROWS*.25); i < ROWS*.75; i++) {
 				cells[i][0].clearWallLeft();
 				cells[i][COLS - 1].clearWallRight();
 			}
@@ -647,7 +647,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						mex.pop().setPly(0, null);
 					}
 				}
-				if (mex.peek().col() == 0)
+				if (mex.peek().col() == 0 && !mex.peek().isBlockedDir(LEFT))
 					win(2);
 				break;
 			case KeyEvent.VK_DOWN:
@@ -753,7 +753,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						tex.pop().setPly(0, null);
 					}
 				}
-				if (tex.peek().col() == COLS - 1)
+				if (tex.peek().col() == COLS - 1 && !tex.peek().isBlockedDir(RIGHT))
 					win(1);
 				break;
 			case KeyEvent.VK_A:
