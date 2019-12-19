@@ -30,6 +30,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	private JPanel controls, maze;
 	private JButton solve, hic, carb;
 	private MazeCell[][] cells;
+
 	private CellStack tex;
 	private CellStack mex;
 	private boolean on;
@@ -78,11 +79,70 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		// carveALameMaze();//this will knock down walls to create a maze
 		carveARandomMaze();
 
+		KeyListener l = new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_SHIFT:
+					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+						p1R = true;
+					} else {
+						p2R = true;
+					}
+					break;
+				case KeyEvent.VK_CONTROL:
+					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+						p1C = true;
+					} else {
+						p2C = true;
+					}
+					break;
+				}
+				if (p1C && p2C) {
+					resetMaze();
+				}
+				if (p1R && p2R) {
+					solve.requestFocus();
+					for (MazeCell[] out : cells)
+						for (MazeCell in : out)
+							in.go();
+					startTime = (int) (System.currentTimeMillis());
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_SHIFT:
+					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+						p1R = false;
+					} else {
+						p2R = false;
+					}
+					break;
+				case KeyEvent.VK_CONTROL:
+					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+						p1C = false;
+					} else {
+						p2C = false;
+					}
+					break;
+				}
+			}
+		};
+
 		// finishing touches
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(ROWS * 40, COLS * 40);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setVisible(true);
+		addKeyListener(l);
+		requestFocus();
 	}// end constructor
 
 	/* 1111111111111111 PHASE 1 STUFF 1111111111111111111111 */
@@ -94,15 +154,20 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		mazeFidelity = .7;
 		aispeed = (int) (200 - (200 * (1 - mazeFidelity)));
 
-		/*p1t = false;
-		p2t = false;
-		p1b = false;
-		p2b = false;*/
+		/*
+		 * p1t = false; p2t = false; p1b = false; p2b = false;
+		 */
+
+		p1C = false;
+		p2C = false;
+
+		p1R = false;
+		p2R = false;
 
 		tex = new CellStack();
 		mex = new CellStack();
 		maze = new JPanel();
-		maze.setBackground(Color.WHITE);
+		maze.setBackground(Color.BLACK);
 		maze.setLayout(new GridLayout(ROWS, COLS));
 
 		cells = new MazeCell[ROWS][COLS];
@@ -122,67 +187,38 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		this.add(maze, BorderLayout.CENTER);
 	}
 
-	private void carveALameMaze() {// "hard code" a maze
-		cells[4][0].clearWallRight();
-		cells[4][0].clearWallLeft();
-		cells[4][1].clearWallLeft();
-		cells[7][9].clearWallRight();
-		cells[7][9].clearWallLeft();
-		cells[7][8].clearWallRight();
-		cells[7][8].clearWallLeft();
-		cells[7][7].clearWallRight();
-		cells[7][7].clearWallLeft();
-		cells[7][6].clearWallRight();
-		cells[7][6].clearWallUp();
-		cells[6][6].clearWallDown();
-		cells[6][6].clearWallUp();
-		cells[5][6].clearWallDown();
-		cells[7][5].clearWallRight();
-		cells[7][6].clearWallLeft();
-		cells[4][1].clearWallDown();
-		cells[5][1].clearWallUp();
-		cells[5][1].clearWallRight();
-		cells[5][2].clearWallLeft();
-		cells[5][2].clearWallRight();
-		cells[5][3].clearWallLeft();
-		cells[4][3].clearWallDown();
-		cells[5][3].clearWallUp();
-		cells[3][3].clearWallDown();
-		cells[4][3].clearWallUp();
-		cells[2][3].clearWallDown();
-		cells[3][3].clearWallUp();
-		cells[3][3].clearWallRight();
-		cells[3][4].clearWallLeft();
-		cells[3][4].clearWallRight();
-		cells[3][5].clearWallLeft();
-		cells[3][5].clearWallDown();
-		cells[4][5].clearWallUp();
-		cells[4][5].clearWallRight();
-		cells[4][6].clearWallLeft();
-		cells[4][7].clearWallDown();
-		cells[5][7].clearWallUp();
-		cells[4][6].clearWallRight();
-		cells[4][7].clearWallLeft();
-		cells[5][6].clearWallRight();
-		cells[5][7].clearWallLeft();
-		cells[8][5].clearWallUp();
-		cells[7][5].clearWallDown();
-		cells[6][2].clearWallUp();
-		cells[5][2].clearWallDown();
-		cells[8][4].clearWallRight();
-		cells[8][5].clearWallLeft();
-		tex.push(cells[4][0]);
-		tex.peek().setStatus(MazeCell.VISITED);
-	}
+	/*
+	 * private void carveALameMaze() {// "hard code" a maze
+	 * cells[4][0].clearWallRight(); cells[4][0].clearWallLeft();
+	 * cells[4][1].clearWallLeft(); cells[7][9].clearWallRight();
+	 * cells[7][9].clearWallLeft(); cells[7][8].clearWallRight();
+	 * cells[7][8].clearWallLeft(); cells[7][7].clearWallRight();
+	 * cells[7][7].clearWallLeft(); cells[7][6].clearWallRight();
+	 * cells[7][6].clearWallUp(); cells[6][6].clearWallDown();
+	 * cells[6][6].clearWallUp(); cells[5][6].clearWallDown();
+	 * cells[7][5].clearWallRight(); cells[7][6].clearWallLeft();
+	 * cells[4][1].clearWallDown(); cells[5][1].clearWallUp();
+	 * cells[5][1].clearWallRight(); cells[5][2].clearWallLeft();
+	 * cells[5][2].clearWallRight(); cells[5][3].clearWallLeft();
+	 * cells[4][3].clearWallDown(); cells[5][3].clearWallUp();
+	 * cells[3][3].clearWallDown(); cells[4][3].clearWallUp();
+	 * cells[2][3].clearWallDown(); cells[3][3].clearWallUp();
+	 * cells[3][3].clearWallRight(); cells[3][4].clearWallLeft();
+	 * cells[3][4].clearWallRight(); cells[3][5].clearWallLeft();
+	 * cells[3][5].clearWallDown(); cells[4][5].clearWallUp();
+	 * cells[4][5].clearWallRight(); cells[4][6].clearWallLeft();
+	 * cells[4][7].clearWallDown(); cells[5][7].clearWallUp();
+	 * cells[4][6].clearWallRight(); cells[4][7].clearWallLeft();
+	 * cells[5][6].clearWallRight(); cells[5][7].clearWallLeft();
+	 * cells[8][5].clearWallUp(); cells[7][5].clearWallDown();
+	 * cells[6][2].clearWallUp(); cells[5][2].clearWallDown();
+	 * cells[8][4].clearWallRight(); cells[8][5].clearWallLeft();
+	 * tex.push(cells[4][0]); tex.peek().setStatus(MazeCell.VISITED); }
+	 */
 
 	/** 2222222222222222222 PHASE 2 STUFF 22222222222222222222222222 **/
 	public boolean isInBounds(int r, int c) {
 		return r >= 0 && r < ROWS && c >= 0 && c < COLS;
-	}
-
-	public void run() {
-		while (solveStep())
-			pause(aispeed);
 	}
 
 	public boolean solveStep() {// takes the next step in solving the maze
@@ -198,7 +234,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 								(int) (Color.BLACK.getGreen() * t + Color.WHITE.getGreen() * (1 - t)),
 								(int) (Color.BLACK.getBlue() * t + Color.WHITE.getBlue() * (1 - t))));
 			}
-			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime) / 1000);
 			JOptionPane.showMessageDialog(this, matchTime);
 			on = false;
 			return true;
@@ -216,7 +252,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 								(int) (beg.getBlue() * t + plead.getBlue() * (1 - t))));
 
 			}
-			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime) / 1000);
 			JOptionPane.showMessageDialog(this, matchTime);
 			on = false;
 			return false;
@@ -240,7 +276,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 				return true;
 			}
 		}
-		if(on)tex.pop().setStatus(MazeCell.DEAD); // if not able to move, kill
+		if (on)
+			tex.pop().setStatus(MazeCell.DEAD); // if not able to move, kill
 		return on;
 	}
 
@@ -377,8 +414,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		 * for(int i=0; i<ROWS; i++){ cells[i][0].setStatus(MazeCell.DEAD);
 		 * cells[i][COLS-1].setStatus(MazeCell.DEAD); }
 		 */
-		begi = cells[(int) (Math.random() * ROWS)][0];
-		end = cells[(int) (Math.random() * ROWS)][COLS - 1];
+		begi = cells[(int) (Math.random() * (ROWS * .5) + ROWS * .25)][0];
+		end = cells[(int) (Math.random() * (ROWS * .5) + ROWS * .25)][COLS - 1];
 		begi.setStatus(MazeCell.VISITED);
 		end.setStatus(MazeCell.BLANK);
 		begi.clearWallLeft();
@@ -390,7 +427,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 			tex.peek().setPly(1, p1);
 			mex.peek().setPly(2, p2);
 
-			for (int i = 0; i < ROWS; i++) {
+			for (int i = (int) (ROWS * .25); i < ROWS * .75; i++) {
 				cells[i][0].clearWallLeft();
 				cells[i][COLS - 1].clearWallRight();
 			}
@@ -417,7 +454,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 								(int) (beg.getGreen() * t + badiddle.getGreen() * (1 - t)),
 								(int) (beg.getBlue() * t + badiddle.getBlue() * (1 - t))));
 			}
-			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime) / 1000);
 			JOptionPane.showMessageDialog(this, matchTime);
 		} else {
 			double i = 0;
@@ -433,18 +470,84 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 								(int) (plead.getGreen() * t + badiddle.getGreen() * (1 - t)),
 								(int) (plead.getBlue() * t + badiddle.getBlue() * (1 - t))));
 			}
-			int matchTime = (int) ((System.currentTimeMillis() - startTime) / 1000);
+			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime) / 1000);
 			JOptionPane.showMessageDialog(this, matchTime);
 		}
+	}
+
+	public void playerMove(int player, int dir) {
+
+		CellStack mex = this.mex;
+		CellStack tex = this.tex;
+		Color pCo = Color.WHITE;
+		if (player == 1) {
+			pCo = p1;
+		} else if (player == 2) {
+			pCo = p2;
+		}
+
+		if (player == 1) {
+			mex = this.tex;
+			tex = this.mex;
+		}
+
+		if (getNeighbor(mex.peek(), dir) != null && getNeighbor(mex.peek(), dir).getPly() == 0
+				&& !mex.peek().isBlockedDir(dir)) { // into blank
+			mex.peek().setStatus(mex.peek().getStatus());
+			mex.push(getNeighbor(mex.peek(), dir));
+			mex.peek().setPly(player, pCo);
+		} else if (getNeighbor(mex.peek(), dir) != null && getNeighbor(mex.peek(), dir).getPly() == player
+				&& !mex.peek().isBlockedDir(dir)) { // into own
+			MazeCell yes = getNeighbor(mex.peek(), dir);
+			while (mex.peek() != yes) {
+				mex.pop().setPly(0, null);
+			}
+		} else if (getNeighbor(mex.peek(), dir) != null && !tex.isEmpty()
+				&& getNeighbor(mex.peek(), dir) == tex.peek()) { // into enemy head
+			for (int i = 0; i < ROWS / 5; i++)
+				if (!tex.isEmpty())
+					tex.pop().setPly(0, null);
+		} else if (getNeighbor(mex.peek(), dir) != null && getNeighbor(mex.peek(), dir).getPly() == player % 2 + 1
+				&& getNeighbor(getNeighbor(mex.peek(), dir), dir) != null
+				&& getNeighbor(getNeighbor(mex.peek(), dir), dir).getPly() == 0) { // able to skip over
+			mex.peek().setStatus(mex.peek().getStatus());
+			mex.push(getNeighbor(getNeighbor(mex.peek(), dir), dir));
+			mex.peek().setPly(player, pCo);
+		} else if (getNeighbor(mex.peek(), dir) != null && getNeighbor(mex.peek(), dir).getPly() == player % 2 + 1
+				&& getNeighbor(getNeighbor(mex.peek(), dir), dir) != null
+				&& getNeighbor(getNeighbor(mex.peek(), dir), dir).getPly() == player) { // skipping back
+			MazeCell yes = getNeighbor(getNeighbor(mex.peek(), dir), dir);
+			while (mex.peek() != yes) {
+				mex.pop().setPly(0, null);
+			}
+		}
+	}
+
+	public void playerMove(int dir) {
+		if (getNeighbor(mex.peek(), dir) != null && !mex.peek().isBlockedDir(dir)) {
+			mex.peek().setStatus(mex.peek().getStatus());
+			mex.push(getNeighbor(mex.peek(), dir));
+			mex.peek().setPStat(true);
+		}
+	}
+
+	public void resetMaze() {
+		this.setVisible(false);
+		new MazeFrame();
+	}
+
+	public void run() {
+		while (solveStep())
+			pause(aispeed);
 	}
 
 	// This gets called any time that you press a button
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == solve) {
-			for(MazeCell[] out : cells)
-				for(MazeCell in : out)
+			for (MazeCell[] out : cells)
+				for (MazeCell in : out)
 					in.go();
-			startTime = (int) (System.currentTimeMillis() / 1000);
+			startTime = (int) (System.currentTimeMillis());
 			if (mode == CPU)
 				(new Thread(this)).start();
 		}
@@ -455,9 +558,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 		}
 		if (e.getSource() == hic) {
-			for (MazeCell[] c : cells)
-				for (MazeCell c2 : c)
-					c2.setStatus(c2.getStatus());
+			openSettings();
 		}
 	}// end action performed
 
@@ -483,249 +584,113 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (!on && e.getKeyCode() != (KeyEvent.VK_CONTROL))
+		if (!on && e.getKeyCode()!=(KeyEvent.VK_CONTROL))
 			return;
 		if (mode == CPU) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_RIGHT:
-				if (getNeighbor(mex.peek(), RIGHT) != null && !mex.peek().isBlockedRight()) {
-					mex.peek().setStatus(mex.peek().getStatus());
-					mex.push(getNeighbor(mex.peek(), RIGHT));
-					mex.peek().setPStat(true);
-				}
+				playerMove(RIGHT);
 				break;
 			case KeyEvent.VK_LEFT:
-				if (getNeighbor(mex.peek(), LEFT) != null && !mex.peek().isBlockedLeft()) {
-					mex.peek().setStatus(mex.peek().getStatus());
-					mex.push(getNeighbor(mex.peek(), LEFT));
-					mex.peek().setPStat(true);
-				}
+				playerMove(LEFT);
 				break;
 			case KeyEvent.VK_DOWN:
-				if (getNeighbor(mex.peek(), DOWN) != null && !mex.peek().isBlockedDown()) {
-					mex.peek().setStatus(mex.peek().getStatus());
-					mex.push(getNeighbor(mex.peek(), DOWN));
-					mex.peek().setPStat(true);
-				}
+				playerMove(DOWN);
 				break;
 			case KeyEvent.VK_UP:
-				if (getNeighbor(mex.peek(), UP) != null && !mex.peek().isBlockedUp()) {
-					mex.peek().setStatus(mex.peek().getStatus());
-					mex.push(getNeighbor(mex.peek(), UP));
-					mex.peek().setPStat(true);
-				}
+				playerMove(UP);
 				break;
 			}
-
 		} else {
-
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_RIGHT:
-				if (getNeighbor(mex.peek(), RIGHT) != null && getNeighbor(mex.peek(), RIGHT).getPly() == 0
-						&& !mex.peek().isBlockedRight()) {
-					mex.peek().setStatus(mex.peek().getStatus());
-					mex.push(getNeighbor(mex.peek(), RIGHT));
-					mex.peek().setPly(2, p2);
-				} else if (getNeighbor(mex.peek(), RIGHT) != null && getNeighbor(mex.peek(), RIGHT).getPly() == 2
-						&& !mex.peek().isBlockedRight()) {
-					MazeCell yes = getNeighbor(mex.peek(), RIGHT);
-					while (mex.peek() != yes) {
-						mex.pop().setPly(0, null);
-					}
-				} else if (getNeighbor(mex.peek(), RIGHT) != null && !tex.isEmpty()
-						&& getNeighbor(mex.peek(), RIGHT) == tex.peek()) {
-					for (int i = 0; i < ROWS / 5; i++)
-						if (!tex.isEmpty())
-							tex.pop().setPly(0, null);
-				}
+				playerMove(2, RIGHT);
 				break;
 			case KeyEvent.VK_LEFT:
-				if (getNeighbor(mex.peek(), LEFT) != null && getNeighbor(mex.peek(), LEFT).getPly() == 0
-						&& !mex.peek().isBlockedLeft()) {
-					mex.peek().setStatus(mex.peek().getStatus());
-					mex.push(getNeighbor(mex.peek(), LEFT));
-					mex.peek().setPly(2, p2);
-				} else if (getNeighbor(mex.peek(), LEFT) != null && getNeighbor(mex.peek(), LEFT).getPly() == 2
-						&& !mex.peek().isBlockedLeft()) {
-					MazeCell yes = getNeighbor(mex.peek(), LEFT);
-					while (mex.peek() != yes) {
-						mex.pop().setPly(0, null);
-					}
-				} else if (getNeighbor(mex.peek(), LEFT) != null && !tex.isEmpty()
-						&& getNeighbor(mex.peek(), LEFT) == tex.peek()) {
-					for (int i = 0; i < ROWS / 5; i++)
-						if (!tex.isEmpty())
-							tex.pop().setPly(0, null);
-				}
-				if (mex.peek().col() == 0)
+				if (mex.peek().col() == 0 && !mex.peek().isBlockedDir(LEFT)) {
 					win(2);
+					break;
+				}
+				if (mex.peek().col() == 1 && getNeighbor(mex.peek(), LEFT).getPly() == 1) {
+					win(2);
+					break;
+				}
+				playerMove(2, LEFT);
 				break;
 			case KeyEvent.VK_DOWN:
-				if (getNeighbor(mex.peek(), DOWN) != null && getNeighbor(mex.peek(), DOWN).getPly() == 0
-						&& !mex.peek().isBlockedDown()) {
-					mex.peek().setStatus(mex.peek().getStatus());
-					mex.push(getNeighbor(mex.peek(), DOWN));
-					mex.peek().setPly(2, p2);
-				} else if (getNeighbor(mex.peek(), DOWN) != null && getNeighbor(mex.peek(), DOWN).getPly() == 2
-						&& !mex.peek().isBlockedDown()) {
-					MazeCell yes = getNeighbor(mex.peek(), DOWN);
-					while (mex.peek() != yes) {
-						mex.pop().setPly(0, null);
-					}
-				} else if (getNeighbor(mex.peek(), DOWN) != null && !tex.isEmpty()
-						&& getNeighbor(mex.peek(), DOWN) == tex.peek()) {
-					for (int i = 0; i < ROWS / 5; i++)
-						if (!tex.isEmpty())
-							tex.pop().setPly(0, null);
-				}
-				/*if (mex.peek().row() == ROWS - 1)
-					p2b = true;
-				if (p2t && p2b) {
-					for (int i = 0; i < ROWS / 5; i++)
-						mex.pop().setPly(0, null);
-					p2b = false;
-				}*/
+				playerMove(2, DOWN);
+				/*
+				 * if (mex.peek().row() == ROWS - 1) p2b = true; if (p2t && p2b) { for (int i =
+				 * 0; i < ROWS / 5; i++) mex.pop().setPly(0, null); p2b = false; }
+				 */
 				break;
 			case KeyEvent.VK_UP:
-				if (getNeighbor(mex.peek(), UP) != null && getNeighbor(mex.peek(), UP).getPly() == 0
-						&& !mex.peek().isBlockedUp()) {
-					mex.peek().setStatus(mex.peek().getStatus());
-					mex.push(getNeighbor(mex.peek(), UP));
-					mex.peek().setPly(2, p2);
-				} else if (getNeighbor(mex.peek(), UP) != null && getNeighbor(mex.peek(), UP).getPly() == 2
-						&& !mex.peek().isBlockedUp()) {
-					MazeCell yes = getNeighbor(mex.peek(), UP);
-					while (mex.peek() != yes) {
-						mex.pop().setPly(0, null);
-					}
-				} else if (getNeighbor(mex.peek(), UP) != null && !tex.isEmpty()
-						&& getNeighbor(mex.peek(), UP) == tex.peek()) {
-					for (int i = 0; i < ROWS / 5; i++)
-						if (!tex.isEmpty())
-							tex.pop().setPly(0, null);
-				}
-				/*if (mex.peek().row() == 0)
-					p2t = true;
-				if (p2t && p2b) {
-					for (int i = 0; i < ROWS / 5; i++)
-						mex.pop().setPly(0, null);
-					p2t = false;
-				}*/
+				playerMove(2, UP);
+				/*
+				 * if (mex.peek().row() == 0) p2t = true; if (p2t && p2b) { for (int i = 0; i <
+				 * ROWS / 5; i++) mex.pop().setPly(0, null); p2t = false; }
+				 */
 				break;
 			case KeyEvent.VK_D:
-				if (getNeighbor(tex.peek(), RIGHT) != null && getNeighbor(tex.peek(), RIGHT).getPly() == 0
-						&& !tex.peek().isBlockedRight()) {
-					tex.peek().setStatus(tex.peek().getStatus());
-					tex.push(getNeighbor(tex.peek(), RIGHT));
-					tex.peek().setPly(1, p1);
-				} else if (getNeighbor(tex.peek(), RIGHT) != null && getNeighbor(tex.peek(), RIGHT).getPly() == 1
-						&& !tex.peek().isBlockedRight()) {
-					MazeCell yes = getNeighbor(tex.peek(), RIGHT);
-					while (tex.peek() != yes) {
-						tex.pop().setPly(0, null);
-					}
-				} else if (getNeighbor(tex.peek(), RIGHT) != null && !mex.isEmpty()
-						&& getNeighbor(tex.peek(), RIGHT) == mex.peek()) {
-					for (int i = 0; i < ROWS / 5; i++)
-						if (!mex.isEmpty())
-							mex.pop().setPly(0, null);
-				}
-				if (tex.peek().col() == COLS - 1)
+				if (tex.peek().col() == COLS - 1 && !tex.peek().isBlockedDir(RIGHT)) {
 					win(1);
+					break;
+				}
+				if (tex.peek().col() == COLS - 2 && getNeighbor(tex.peek(), RIGHT).getPly() == 2) {
+					win(1);
+					break;
+				}
+				playerMove(1, RIGHT);
 				break;
 			case KeyEvent.VK_A:
-				if (getNeighbor(tex.peek(), LEFT) != null && getNeighbor(tex.peek(), LEFT).getPly() == 0
-						&& !tex.peek().isBlockedLeft()) {
-					tex.peek().setStatus(tex.peek().getStatus());
-					tex.push(getNeighbor(tex.peek(), LEFT));
-					tex.peek().setPly(1, p1);
-				} else if (getNeighbor(tex.peek(), LEFT) != null && getNeighbor(tex.peek(), LEFT).getPly() == 1
-						&& !tex.peek().isBlockedLeft()) {
-					MazeCell yes = getNeighbor(tex.peek(), LEFT);
-					while (tex.peek() != yes) {
-						tex.pop().setPly(0, null);
-					}
-				} else if (getNeighbor(tex.peek(), LEFT) != null && !mex.isEmpty()
-						&& getNeighbor(tex.peek(), LEFT) == mex.peek()) {
-					for (int i = 0; i < ROWS / 5; i++)
-						if (!mex.isEmpty())
-							mex.pop().setPly(0, null);
-				}
+				playerMove(1, LEFT);
 				break;
 			case KeyEvent.VK_S:
-				if (getNeighbor(tex.peek(), DOWN) != null && getNeighbor(tex.peek(), DOWN).getPly() == 0
-						&& !tex.peek().isBlockedDown()) {
-					tex.peek().setStatus(tex.peek().getStatus());
-					tex.push(getNeighbor(tex.peek(), DOWN));
-					tex.peek().setPly(1, p1);
-				} else if (getNeighbor(tex.peek(), DOWN) != null && getNeighbor(tex.peek(), DOWN).getPly() == 1
-						&& !tex.peek().isBlockedDown()) {
-					MazeCell yes = getNeighbor(tex.peek(), DOWN);
-					while (tex.peek() != yes) {
-						tex.pop().setPly(0, null);
-					}
-				} else if (getNeighbor(tex.peek(), DOWN) != null && !mex.isEmpty()
-						&& getNeighbor(tex.peek(), DOWN) == mex.peek()) {
-					for (int i = 0; i < ROWS / 5; i++)
-						if (!mex.isEmpty())
-							mex.pop().setPly(0, null);
-				}
-				/*if (tex.peek().row() == ROWS - 1)
-					p1b = true;
-				if (p1t && p1b) {
-					for (int i = 0; i < ROWS / 5; i++)
-						tex.pop().setPly(0, null);
-					p1b = false;
-				}*/
+				playerMove(1, DOWN);
+				/*
+				 * if (tex.peek().row() == ROWS - 1) p1b = true; if (p1t && p1b) { for (int i =
+				 * 0; i < ROWS / 5; i++) tex.pop().setPly(0, null); p1b = false; }
+				 */
 				break;
 			case KeyEvent.VK_W:
-				if (getNeighbor(tex.peek(), UP) != null && getNeighbor(tex.peek(), UP).getPly() == 0
-						&& !tex.peek().isBlockedUp()) {
-					tex.peek().setStatus(tex.peek().getStatus());
-					tex.push(getNeighbor(tex.peek(), UP));
-					tex.peek().setPly(1, p1);
-				} else if (getNeighbor(tex.peek(), UP) != null && getNeighbor(tex.peek(), UP).getPly() == 1
-						&& !tex.peek().isBlockedUp()) {
-					MazeCell yes = getNeighbor(tex.peek(), UP);
-					while (tex.peek() != yes) {
-						tex.pop().setPly(0, null);
-					}
-				} else if (getNeighbor(tex.peek(), UP) != null && !mex.isEmpty()
-						&& getNeighbor(tex.peek(), UP) == mex.peek()) {
-					for (int i = 0; i < ROWS / 5; i++)
-						if (!mex.isEmpty())
-							mex.pop().setPly(0, null);
+				playerMove(1, UP);
+				/*
+				 * if (tex.peek().row() == 0) p1t = true; if (p1t && p1b) { for (int i = 0; i <
+				 * ROWS / 5; i++) tex.pop().setPly(0, null); p1t = false;
+				 *
+				 * }
+				 */
+				break;
+			case KeyEvent.VK_CONTROL:
+				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+					p1C = true;
+				} else {
+					p2C = true;
 				}
-				/*if (tex.peek().row() == 0)
-					p1t = true;
-				if (p1t && p1b) {
-					for (int i = 0; i < ROWS / 5; i++)
-						tex.pop().setPly(0, null);
-					p1t = false;
-
-				}*/
-				break;
-			case KeyEvent.VK_NUMPAD0:
-				setVisible(false);
-				new MazeFrame();
-
-				break;
-
-			case KeyEvent.VK_Q:
-				setVisible(false);
-				new MazeFrame();
-
 				break;
 			}
-
+			if (p1C && p2C) {
+				resetMaze();
+			}
 		}
+
+	}
+
+	public static void openSettings() {
 
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_CONTROL:
+			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+				p1C = false;
+			} else {
+				p2C = false;
+			}
+			break;
+		}
 	}
 
 	@Override
