@@ -33,7 +33,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 	private CellStack tex;
 	private CellStack mex;
-	private boolean öñ;
+	private boolean Ã¶Ã±;
 	// private boolean p1t, p2t, p1b, p2b;
 	private boolean p1C, p2C;
 	public boolean p1R, p2R;
@@ -150,7 +150,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 		stagePreset = BORING;
 		mode = P2;
-		öñ = true;
+		Ã¶Ã± = true;
 		mazeFidelity = .7;
 		aispeed = (int) (200 - (200 * (1 - mazeFidelity)));
 
@@ -222,11 +222,11 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	}
 
 	public boolean solveStep() {// takes the next step in solving the maze
-		if (öñ && isLast(tex.peek())) {
+		if (Ã¶Ã± && isLast(tex.peek())) {
 			double i = 0;
 			double t = 0;
 			int sizzle = tex.size();
-			while (!tex.isEmpty() && öñ) {
+			while (!tex.isEmpty() && Ã¶Ã±) {
 				t = i / sizzle;
 				i++;
 				tex.pop()
@@ -236,10 +236,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 			}
 			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime) / 1000);
 			JOptionPane.showMessageDialog(this, matchTime);
-			öñ = false;
+			Ã¶Ã± = false;
 			return true;
 		}
-		if ((tex.isEmpty() || (!mex.isEmpty() && mex.peek() == begi)) && öñ) {
+		if ((tex.isEmpty() || (!mex.isEmpty() && mex.peek() == begi)) && Ã¶Ã±) {
 			double i = 0;
 			double t = 0;
 			int sizzle = mex.size();
@@ -254,12 +254,12 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 			}
 			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime) / 1000);
 			JOptionPane.showMessageDialog(this, matchTime);
-			öñ = false;
+			Ã¶Ã± = false;
 			return false;
 		}
 
 		for (int dir = 0; dir <= 3; dir++) { // for all directions
-			if (öñ && getNeighbor(tex.peek(), getBetDir(tex.peek(), end)[dir]) != null
+			if (Ã¶Ã± && getNeighbor(tex.peek(), getBetDir(tex.peek(), end)[dir]) != null
 					&& !(tex.peek().isBlockedDir(getBetDir(tex.peek(), end)[dir]))
 					&& getNeighbor(tex.peek(), getBetDir(tex.peek(), end)[dir]).getStatus() == MazeCell.BLANK) { // if
 																													// cell
@@ -276,9 +276,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 				return true;
 			}
 		}
-		if (öñ)
+		if (Ã¶Ã±)
 			tex.pop().setStatus(MazeCell.DEAD); // if not able to move, kill
-		return öñ;
+		return Ã¶Ã±;
 	}
 
 	public void pause(int t) {
@@ -439,7 +439,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 	// 4444444444444444444 PHASE 4 STUFF 4444444444444444444444444444
 	private void win(int player) {
-		öñ = false;
+		Ã¶Ã± = false;
 		if (player == 1) {
 			double i = 0;
 			double t = 0;
@@ -584,7 +584,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (!öñ)
+		if (!Ã¶Ã± && e.getKeyCode()!=(KeyEvent.VK_CONTROL))
 			return;
 		if (mode == CPU) {
 			switch (e.getKeyCode()) {
