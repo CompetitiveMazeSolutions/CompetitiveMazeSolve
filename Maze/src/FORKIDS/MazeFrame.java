@@ -30,16 +30,70 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	private JPanel controls, maze;
 	private JButton solve, hic, carb;
 	private MazeCell[][] cells;
-
 	private CellStack tex;
 	private CellStack mex;
+	KeyListener l = new KeyListener() {
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_SHIFT:
+				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+					p1R = true;
+				} else {
+					p2R = true;
+				}
+				break;
+			case KeyEvent.VK_CONTROL:
+				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+					p1C = true;
+				} else {
+					p2C = true;
+				}
+				break;
+			}
+			if (p1C && p2C) {
+				resetMaze();
+			}
+			if (p1R && p2R) {
+				solve.requestFocus();
+				for (MazeCell[] out : cells)
+					for (MazeCell in : out)
+						in.go();
+				startTime = (int) (System.currentTimeMillis());
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_SHIFT:
+				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+					p1R = false;
+				} else {
+					p2R = false;
+				}
+				break;
+			case KeyEvent.VK_CONTROL:
+				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+					p1C = false;
+				} else {
+					p2C = false;
+				}
+				break;
+			}
+		}
+	};
+
 	private boolean on;
-	// private boolean p1t, p2t, p1b, p2b;
 	private boolean p1C, p2C;
 	public boolean p1R, p2R;
 
 	private MazeCell begi, end;
-	// *** you will need a 2DArray of MazeCells****
 	/*
 	 * dumb private Color beg = new Color(1,1,1); private Color plead = new
 	 * Color(255,255,255);
@@ -76,71 +130,14 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 		setUpControlPanel();// make the buttons & put them in the north
 		instantiateCells();// give birth to all the mazeCells & get them onto the screen
-		// carveALameMaze();//this will knock down walls to create a maze
-		carveARandomMaze();
-
-		KeyListener l = new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_SHIFT:
-					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-						p1R = true;
-					} else {
-						p2R = true;
-					}
-					break;
-				case KeyEvent.VK_CONTROL:
-					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-						p1C = true;
-					} else {
-						p2C = true;
-					}
-					break;
-				}
-				if (p1C && p2C) {
-					resetMaze();
-				}
-				if (p1R && p2R) {
-					solve.requestFocus();
-					for (MazeCell[] out : cells)
-						for (MazeCell in : out)
-							in.go();
-					startTime = (int) (System.currentTimeMillis());
-				}
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_SHIFT:
-					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-						p1R = false;
-					} else {
-						p2R = false;
-					}
-					break;
-				case KeyEvent.VK_CONTROL:
-					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-						p1C = false;
-					} else {
-						p2C = false;
-					}
-					break;
-				}
-			}
-		};
+		carveARandomMaze();// this will knock down walls to create a maze
 
 		// finishing touches
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(ROWS * 40, COLS * 40);
-		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		this.setVisible(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setSize(ROWS * 40, COLS * 40);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setBackground(Color.BLACK);
+		setVisible(true);
 		addKeyListener(l);
 		requestFocus();
 	}// end constructor
@@ -167,7 +164,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		tex = new CellStack();
 		mex = new CellStack();
 		maze = new JPanel();
-		maze.setBackground(Color.BLACK);
+		maze.setBackground(this.getBackground());
 		maze.setLayout(new GridLayout(ROWS, COLS));
 
 		cells = new MazeCell[ROWS][COLS];
@@ -221,7 +218,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		return r >= 0 && r < ROWS && c >= 0 && c < COLS;
 	}
 
-	public boolean solveStep() {// takes the next step in solving the maze
+	private boolean solveStep() {// takes the next step in solving the maze
 		if (on && isLast(tex.peek())) {
 			double i = 0;
 			double t = 0;
@@ -288,13 +285,13 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		}
 	}
 
-	public boolean isLast(MazeCell luckyBoy) {
+	private boolean isLast(MazeCell luckyBoy) {
 		return luckyBoy.col() == COLS - 1 && !luckyBoy.isBlockedRight();
 	}
 
 	/* 33333333333333333333 Phase 3 stuff 3333333333333333333333333 */
 
-	public MazeCell getNeighbor(MazeCell mc, int dir) {
+	private MazeCell getNeighbor(MazeCell mc, int dir) {
 		switch (dir) { // where moving to
 		case LEFT:
 			if (isInBounds(mc.row(), mc.col() - 1))
@@ -321,7 +318,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		}
 	}
 
-	public ArrayList<MazeCell> blankNeighbors(MazeCell mc) {
+	private ArrayList<MazeCell> blankNeighbors(MazeCell mc) {
 		ArrayList<MazeCell> results = new ArrayList<MazeCell>();
 		for (int i = 0; i < 4; i++)
 			if (getNeighbor(mc, i) != null && getNeighbor(mc, i).getStatus() == MazeCell.BLANK)
@@ -329,7 +326,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		return results;
 	}
 
-	public int getDirectionFrom(MazeCell orig, MazeCell dest) {
+	private int getDirectionFrom(MazeCell orig, MazeCell dest) {
 		int ret = -1;
 		if (dest.row() < orig.row())
 			ret = MazeCell.UP;
@@ -342,7 +339,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		return ret;
 	}
 
-	public int[] getBetDir(MazeCell orig, MazeCell dest) {
+	private int[] getBetDir(MazeCell orig, MazeCell dest) {
 		int[] moves = new int[4];
 		int yDis = dest.row() - orig.row();
 		int xDis = dest.col() - orig.col();
@@ -380,7 +377,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		return moves;
 	}
 
-	public void stepCarve() {
+	private void stepCarve() {
 		if (tex.isEmpty()) {
 			for (int i = 0; i < ROWS; i++)
 				for (int j = 0; j < COLS; j++)
@@ -403,7 +400,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		}
 	}
 
-	public void carveARandomMaze() {
+	private void carveARandomMaze() {
 		/*
 		 * if(!tex.isEmpty()){ tex.peek().setStatus(MazeCell.BLANK);
 		 * tex.peek().setPly(0, null); tex.peek().setPly(0, null); tex.pop(); }
@@ -475,7 +472,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		}
 	}
 
-	public void playerMove(int player, int dir) {
+	private void playerMove(int player, int dir) {
 
 		CellStack mex = this.mex;
 		CellStack tex = this.tex;
@@ -523,7 +520,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		}
 	}
 
-	public void playerMove(int dir) {
+	private void playerMove(int dir) {
 		if (getNeighbor(mex.peek(), dir) != null && !mex.peek().isBlockedDir(dir)) {
 			mex.peek().setStatus(mex.peek().getStatus());
 			mex.push(getNeighbor(mex.peek(), dir));
@@ -562,8 +559,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		}
 	}// end action performed
 
-	private void setUpControlPanel() {
+	public void setUpControlPanel() {
 		controls = new JPanel();
+		controls.setBackground(this.getBackground());
 		carb = new JButton("THIS ONE'S TRASH");
 		hic = new JButton("I'M HERE TOO");
 		solve = new JButton("I'M READY");
@@ -584,7 +582,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (!on && e.getKeyCode()!=(KeyEvent.VK_CONTROL))
+		if (!on && e.getKeyCode() != (KeyEvent.VK_CONTROL))
 			return;
 		if (mode == CPU) {
 			switch (e.getKeyCode()) {
@@ -676,8 +674,12 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 	}
 
-	public static void openSettings() {
-
+	public void openSettings() {
+		Settings settingWindow = new Settings(this);
+		this.add(settingWindow);
+		maze.setVisible(false);
+		controls.setVisible(false);
+		pack();
 	}
 
 	@Override
@@ -697,6 +699,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public JPanel getGameWindow() {
+		return maze;
 	}
 
 }// end class
