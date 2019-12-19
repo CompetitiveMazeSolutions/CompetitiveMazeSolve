@@ -617,6 +617,12 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 				}
 				break;
 			case KeyEvent.VK_LEFT:
+				if (mex.peek().col() == 0 && !mex.peek().isBlockedDir(LEFT)) {
+					win(2);
+					break;}
+				if (mex.peek().col() == 1 && getNeighbor(mex.peek(),LEFT).getPly()==1) {
+					win(2);
+					break;}
 				if (getNeighbor(mex.peek(), LEFT) != null && getNeighbor(mex.peek(), LEFT).getPly() == 0
 						&& !mex.peek().isBlockedLeft()) {
 					mex.peek().setStatus(mex.peek().getStatus());
@@ -647,10 +653,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						mex.pop().setPly(0, null);
 					}
 				}
-				if (mex.peek().col() == 0 && !mex.peek().isBlockedDir(LEFT))
-					win(2);
-				if (mex.peek().col() == 1 && getNeighbor(mex.peek(),LEFT).getPly()==1)
-					win(2);
+				
 				break;
 			case KeyEvent.VK_DOWN:
 				if (getNeighbor(mex.peek(), DOWN) != null && getNeighbor(mex.peek(), DOWN).getPly() == 0
@@ -725,6 +728,12 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 				 */
 				break;
 			case KeyEvent.VK_D:
+				if (tex.peek().col() == COLS - 1 && !tex.peek().isBlockedDir(RIGHT)) {
+					win(1);
+					break;}
+				if (tex.peek().col() == COLS - 2 && getNeighbor(tex.peek(),RIGHT).getPly()==2) {
+					win(1);
+					break;}
 				if (getNeighbor(tex.peek(), RIGHT) != null && getNeighbor(tex.peek(), RIGHT).getPly() == 0
 						&& !tex.peek().isBlockedRight()) {
 					tex.peek().setStatus(tex.peek().getStatus());
@@ -755,10 +764,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 						tex.pop().setPly(0, null);
 					}
 				}
-				if (tex.peek().col() == COLS - 1 && !tex.peek().isBlockedDir(RIGHT))
-					win(1);
-				if (tex.peek().col() == COLS - 2 && getNeighbor(tex.peek(),RIGHT).getPly()==2)
-					win(1);
+				
 				break;
 			case KeyEvent.VK_A:
 				if (getNeighbor(tex.peek(), LEFT) != null && getNeighbor(tex.peek(), LEFT).getPly() == 0
