@@ -19,13 +19,13 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 	public static int ROWS = 20, COLS = 35;
 	public static final int CPU = 1, P2 = 2;
+	private static final int BORING = 0, BOXES = 1;
 
-	private int mode = P2;
+	private int mode;
 	private int aispeed;
 	private int startTime;
 	private double mazeFidelity;
-	private int stagePreset;
-	private static final int BORING = 0, BOXES = 1;
+	private int stagePreset = BORING;
 
 	private JPanel controls, maze;
 	private JButton solve, hic, carb;
@@ -69,11 +69,11 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	private final Color p2 = plead;
 
 	/** Constructor **/
-	public MazeFrame() {
+	public MazeFrame(int mode, double mazeFidelity2) {
 		super("MAZE");
 
 		setUpControlPanel();// make the buttons & put them in the north
-		instantiateCells();// give birth to all the mazeCells & get them onto the screen
+		instantiateCells(mode, mazeFidelity2);// give birth to all the mazeCells & get them onto the screen
 		carveARandomMaze();// this will knock down walls to create a maze
 
 		// finishing touches
@@ -82,18 +82,19 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setBackground(Color.BLACK);
 		setVisible(true);
+		setFocusable(true);
 		addKeyListener(new OverarchingListener(this));
 		requestFocus();
 	}// end constructor
 
 	/* 1111111111111111 PHASE 1 STUFF 1111111111111111111111 */
-	private void instantiateCells() {
+	private void instantiateCells(int mode, double mazeFidelity) {
 
 		stagePreset = BORING;
-		mode = CPU;
-		on = true;
-		mazeFidelity = .7;
+		this.mode = mode;
+		this.mazeFidelity = mazeFidelity;
 		aispeed = (int) (200 - (200 * (1 - mazeFidelity)));
+		on = true;
 
 		/*
 		 * p1t = false; p2t = false; p1b = false; p2b = false;
@@ -474,7 +475,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 	public void resetMaze() {
 		this.setVisible(false);
-		new MazeFrame();
+		new MazeFrame(mode, mazeFidelity);
 	}
 
 	public void run() {
@@ -495,7 +496,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 		if (e.getSource() == carb) {
 			this.setVisible(false);
-			new MazeFrame();
+			new MazeFrame(mode, mazeFidelity);
 
 		}
 		if (e.getSource() == hic) {
@@ -526,10 +527,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		controls.add(solve);
 
 		this.add(controls, BorderLayout.NORTH);
-	}
-
-	public static void main(String[] args) {
-		new MazeFrame();
 	}
 
 	@Override
@@ -645,6 +642,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 	}
 
+	// ACCESSORS AND MUTATORS
 	public JPanel getGameWindow() {
 		return maze;
 	}

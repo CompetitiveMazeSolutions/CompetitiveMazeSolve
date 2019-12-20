@@ -8,7 +8,7 @@ public class OverarchingListener implements KeyListener {
 	private MazeFrame parent;
 
 	public OverarchingListener(MazeFrame parent) {
-
+		this.parent = parent;
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class OverarchingListener implements KeyListener {
 				parent.setP2R(true);
 			}
 			if (parent.getMode() == MazeFrame.CPU) {
-				(new Thread()).start();
+				(new Thread(parent)).start();
 			}
 			break;
 		case KeyEvent.VK_CONTROL:
