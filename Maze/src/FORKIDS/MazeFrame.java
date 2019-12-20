@@ -16,11 +16,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyListener {
-	private static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
-	private static int ROWS = 20, COLS = 35;
+	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
+	public static int ROWS = 20, COLS = 35;
+	public static final int CPU = 1, P2 = 2;
 
-	private static final int CPU = 1, P2 = 2;
-	private int mode;
+	private int mode = P2;
 	private int aispeed;
 	private int startTime;
 	private double mazeFidelity;
@@ -32,66 +32,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	private MazeCell[][] cells;
 	private CellStack tex;
 	private CellStack mex;
-	KeyListener l = new KeyListener() {
-
-		@Override
-		public void keyTyped(KeyEvent e) {
-		}
-
-		@Override
-		public void keyPressed(KeyEvent e) {
-			switch (e.getKeyCode()) {
-			case KeyEvent.VK_SHIFT:
-				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-					p1R = true;
-				} else {
-					p2R = true;
-				}
-				break;
-			case KeyEvent.VK_CONTROL:
-				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-					p1C = true;
-				} else {
-					p2C = true;
-				}
-				break;
-			}
-			if (p1C && p2C) {
-				resetMaze();
-			}
-			if (p1R && p2R) {
-				solve.requestFocus();
-				for (MazeCell[] out : cells)
-					for (MazeCell in : out)
-						in.go();
-				startTime = (int) (System.currentTimeMillis());
-			}
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e) {
-			switch (e.getKeyCode()) {
-			case KeyEvent.VK_SHIFT:
-				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-					p1R = false;
-				} else {
-					p2R = false;
-				}
-				break;
-			case KeyEvent.VK_CONTROL:
-				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-					p1C = false;
-				} else {
-					p2C = false;
-				}
-				break;
-			}
-		}
-	};
 
 	private boolean on;
 	private boolean p1C, p2C;
-	public boolean p1R, p2R;
+	private boolean p1R, p2R;
 
 	private MazeCell begi, end;
 	/*
@@ -138,7 +82,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setBackground(Color.BLACK);
 		setVisible(true);
-		addKeyListener(l);
+		addKeyListener(new OverarchingListener(this));
 		requestFocus();
 	}// end constructor
 
@@ -146,7 +90,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 	private void instantiateCells() {
 
 		stagePreset = BORING;
-		mode = P2;
+		mode = CPU;
 		on = true;
 		mazeFidelity = .7;
 		aispeed = (int) (200 - (200 * (1 - mazeFidelity)));
@@ -559,6 +503,14 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 		}
 	}// end action performed
 
+	public void openSettings() {
+		Settings settingWindow = new Settings(this);
+		this.add(settingWindow);
+		maze.setVisible(false);
+		controls.setVisible(false);
+		pack();
+	}
+
 	public void setUpControlPanel() {
 		controls = new JPanel();
 		controls.setBackground(this.getBackground());
@@ -674,14 +626,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 	}
 
-	public void openSettings() {
-		Settings settingWindow = new Settings(this);
-		this.add(settingWindow);
-		maze.setVisible(false);
-		controls.setVisible(false);
-		pack();
-	}
-
 	@Override
 	public void keyReleased(KeyEvent e) {
 		switch (e.getKeyCode()) {
@@ -703,6 +647,67 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable, KeyLi
 
 	public JPanel getGameWindow() {
 		return maze;
+	}
+
+	public Runnable getRun() {
+		return this;
+	}
+
+	public boolean isP1C() {
+		return p1C;
+	}
+
+	public void setP1C(boolean p1c) {
+		p1C = p1c;
+	}
+
+	public boolean isP2C() {
+		return p2C;
+	}
+
+	public void setP2C(boolean p2c) {
+		p2C = p2c;
+	}
+
+	public boolean isP1R() {
+		return p1R;
+	}
+
+	public void setP1R(boolean p1r) {
+		p1R = p1r;
+	}
+
+	public boolean isP2R() {
+		return p2R;
+	}
+
+	public void setP2R(boolean p2r) {
+		p2R = p2r;
+	}
+
+	public int getMode() {
+		return mode;
+	}
+
+	public void setMode(int mode) {
+		this.mode = mode;
+	}
+
+	public int getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(int startTime) {
+		this.startTime = startTime;
+	}
+
+	public JButton getSolve() {
+		return solve;
+	}
+
+	public MazeCell[][] getCells() {
+		return cells;
+
 	}
 
 }// end class
