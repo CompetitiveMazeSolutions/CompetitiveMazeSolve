@@ -1,5 +1,5 @@
 //package Phase1;
-package FORKIDS;
+package main;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -13,7 +13,7 @@ public class MazeCell extends JPanel {
 	private boolean[] borders;
 	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3;
-	public static final int p1 = 0, p2 = 1;
+	public static final int p1 = 1, p2 = 2;
 
 	private int wallThickness = 2;
 	private int padding = 2;

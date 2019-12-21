@@ -1,4 +1,4 @@
-package FORKIDS;
+package main;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 
