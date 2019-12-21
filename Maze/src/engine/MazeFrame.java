@@ -67,7 +67,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	private final Color p2 = plead;
 
 	/** Constructors **/
-	public MazeFrame(int mode, double mazeFidelity2) {
+	public MazeFrame(int mode, double mazeFidelity) {
 		super("MAZE");
 
 		stagePreset = BORING;
