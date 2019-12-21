@@ -1,4 +1,4 @@
-package FORKIDS;
+package engine;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;

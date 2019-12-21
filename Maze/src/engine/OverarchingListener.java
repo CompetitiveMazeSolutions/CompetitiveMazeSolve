@@ -1,4 +1,4 @@
-package FORKIDS;
+package engine;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -6,9 +6,17 @@ import java.awt.event.KeyListener;
 public class OverarchingListener implements KeyListener {
 
 	private MazeFrame parent;
+	private int mode;
+	private boolean p1C;
+	private boolean p2C;
+	private boolean p1R;
+	private boolean p2R;
 
 	public OverarchingListener(MazeFrame parent) {
 		this.parent = parent;
+		mode = parent.getMode();
+		p1C = false;
+		p2C = false;
 	}
 
 	@Override
@@ -17,29 +25,30 @@ public class OverarchingListener implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_SHIFT:
 			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-				parent.setP1R(true);
+				p1R = true;
 			} else {
-				parent.setP2R(true);
+				p2R = true;
 			}
-			if (parent.getMode() == MazeFrame.CPU) {
+			if (mode == MazeFrame.CPU) {
 				(new Thread(parent)).start();
 			}
 			break;
 		case KeyEvent.VK_CONTROL:
 			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-				parent.setP1C(true);
+				p1C = true;
 			} else {
-				parent.setP2C(true);
+				p2C = true;
 			}
 			break;
 		}
-		if (parent.isP1C() && parent.isP2C()) {
+		if (p1C && p2C) {
 			parent.resetMaze();
 		}
-		if (parent.isP1R() && parent.isP2R()) {
+		if (p1R && p2R) {
 			parent.getSolve().requestFocus();
 			for (MazeCell[] out : parent.getCells())
 				for (MazeCell in : out)
@@ -53,16 +62,16 @@ public class OverarchingListener implements KeyListener {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_SHIFT:
 			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-				parent.setP1R(false);
+				p1R = false;
 			} else {
-				parent.setP2R(false);
+				p2R = false;
 			}
 			break;
 		case KeyEvent.VK_CONTROL:
 			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
-				parent.setP1C(false);
+				p1C = false;
 			} else {
-				parent.setP2C(false);
+				p2C = false;
 			}
 			break;
 		}
