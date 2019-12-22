@@ -23,10 +23,10 @@ import javax.swing.JPanel;
 public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
-	public static int ROWS = 20, COLS = 35;
 	public static final int CPU = 1, P2 = 2, TT = 3;
 	public static final int BORING = 0, BOXES = 1;
 
+	public static int rows, cols; //20 and 35 best
 	private int mode;
 	private int aispeed; // Speed of bot
 	private int startTime; // Time game is started
@@ -79,12 +79,15 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	/** Constructors **/
 
-	public MazeFrame(int mode, double mazeFidelity, String matchName) {
+	public MazeFrame(int mode, double mazeFidelity, String matchName, int r, int c) {
 		super("MAZE");
 
 		this.matchName = matchName;
 		this.mode = mode;
 		this.mazeFidelity = mazeFidelity;
+		rows = r;
+		cols = c;
+		
 		aispeed = (int) (200 - (200 * (1 - mazeFidelity)));
 		stagePreset = BORING;
 		embededListener = new ReadyListener(this);
@@ -100,7 +103,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// finishing touches
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(ROWS * 40, COLS * 40);
+		setSize(rows * 40, cols * 40);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setBackground(Color.BLACK);
 		setVisible(true);
@@ -130,7 +133,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// finishing touches
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(ROWS * 40, COLS * 40);
+		setSize(rows * 40, cols * 40);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setBackground(Color.BLACK);
 		setVisible(true);
@@ -160,7 +163,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// finishing touches
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(ROWS * 40, COLS * 40);
+		setSize(rows * 40, cols * 40);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setBackground(Color.BLACK);
 		setVisible(true);
@@ -183,10 +186,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// Initialize new maze panel
 		maze = new JPanel();
 		maze.setBackground(this.getBackground());
-		maze.setLayout(new GridLayout(ROWS, COLS));
+		maze.setLayout(new GridLayout(rows, cols));
 
 		// Initialize cell array
-		cells = new MazeCell[ROWS][COLS];
+		cells = new MazeCell[rows][cols];
 
 		// Fill in the cell array
 		for (int i = 0; i < cells.length; i++) {
@@ -222,8 +225,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	private void carveARandomMaze() {
 
 		// Pick beginning and end
-		begi = cells[(int) (Math.random() * (ROWS * .5) + ROWS * .25)][0];
-		end = cells[(int) (Math.random() * (ROWS * .5) + ROWS * .25)][COLS - 1];
+		begi = cells[(int) (Math.random() * (rows * .5) + rows * .25)][0];
+		end = cells[(int) (Math.random() * (rows * .5) + rows * .25)][cols - 1];
 		// Sets starting state for carveAI
 		begi.setStatus(MazeCell.VISITED);
 		end.setStatus(MazeCell.BLANK);
@@ -244,9 +247,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			if(mode == P2)tex.peek().setPly(1, p1);
 
 			// Clear out all side walls that need to be cleared
-			for (int i = (int) (ROWS * .25); i < ROWS * .75; i++) {
+			for (int i = (int) (rows * .25); i < rows * .75; i++) {
 				cells[i][0].clearWallDir(LEFT);
-				cells[i][COLS - 1].clearWallDir(RIGHT);
+				cells[i][cols - 1].clearWallDir(RIGHT);
 			}
 		}
 
@@ -265,8 +268,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// If this is the first or last step
 		if (tex.isEmpty()) {
 			// Set all cells to be blanks
-			for (int i = 0; i < ROWS; i++)
-				for (int j = 0; j < COLS; j++)
+			for (int i = 0; i < rows; i++)
+				for (int j = 0; j < cols; j++)
 					cells[i][j].setStatus(MazeCell.BLANK);
 			// Push the first cell
 			tex.push(begi);
@@ -406,7 +409,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		} else if (getNeighbor(mex.peek(), dir) != null && !tex.isEmpty()
 				&& getNeighbor(mex.peek(), dir) == tex.peek()) { // into enemy head
 
-			for (int i = 0; i < ROWS / 5; i++)
+			for (int i = 0; i < rows / 5; i++)
 				if (!tex.isEmpty())
 					tex.pop().setPly(0, null);
 			return;
@@ -447,12 +450,12 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	// If the given cell qualifies for last move
 	private boolean isLast(MazeCell luckyBoy) {
-		return luckyBoy.col() == COLS - 1 && !luckyBoy.isBlockedDir(RIGHT);
+		return luckyBoy.col() == cols - 1 && !luckyBoy.isBlockedDir(RIGHT);
 	}
 
 	// If the possible cell is valid
 	private boolean isInBounds(int r, int c) {
-		return r >= 0 && r < ROWS && c >= 0 && c < COLS;
+		return r >= 0 && r < rows && c >= 0 && c < cols;
 	}
 
 	// Returns an array of directional neighbor cells to the given cells
@@ -581,10 +584,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	// Fully resets this maze's frame
 	public void resetMaze() {
-		new MazeFrame(mode, mazeFidelity, null);
+		new MazeFrame(mode, mazeFidelity, null, rows, cols);
 
 		try {
-			Thread.sleep(50 + (ROWS * COLS) / 1000);
+			Thread.sleep(50 + (rows * cols) / 1000);
 		} catch (Exception e) {
 		}
 

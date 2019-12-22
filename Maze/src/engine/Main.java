@@ -7,7 +7,9 @@ public class Main {
 		final int mode = MazeFrame.TT;
 		final double mazeFidelity = .7;
 		final String matchName = null;
+		final int rows = 20;
+		final int cols = 35;
 
-		new MazeFrame(mode, mazeFidelity, matchName);
+		new MazeFrame(mode, mazeFidelity, matchName, rows, cols);
 	}
 }
