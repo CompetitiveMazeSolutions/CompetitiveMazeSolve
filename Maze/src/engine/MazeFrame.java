@@ -29,7 +29,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	public static int rows, cols; //20 and 35 best
 	private int mode;
 	private int aispeed; // Speed of bot
-	private int startTime; // Time game is started
+	private double startTime; // Time game is started
 	private double mazeFidelity; // Called at the end of CarveStep
 	private int stagePreset = BORING; // Not implemented
 	private String matchName;// Will be added onto the fileOutput if saved
@@ -670,9 +670,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 				tex.pop().setGrad(new Color(gradVal, gradVal, gradVal));
 			}
 			// Find match time
-			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime) / 1000);
+			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
 			// Display match time
-			JOptionPane.showMessageDialog(this, matchTime + " second match");
+			JOptionPane.showMessageDialog(this, (double)matchTime/1000 + " seconds");
 		} else if (player == 1) {
 			// Some gradient setup
 			double i = 0;
@@ -693,8 +693,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 								(int) (beg.getBlue() * t + badiddle.getBlue() * (1 - t))));
 			}
 			// Display match time
-			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime) / 1000);
-			JOptionPane.showMessageDialog(this, matchTime + " second match");
+			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
+			JOptionPane.showMessageDialog(this, (double)matchTime/1000 + " seconds");
 			return;
 		} else if (player == 2) {
 			// Some gradient setup
@@ -716,8 +716,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 								(int) (plead.getBlue() * t + badiddle.getBlue() * (1 - t))));
 			}
 			// Display match time
-			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime) / 1000);
-			JOptionPane.showMessageDialog(this, matchTime + " second match");
+			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
+			JOptionPane.showMessageDialog(this, (double)matchTime/1000 + " seconds");
 			return;
 		}
 	}
@@ -797,11 +797,11 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		this.mode = mode;
 	}
 
-	public int getStartTime() {
+	public double getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(int startTime) {
+	public void setStartTime(double startTime) {
 		this.startTime = startTime;
 	}
 
