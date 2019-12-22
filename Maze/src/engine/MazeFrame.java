@@ -26,8 +26,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	public static final int CPU = 1, P2 = 2, TT = 3;
 	public static final int BORING = 0, BOXES = 1;
 
-	public static int rows, cols; //20 and 35 best
-	private int mode;
+	public static int rows, cols; // 20 and 35 best
+	private int mode; // Gamemode
 	private int aispeed; // Speed of bot
 	private double startTime; // Time game is started
 	private double mazeFidelity; // Called at the end of CarveStep
@@ -87,7 +87,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		this.mazeFidelity = mazeFidelity;
 		rows = r;
 		cols = c;
-		
+
 		aispeed = (int) (200 - (200 * (1 - mazeFidelity)));
 		stagePreset = BORING;
 		embededListener = new ReadyListener(this);
@@ -112,7 +112,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		requestFocus();
 	}
 
-	public MazeFrame(int mode, double mazeFidelity, int aispeed, String matchName) {
+	public MazeFrame(int mode, double mazeFidelity, int aispeed, String matchName, int r, int c) {
 		super("MAZE");
 
 		this.matchName = matchName;
@@ -142,7 +142,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		requestFocus();
 	}
 
-	public MazeFrame(int mode, double mazeFidelity, int aispeed, int stagePreset, String matchName) {
+	public MazeFrame(int mode, double mazeFidelity, int aispeed, int stagePreset, String matchName, int r, int c) {
 		super("MAZE");
 
 		this.matchName = matchName;
@@ -244,7 +244,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// Sets color and player of stack starts
 		if (mode == TT || mode == P2) {
 			mex.peek().setPly(2, p2);
-			if(mode == P2)tex.peek().setPly(1, p1);
+			if (mode == P2)
+				tex.peek().setPly(1, p1);
 
 			// Clear out all side walls that need to be cleared
 			for (int i = (int) (rows * .25); i < rows * .75; i++) {
@@ -259,7 +260,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// Finish it off
 		stepCarve();
-		if(mode==TT)begi.setStatus(MazeCell.BLANK);
+		if (mode == TT)
+			begi.setStatus(MazeCell.BLANK);
 	}
 
 	// Called by carveARandomMaze for each step
@@ -374,9 +376,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// Skippable cells based on mode
 		int skipO = 0;
-		if(mode == P2) {
+		if (mode == P2) {
 			skipO = player % 2 + 1;
-		}else if(mode == TT){
+		} else if (mode == TT) {
 			skipO = player;
 		}
 
@@ -386,7 +388,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			mex = this.mex;
 			tex = this.tex;
 		}
-		
 
 		if (getNeighbor(mex.peek(), dir) != null && getNeighbor(mex.peek(), dir).getPly() == 0
 				&& !mex.peek().isBlockedDir(dir)) { // into blank
@@ -612,18 +613,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			File outputFile = new File("src/output/");
 			// If the directory does not exist, create it
 			if (!outputFile.exists()) {
-				System.out.println("creating directory: " + outputFile.getName());
-				boolean result = false;
-
-				try {
-					outputFile.mkdir();
-					result = true;
-				} catch (SecurityException se) {
-					// handle it
-				}
-				if (result) {
-					System.out.println("DIR created");
-				}
+				outputFile.mkdir();
 				outputFile = new File("src/output/" + matchName + ".JPEG");
 			}
 			// If it does exist, then find make the new file name have a different number
@@ -672,7 +662,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			// Find match time
 			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
 			// Display match time
-			JOptionPane.showMessageDialog(this, (double)matchTime/1000 + " seconds");
+			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
+			return;
 		} else if (player == 1) {
 			// Some gradient setup
 			double i = 0;
@@ -694,7 +685,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			}
 			// Display match time
 			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
-			JOptionPane.showMessageDialog(this, (double)matchTime/1000 + " seconds");
+			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
 			return;
 		} else if (player == 2) {
 			// Some gradient setup
@@ -717,7 +708,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			}
 			// Display match time
 			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
-			JOptionPane.showMessageDialog(this, (double)matchTime/1000 + " seconds");
+			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
 			return;
 		}
 	}
