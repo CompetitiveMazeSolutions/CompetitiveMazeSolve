@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 public class MazeCell extends JPanel {
 	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3; // For statuses
-	public static final int bot = 0, p1 = 1, p2 = 2;
+	public static final int p1 = 1, p2 = 2;
 
 	private int wallThickness = 2; // Width of wall brush
 	private int padding = 2; // Amount of space to the next cell
@@ -61,7 +61,7 @@ public class MazeCell extends JPanel {
 				pHead = false;
 				g.setColor(c);
 			}
-		} else if (ply != p1) { // If not bot mode, and a player exists
+		} else if (ply != 0) { // If not bot mode, and a player exists
 			c = new Color(plyCo.getRed(), plyCo.getGreen(), plyCo.getBlue(), 200);
 			g.setColor(c);
 		}
