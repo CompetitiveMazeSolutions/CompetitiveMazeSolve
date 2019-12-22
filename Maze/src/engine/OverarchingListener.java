@@ -33,19 +33,16 @@ public class OverarchingListener implements KeyListener {
 			} else {
 				p2R = true;
 			}
-			if (mode == MazeFrame.CPU) {
-				(new Thread(parent)).start();
-			}
 			break;
 		case KeyEvent.VK_CONTROL:
-			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_LEFT) {
 				p1C = true;
 			} else {
 				p2C = true;
 			}
 			break;
 		}
-		if (p1C && p2C) {
+		if (p1C || p2C) {
 			parent.resetMaze();
 		}
 		if (p1R && p2R) {
@@ -54,6 +51,8 @@ public class OverarchingListener implements KeyListener {
 				for (MazeCell in : out)
 					in.go();
 			parent.setStartTime((int) (System.currentTimeMillis()));
+			if (mode == MazeFrame.CPU)
+				new Thread(parent).start();
 		}
 	}
 
