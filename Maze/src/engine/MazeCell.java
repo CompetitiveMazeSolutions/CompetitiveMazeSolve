@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 
 public class MazeCell extends JPanel {
 	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
-	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3;
+	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3; // Dead is
 	public static final int p1 = 0, p2 = 1;
 
 	private int wallThickness = 2; // Width of wall brush
@@ -19,7 +19,7 @@ public class MazeCell extends JPanel {
 	private int row, col; // Location of cell
 	private int ply; // Player
 	private int status; // Determines the color and accessibility
-	private int needPly; // ???
+	private int mode; // Mode of MazeFrame (previously needPly)
 	private Stroke str; // Brush for walls
 	private Color lineColor = Color.WHITE; // Color of walls
 	private Color textColor = Color.WHITE.darker(); // Color of inside text
@@ -39,36 +39,34 @@ public class MazeCell extends JPanel {
 		col = c;
 		status = BLANK;
 		playered = false;
-		needPly = mode;
+		this.mode = mode;
 		hide = true;
 
 		setBackground(defaultBG);
 	}
 
 	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+		super.paintComponent(g); // Makes the maze draw this cell onto it
 
 		Color c;
-		if (needPly == 1) {
-			if (!playered) {
+		if (mode == MazeFrame.CPU) {
+			if (!playered) { // look I know it's not a real word, ok?
 				c = new Color(colors[status].getRed(), colors[status].getGreen(), colors[status].getBlue(), 150);
 			} else {
 				c = new Color(colorsP[status].getRed(), colorsP[status].getGreen(), colorsP[status].getBlue(), 150);
 			}
 			g.setColor(c);
-			if (pHead) {
-				c = Color.ORANGE;
+			if (pHead) { // If this is the head of the player in bot mode
+				c = colorsP[3];
 				pHead = false;
 				g.setColor(c);
 			}
-		} else {
-			if (ply != 0) {
-				c = new Color(plyCo.getRed(), plyCo.getGreen(), plyCo.getBlue(), 200);
-				g.setColor(c);
-			}
+		} else if (ply != 0) { // If not bot mode, and a player exists
+			c = new Color(plyCo.getRed(), plyCo.getGreen(), plyCo.getBlue(), 200);
+			g.setColor(c);
 		}
 
-		int roll = (int) (Math.random() * 35) + 130;
+		int roll = (int) (Math.random() * 35) + 130; // Roll for how dark the cell is
 		if (status == BLANK && !(playered) && ply == 0) {
 			if (hide) {
 				g.setColor(Color.WHITE);
@@ -77,6 +75,7 @@ public class MazeCell extends JPanel {
 			}
 		}
 
+		/**** DRAW ALL OF IT BASED ON THE COLORS ABOVE ****/
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
 		g.setColor(lineColor);
@@ -112,8 +111,18 @@ public class MazeCell extends JPanel {
 
 	// Sets status of being playered
 	public void setPlayered(boolean trü) {
-		pHead = pHead && trü;
+		if (!pHead && trü)
+			pHead = true;
 		playered = trü;
+		repaint();
+	}
+
+	public boolean isPlayered() {
+		return playered;
+	}
+
+	public void setPHead(boolean pHead) {
+		this.pHead = pHead;
 		repaint();
 	}
 

@@ -306,18 +306,17 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	private boolean solveStep() {
 
 		if (on) {
+			// If player has reached the beginning
+			if (mex.peek() == begi) {
+				// Player wins
+				win(2);
+				return false;
+			}
 
 			// If bot is at the end
 			if (isLast(tex.peek())) {
 				// Bot wins
 				win(0);
-				return false;
-			}
-
-			// If player has reached the beginning
-			if (mex.peek() == begi) {
-				// Player wins
-				win(2);
 				return false;
 			}
 
@@ -407,6 +406,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	// playerMove case for bot mode
 	public void playerMove(int dir) {
 		if (getNeighbor(mex.peek(), dir) != null && !mex.peek().isBlockedDir(dir)) {
+			mex.peek().setPHead(false);
 			mex.push(getNeighbor(mex.peek(), dir));
 			mex.peek().setPlayered(true);
 		}
@@ -647,6 +647,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			for (MazeCell[] out : cells)
 				for (MazeCell in : out)
 					in.go();
+			on = true;
 			startTime = (int) (System.currentTimeMillis());
 			if (mode == CPU)
 				(new Thread(this)).start();
