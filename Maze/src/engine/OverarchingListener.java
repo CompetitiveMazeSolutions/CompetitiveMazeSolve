@@ -50,6 +50,7 @@ public class OverarchingListener implements KeyListener {
 					for (MazeCell in : out)
 						in.go();
 				parent.setStartTime((int) (System.currentTimeMillis()));
+				parent.setOn(true);
 				new Thread(parent).start();
 				return;
 			}
@@ -59,6 +60,7 @@ public class OverarchingListener implements KeyListener {
 				for (MazeCell[] out : parent.getCells())
 					for (MazeCell in : out)
 						in.go();
+				parent.setOn(true);
 				parent.setStartTime((int) (System.currentTimeMillis()));
 				return;
 			}

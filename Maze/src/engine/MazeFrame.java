@@ -214,8 +214,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		tex.push(begi);
 		mex.push(end);
 
-		// Set start color
-		mex.peek().setPStat(true);
+		// Set to be playered
+		mex.peek().setPlayered(true);
 
 		// Sets color and player of stack starts
 		if (mode == P2) {
@@ -408,7 +408,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	public void playerMove(int dir) {
 		if (getNeighbor(mex.peek(), dir) != null && !mex.peek().isBlockedDir(dir)) {
 			mex.push(getNeighbor(mex.peek(), dir));
-			mex.peek().setPStat(true);
+			mex.peek().setPlayered(true);
 		}
 	}
 
@@ -690,6 +690,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	public boolean isOn() {
 		return on;
+	}
+
+	public void setOn(boolean on) {
+		this.on = on;
 	}
 
 	public int getMode() {

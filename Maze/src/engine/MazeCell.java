@@ -15,7 +15,7 @@ public class MazeCell extends JPanel {
 	public static final int p1 = 0, p2 = 1;
 
 	private int wallThickness = 2; // Width of wall brush
-	private int padding = 2; // ???
+	private int padding = 2; // Amount of space to the next cell
 	private int row, col; // Location of cell
 	private int ply; // Player
 	private int status; // Determines the color and accessibility
@@ -24,13 +24,13 @@ public class MazeCell extends JPanel {
 	private Color lineColor = Color.WHITE; // Color of walls
 	private Color textColor = Color.WHITE.darker(); // Color of inside text
 	private Color defaultBG = Color.GRAY; // Background of cell
-	private Color plyCo; // ???
+	private Color plyCo; // Color of player
 	private Color[] colors = { defaultBG, Color.BLUE, Color.BLACK, Color.CYAN }; // Color of each status
 	private Color[] colorsP = { Color.YELLOW, Color.GREEN, Color.YELLOW.darker(), Color.ORANGE }; // Colors w/ player
 	private boolean[] borders = { true, true, true, true }; // Border for each side
 	private boolean pHead; // If the cell is the head of the player
 	private boolean hide; // If the cell is hidden
-	private boolean pStat; // Status while with player
+	private boolean playered; // Status of a player being in it
 
 	public MazeCell(int r, int c, int mode) {
 		super();
@@ -38,7 +38,7 @@ public class MazeCell extends JPanel {
 		row = r;
 		col = c;
 		status = BLANK;
-		pStat = false;
+		playered = false;
 		needPly = mode;
 		hide = true;
 
@@ -50,7 +50,7 @@ public class MazeCell extends JPanel {
 
 		Color c;
 		if (needPly == 1) {
-			if (!pStat) {
+			if (!playered) {
 				c = new Color(colors[status].getRed(), colors[status].getGreen(), colors[status].getBlue(), 150);
 			} else {
 				c = new Color(colorsP[status].getRed(), colorsP[status].getGreen(), colorsP[status].getBlue(), 150);
@@ -69,13 +69,14 @@ public class MazeCell extends JPanel {
 		}
 
 		int roll = (int) (Math.random() * 35) + 130;
-		if (status == BLANK && !(pStat) && ply == 0) {
+		if (status == BLANK && !(playered) && ply == 0) {
 			if (hide) {
 				g.setColor(Color.WHITE);
 			} else {
 				g.setColor(new Color(roll, roll, roll));
 			}
 		}
+
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
 		g.setColor(lineColor);
@@ -109,13 +110,10 @@ public class MazeCell extends JPanel {
 		repaint();
 	}
 
-	// Sets status while playered
-	public void setPStat(boolean trü) {
-		if (pHead)
-			pHead = false;
-		if (pStat && trü)
-			pHead = true;
-		pStat = trü;
+	// Sets status of being playered
+	public void setPlayered(boolean trü) {
+		pHead = pHead && trü;
+		playered = trü;
 		repaint();
 	}
 
