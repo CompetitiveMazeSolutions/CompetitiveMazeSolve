@@ -256,6 +256,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// Finish it off
 		stepCarve();
+		if(mode==TT)begi.setStatus(MazeCell.BLANK);
 	}
 
 	// Called by carveARandomMaze for each step

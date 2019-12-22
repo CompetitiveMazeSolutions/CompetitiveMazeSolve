@@ -35,11 +35,8 @@ public class ReadyListener implements KeyListener {
 				parent.playerMove(MazeFrame.UP);
 				break;
 			case KeyEvent.VK_CONTROL:
-				p2C = true;
-				break;
-			}
-			if (p2C) {
 				parent.resetMaze();
+				break;
 			}
 
 		} else if (parent.getMode() == MazeFrame.P2){
@@ -109,7 +106,7 @@ public class ReadyListener implements KeyListener {
 					return;
 				}
 				if (parent.getMex().peek().col() == 1
-						&& parent.getNeighbor(parent.getMex().peek(), MazeFrame.LEFT).getPly() == 1) {
+						&& parent.getNeighbor(parent.getMex().peek(), MazeFrame.LEFT).getPly() == 2) {
 					parent.win(2);
 					return;
 				}
@@ -121,7 +118,11 @@ public class ReadyListener implements KeyListener {
 			case KeyEvent.VK_UP:
 				parent.playerMove(2, MazeFrame.UP);
 				break;
-		}
+			case KeyEvent.VK_CONTROL:
+				parent.resetMaze();
+				break;
+			
+			}
 		}
 
 	}

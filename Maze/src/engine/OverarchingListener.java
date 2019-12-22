@@ -64,6 +64,16 @@ public class OverarchingListener implements KeyListener {
 				parent.setStartTime((int) (System.currentTimeMillis()));
 				return;
 			}
+		} else if (mode == MazeFrame.TT) {
+			if (p1R || p2R) {
+				parent.getSolve().requestFocus();
+				for (MazeCell[] out : parent.getCells())
+					for (MazeCell in : out)
+						in.go();
+				parent.setOn(true);
+				parent.setStartTime((int) (System.currentTimeMillis()));
+				return;
+			}
 		}
 	}
 
