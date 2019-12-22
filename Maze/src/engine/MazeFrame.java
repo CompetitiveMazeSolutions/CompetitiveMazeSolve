@@ -224,7 +224,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// Pick beginning and end
 		begi = cells[(int) (Math.random() * (ROWS * .5) + ROWS * .25)][0];
 		end = cells[(int) (Math.random() * (ROWS * .5) + ROWS * .25)][COLS - 1];
-
 		// Sets starting state for carveAI
 		begi.setStatus(MazeCell.VISITED);
 		end.setStatus(MazeCell.BLANK);
@@ -239,11 +238,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// Set to be playered
 		mex.peek().setPlayered(true);
-
 		// Sets color and player of stack starts
-		if (mode == P2) {
-			tex.peek().setPly(1, p1);
+		if (mode == TT || mode == P2) {
 			mex.peek().setPly(2, p2);
+			if(mode == P2)tex.peek().setPly(1, p1);
 
 			// Clear out all side walls that need to be cleared
 			for (int i = (int) (ROWS * .25); i < ROWS * .75; i++) {
@@ -370,12 +368,21 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		Stack<MazeCell> tex = this.mex;
 		Color pCo = p1;
 
+		// Skippable cells based on mode
+		int skipO = 0;
+		if(mode == P2) {
+			skipO = player % 2 + 1;
+		}else if(mode == TT){
+			skipO = player;
+		}
+
 		// Set stacks to player stacks
 		if (player == 2) {
 			pCo = p2;
 			mex = this.mex;
 			tex = this.tex;
 		}
+		
 
 		if (getNeighbor(mex.peek(), dir) != null && getNeighbor(mex.peek(), dir).getPly() == 0
 				&& !mex.peek().isBlockedDir(dir)) { // into blank
@@ -403,7 +410,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 					tex.pop().setPly(0, null);
 			return;
 
-		} else if (getNeighbor(mex.peek(), dir) != null && getNeighbor(mex.peek(), dir).getPly() == player % 2 + 1
+		} else if (getNeighbor(mex.peek(), dir) != null && getNeighbor(mex.peek(), dir).getPly() == skipO
 				&& getNeighbor(getNeighbor(mex.peek(), dir), dir) != null
 				&& getNeighbor(getNeighbor(mex.peek(), dir), dir).getPly() == 0) { // able to skip over
 
@@ -412,7 +419,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			mex.peek().setPly(player, pCo);
 			return;
 
-		} else if (getNeighbor(mex.peek(), dir) != null && getNeighbor(mex.peek(), dir).getPly() == player % 2 + 1
+		} else if (getNeighbor(mex.peek(), dir) != null && getNeighbor(mex.peek(), dir).getPly() == skipO
 				&& getNeighbor(getNeighbor(mex.peek(), dir), dir) != null
 				&& getNeighbor(getNeighbor(mex.peek(), dir), dir).getPly() == player) { // skipping back
 

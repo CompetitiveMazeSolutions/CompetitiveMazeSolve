@@ -42,7 +42,7 @@ public class ReadyListener implements KeyListener {
 				parent.resetMaze();
 			}
 
-		} else {
+		} else if (parent.getMode() == MazeFrame.P2){
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_RIGHT:
 				parent.playerMove(2, MazeFrame.RIGHT);
@@ -98,6 +98,30 @@ public class ReadyListener implements KeyListener {
 			if (p1C && p2C) {
 				parent.resetMaze();
 			}
+		} else if (parent.getMode() == MazeFrame.TT){
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_RIGHT:
+				parent.playerMove(2, MazeFrame.RIGHT);
+				break;
+			case KeyEvent.VK_LEFT:
+				if (parent.getMex().peek().col() == 0 && !parent.getMex().peek().isBlockedDir(MazeFrame.LEFT)) {
+					parent.win(2);
+					return;
+				}
+				if (parent.getMex().peek().col() == 1
+						&& parent.getNeighbor(parent.getMex().peek(), MazeFrame.LEFT).getPly() == 1) {
+					parent.win(2);
+					return;
+				}
+				parent.playerMove(2, MazeFrame.LEFT);
+				break;
+			case KeyEvent.VK_DOWN:
+				parent.playerMove(2, MazeFrame.DOWN);
+				break;
+			case KeyEvent.VK_UP:
+				parent.playerMove(2, MazeFrame.UP);
+				break;
+		}
 		}
 
 	}
