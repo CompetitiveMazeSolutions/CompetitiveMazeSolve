@@ -613,23 +613,15 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			if (!outputFile.exists()) {
 				outputFile.mkdir();
 				outputFile = new File("src/output/" + matchName + ".JPEG");
-			}
-			// If it does exist, then find make the new file name have a different number
-			if (outputFile.exists()) { // If the file exists
+			} else if (outputFile.exists()) { // If the file exists, then find out what number it should have.
 				int currentInstance = 0;
 				String currentName = outputFile.getName();
 				if (currentName.contains("(")) { // If it has an identifier
 					String newInstance = currentName.substring(currentName.indexOf("(") + 1);
 					currentInstance = Integer.parseInt(newInstance);
-				}
-				// Create a new output file
-				if (((int) currentInstance + 1) == 0) {
-					outputFile = new File("src/output/" + matchName + ".JPEG");
-				} else {
-					outputFile = new File("src/output/" + matchName + "(" + (((int) currentInstance) + 1) + ").JPEG");
+					outputFile = new File("src/output/" + matchName + "(" + ((int) currentInstance + 1) + ").JPEG");
 				}
 			}
-
 			// Write it to disk
 			ImageIO.write(imagebuf, "jpeg", outputFile);
 		} catch (Exception e) {
