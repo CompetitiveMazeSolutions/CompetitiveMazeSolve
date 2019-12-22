@@ -24,7 +24,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 	public static int ROWS = 20, COLS = 35;
-	public static final int CPU = 1, P2 = 2;
+	public static final int CPU = 1, P2 = 2, TT = 3;
 	public static final int BORING = 0, BOXES = 1;
 
 	private int mode;
@@ -683,7 +683,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			}
 			// Display match time
 			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime) / 1000);
-			JOptionPane.showMessageDialog(this, matchTime);
+			JOptionPane.showMessageDialog(this, matchTime + " second match");
 			return;
 		} else if (player == 2) {
 			// Some gradient setup
@@ -706,7 +706,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			}
 			// Display match time
 			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime) / 1000);
-			JOptionPane.showMessageDialog(this, matchTime);
+			JOptionPane.showMessageDialog(this, matchTime + " second match");
 			return;
 		}
 	}
