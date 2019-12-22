@@ -10,147 +10,39 @@ import java.awt.Stroke;
 import javax.swing.JPanel;
 
 public class MazeCell extends JPanel {
-	private boolean[] borders;
 	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3;
 	public static final int p1 = 0, p2 = 1;
 
-	private int wallThickness = 2;
-	private int padding = 2;
-	private int row, col;
-	private int ply;
-	private int status;
-	private int needPly;
-	private Stroke str;
-	private Color lineColor = Color.WHITE;
-	private Color textColor = Color.WHITE.darker();
-	private Color defaultBG = Color.GRAY;
-	private Color plyCo;
-	private Color[] colors = { defaultBG, Color.BLUE, Color.BLACK, Color.CYAN };
-	private Color[] colorsP = { Color.YELLOW, Color.GREEN, Color.YELLOW.darker(), Color.ORANGE };
-	private boolean pHead;
-	private boolean hide;
-	private boolean pStat;
+	private int wallThickness = 2; // Width of wall brush
+	private int padding = 2; // ???
+	private int row, col; // Location of cell
+	private int ply; // Player
+	private int status; // Determines the color and accessibility
+	private int needPly; // ???
+	private Stroke str; // Brush for walls
+	private Color lineColor = Color.WHITE; // Color of walls
+	private Color textColor = Color.WHITE.darker(); // Color of inside text
+	private Color defaultBG = Color.GRAY; // Background of cell
+	private Color plyCo; // ???
+	private Color[] colors = { defaultBG, Color.BLUE, Color.BLACK, Color.CYAN }; // Color of each status
+	private Color[] colorsP = { Color.YELLOW, Color.GREEN, Color.YELLOW.darker(), Color.ORANGE }; // Colors w/ player
+	private boolean[] borders = { true, true, true, true }; // Border for each side
+	private boolean pHead; // If the cell is the head of the player
+	private boolean hide; // If the cell is hidden
+	private boolean pStat; // Status while with player
 
 	public MazeCell(int r, int c, int mode) {
 		super();
-		str = new BasicStroke(wallThickness);
+		str = new BasicStroke(wallThickness); // Had a stroke reading this
 		row = r;
 		col = c;
-		borders = new boolean[4];
-		for (int i = 0; i < 4; i++)
-			borders[i] = true;
-		this.setBackground(defaultBG);
 		status = BLANK;
 		pStat = false;
 		needPly = mode;
 		hide = true;
-	}
 
-	public int row() {
-		return row;
-	}
-
-	public int col() {
-		return col;
-	}
-
-	public void setStatus(int x) {
-		status = x;
-		// this.setBackground(colors[status]);
-		this.paint(this.getGraphics());
-	}
-
-	public void setPStat(boolean trü) {
-		if (pHead)
-			pHead = false;
-		if (pStat && trü)
-			pHead = true;
-		pStat = trü;
-		this.paint(this.getGraphics());
-	}
-
-	public void setPly(int x, Color colour) {
-		ply = x;
-		plyCo = colour;
-		this.paint(this.getGraphics());
-	}
-
-	public int getPly() {
-		return ply;
-	}
-
-	public void setGrad(Color beep) {
-		status = 3;
-		colors[status] = beep;
-		colorsP[status] = beep;
-		this.paint(this.getGraphics());
-	}
-
-	public void go() {
-		hide = false;
-		this.paint(this.getGraphics());
-	}
-
-	public boolean isBlank() {
-		return status == BLANK;
-	}
-
-	public boolean isVisited() {
-		return status == VISITED;
-	}
-
-	public boolean isDead() {
-		return status == DEAD;
-	}
-
-	public int getStatus() {
-		return status;
-	}
-
-	public boolean isBlockedUp() {
-		return borders[UP];
-	}
-
-	public boolean isBlockedDown() {
-		return borders[DOWN];
-	}
-
-	public boolean isBlockedLeft() {
-		return borders[LEFT];
-	}
-
-	public boolean isBlockedRight() {
-		return borders[RIGHT];
-	}
-
-	public boolean isBlockedDir(int dir) {
-		return borders[dir];
-	}
-
-	public void clearWallUp() {
-		borders[UP] = false;
-		repaint();
-	}
-
-	public void clearWallDown() {
-		borders[DOWN] = false;
-		repaint();
-	}
-
-	public void clearWallRight() {
-		borders[RIGHT] = false;
-		repaint();
-	}
-
-	public void clearWallLeft() {
-		borders[LEFT] = false;
-		repaint();
-	}
-
-	public void clearWallDir(int dir) {
-		borders[dir] = false;
-		repaint();
+		setBackground(defaultBG);
 	}
 
 	public void paintComponent(Graphics g) {
@@ -186,9 +78,6 @@ public class MazeCell extends JPanel {
 		}
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-		// g.fillOval(this.getWidth()/3,this.getHeight()/3,this.getWidth()/3,this.getHeight()/3
-		// );
-
 		g.setColor(lineColor);
 		((Graphics2D) g).setStroke(str);
 		if (borders[UP])
@@ -204,8 +93,84 @@ public class MazeCell extends JPanel {
 		g.drawString(this.toString(), 5, 15);
 	}
 
+	// Returns row of cell
+	public int row() {
+		return row;
+	}
+
+	// Returns column of cell
+	public int col() {
+		return col;
+	}
+
+	// Sets status(color) of the cell
+	public void setStatus(int x) {
+		status = x;
+		repaint();
+	}
+
+	// Sets status while playered
+	public void setPStat(boolean trü) {
+		if (pHead)
+			pHead = false;
+		if (pStat && trü)
+			pHead = true;
+		pStat = trü;
+		repaint();
+	}
+
+	// Sets player and player color
+	public void setPly(int x, Color colour) {
+		ply = x;
+		plyCo = colour;
+		repaint();
+	}
+
+	// Gets the current player
+	public int getPly() {
+		return ply;
+	}
+
+	// Sets the gradient color
+	public void setGrad(Color beep) {
+		status = 3;
+		colors[status] = beep;
+		colorsP[status] = beep;
+		repaint();
+	}
+
+	// Called when the game opens
+	public void go() {
+		hide = false;
+		paint(this.getGraphics());
+	}
+
+	public boolean isBlank() {
+		return status == BLANK;
+	}
+
+	public boolean isVisited() {
+		return status == VISITED;
+	}
+
+	public boolean isDead() {
+		return status == DEAD;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public boolean isBlockedDir(int dir) {
+		return borders[dir];
+	}
+
+	public void clearWallDir(int dir) {
+		borders[dir] = false;
+		repaint();
+	}
+
 	public String toString() {
-		// return "("+row+", "+col+")";
 		char yees = (char) ((int) (Math.random() * 94) + 27);
 		return "" + yees;
 	}

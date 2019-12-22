@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,12 +28,11 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	private int stagePreset = BORING; // Not implemented
 
 	private JPanel controls, maze;
-	private JButton[] buttons = new JButton[] { new JButton("THIS ONE'S TRASH"), new JButton("I'M READY"),
-			new JButton("SETTINGS") };
+	private JButton[] buttons = { new JButton("THIS ONE'S TRASH"), new JButton("I'M READY"), new JButton("SETTINGS") };
 	private MazeCell[][] cells;
 	private MazeCell begi, end;
-	private CellStack tex;
-	private CellStack mex;
+	private Stack<MazeCell> tex;
+	private Stack<MazeCell> mex;
 	private ReadyListener embededListener; // Put inside I'm Ready button, called on move
 	private OverarchingListener frameListener;
 
@@ -154,8 +154,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	private void instantiateCells() {
 
 		// Initialize new stacks
-		tex = new CellStack();
-		mex = new CellStack();
+		tex = new Stack<MazeCell>();
+		mex = new Stack<MazeCell>();
 
 		// Initialize new maze panel
 		maze = new JPanel();
@@ -207,8 +207,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		end.setStatus(MazeCell.BLANK);
 
 		// Make beginning and end
-		begi.clearWallLeft();
-		end.clearWallRight();
+		begi.clearWallDir(LEFT);
+		end.clearWallDir(RIGHT);
 
 		// Push beginning to bot and end to p2
 		tex.push(begi);
@@ -224,8 +224,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 			// Clear out all side walls that need to be cleared
 			for (int i = (int) (ROWS * .25); i < ROWS * .75; i++) {
-				cells[i][0].clearWallLeft();
-				cells[i][COLS - 1].clearWallRight();
+				cells[i][0].clearWallDir(LEFT);
+				cells[i][COLS - 1].clearWallDir(RIGHT);
 			}
 		}
 
@@ -344,8 +344,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	public void playerMove(int player, int dir) {
 
 		// Default stacks
-		CellStack mex = this.tex;
-		CellStack tex = this.mex;
+		Stack<MazeCell> mex = this.tex;
+		Stack<MazeCell> tex = this.mex;
 		Color pCo = p1;
 
 		// Set stacks to player stacks
@@ -416,7 +416,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	// If the given cell qualifies for last move
 	private boolean isLast(MazeCell luckyBoy) {
-		return luckyBoy.col() == COLS - 1 && !luckyBoy.isBlockedRight();
+		return luckyBoy.col() == COLS - 1 && !luckyBoy.isBlockedDir(RIGHT);
 	}
 
 	// If the possible cell is valid
@@ -638,7 +638,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	// Called any time that you press a button
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == buttons[0]) {
-			this.setVisible(false);
+			setVisible(false);
 			new MazeFrame(mode, mazeFidelity);
 			return;
 		}
@@ -671,11 +671,11 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		return buttons[1];
 	}
 
-	public CellStack getMex() {
+	public Stack<MazeCell> getMex() {
 		return mex;
 	}
 
-	public CellStack getTex() {
+	public Stack<MazeCell> getTex() {
 		return tex;
 	}
 

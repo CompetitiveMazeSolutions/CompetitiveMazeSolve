@@ -17,10 +17,8 @@ public class OverarchingListener implements KeyListener {
 		mode = parent.getMode();
 		p1C = false;
 		p2C = false;
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
+		p1R = false;
+		p2R = false;
 	}
 
 	@Override
@@ -28,7 +26,7 @@ public class OverarchingListener implements KeyListener {
 
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_SHIFT:
-			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_LEFT) {
 				p1R = true;
 			} else {
 				p2R = true;
@@ -45,14 +43,25 @@ public class OverarchingListener implements KeyListener {
 		if (p1C || p2C) {
 			parent.resetMaze();
 		}
-		if (p1R && p2R) {
-			parent.getSolve().requestFocus();
-			for (MazeCell[] out : parent.getCells())
-				for (MazeCell in : out)
-					in.go();
-			parent.setStartTime((int) (System.currentTimeMillis()));
-			if (mode == MazeFrame.CPU)
+		if (mode == MazeFrame.CPU) {
+			if (p1R || p2R) {
+				parent.getSolve().requestFocus();
+				for (MazeCell[] out : parent.getCells())
+					for (MazeCell in : out)
+						in.go();
+				parent.setStartTime((int) (System.currentTimeMillis()));
 				new Thread(parent).start();
+				return;
+			}
+		} else if (mode == MazeFrame.P2) {
+			if (p1R && p2R) {
+				parent.getSolve().requestFocus();
+				for (MazeCell[] out : parent.getCells())
+					for (MazeCell in : out)
+						in.go();
+				parent.setStartTime((int) (System.currentTimeMillis()));
+				return;
+			}
 		}
 	}
 
@@ -60,19 +69,23 @@ public class OverarchingListener implements KeyListener {
 	public void keyReleased(KeyEvent e) {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_SHIFT:
-			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_LEFT) {
 				p1R = false;
 			} else {
 				p2R = false;
 			}
 			break;
 		case KeyEvent.VK_CONTROL:
-			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT) {
+			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_LEFT) {
 				p1C = false;
 			} else {
 				p2C = false;
 			}
 			break;
 		}
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
 	}
 }
