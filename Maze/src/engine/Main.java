@@ -6,7 +6,8 @@ public class Main {
 		// Starting defaults for values and mode
 		final int mode = MazeFrame.CPU;
 		final double mazeFidelity = .7;
+		final String matchName = null;
 
-		new MazeFrame(mode, mazeFidelity);
+		new MazeFrame(mode, mazeFidelity, matchName);
 	}
 }

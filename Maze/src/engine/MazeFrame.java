@@ -1,14 +1,20 @@
 package engine;
 //package FORKIDS;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -26,9 +32,11 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	private int startTime; // Time game is started
 	private double mazeFidelity; // Called at the end of CarveStep
 	private int stagePreset = BORING; // Not implemented
+	private String matchName;// Will be added onto the fileOutput if saved
 
 	private JPanel controls, maze;
-	private JButton[] buttons = { new JButton("THIS ONE'S TRASH"), new JButton("I'M READY"), new JButton("SETTINGS") };
+	private JButton[] buttons = { new JButton("THIS ONE'S TRASH"), new JButton("I'M READY"), new JButton("SETTINGS"),
+			new JButton("SAVE") };
 	private MazeCell[][] cells;
 	private MazeCell begi, end;
 	private Stack<MazeCell> tex;
@@ -71,9 +79,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	/** Constructors **/
 
-	public MazeFrame(int mode, double mazeFidelity) {
+	public MazeFrame(int mode, double mazeFidelity, String matchName) {
 		super("MAZE");
 
+		this.matchName = matchName;
 		this.mode = mode;
 		this.mazeFidelity = mazeFidelity;
 		aispeed = (int) (200 - (200 * (1 - mazeFidelity)));
@@ -81,6 +90,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		embededListener = new ReadyListener(this);
 		frameListener = new OverarchingListener(this);
 
+		if (matchName == null || matchName.equals("")) {
+			this.matchName = "unnamed";
+		}
+
 		setUpControlPanel();// make the buttons & put them in the north
 		instantiateCells();// give birth to all the mazeCells & get them onto the screen
 		carveARandomMaze();// this will knock down walls to create a maze
@@ -96,9 +109,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		requestFocus();
 	}
 
-	public MazeFrame(int mode, double mazeFidelity, int aispeed) {
+	public MazeFrame(int mode, double mazeFidelity, int aispeed, String matchName) {
 		super("MAZE");
 
+		this.matchName = matchName;
 		this.mode = mode;
 		this.mazeFidelity = mazeFidelity;
 		this.aispeed = aispeed;
@@ -106,6 +120,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		embededListener = new ReadyListener(this);
 		frameListener = new OverarchingListener(this);
 
+		if (matchName == null || matchName.equals("")) {
+			this.matchName = "unnamed";
+		}
+
 		setUpControlPanel();// make the buttons & put them in the north
 		instantiateCells();// give birth to all the mazeCells & get them onto the screen
 		carveARandomMaze();// this will knock down walls to create a maze
@@ -121,15 +139,20 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		requestFocus();
 	}
 
-	public MazeFrame(int mode, double mazeFidelity, int aispeed, int stagePreset) {
+	public MazeFrame(int mode, double mazeFidelity, int aispeed, int stagePreset, String matchName) {
 		super("MAZE");
 
+		this.matchName = matchName;
 		this.mode = mode;
 		this.mazeFidelity = mazeFidelity;
 		this.aispeed = aispeed;
 		this.stagePreset = stagePreset;
 		embededListener = new ReadyListener(this);
 		frameListener = new OverarchingListener(this);
+
+		if (matchName == null || matchName.equals("")) {
+			this.matchName = "unnamed";
+		}
 
 		setUpControlPanel();// make the buttons & put them in the north
 		instantiateCells();// give birth to all the mazeCells & get them onto the screen
@@ -550,7 +573,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	// Fully resets this maze's frame
 	public void resetMaze() {
-		new MazeFrame(mode, mazeFidelity);
+		new MazeFrame(mode, mazeFidelity, null);
 
 		try {
 			Thread.sleep(50 + (ROWS * COLS) / 1000);
@@ -558,6 +581,61 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		}
 
 		setVisible(false);
+	}
+
+	// Saves the current maze image
+	// Took me a while to figure out robot :(
+	public void saveMaze() {
+		BufferedImage imagebuf = null; // New blank image
+		try {
+			// Robot just scans the screen for each pixel
+			imagebuf = new Robot().createScreenCapture(maze.getBounds());
+		} catch (AWTException e1) {
+			e1.printStackTrace();
+		}
+		// New graphics to catch image trace
+		Graphics2D graphics2D = imagebuf.createGraphics();
+		maze.paint(graphics2D);
+		try {
+			// Writes the image onto a new file
+			File outputFile = new File("src/output/");
+			// If the directory does not exist, create it
+			if (!outputFile.exists()) {
+				System.out.println("creating directory: " + outputFile.getName());
+				boolean result = false;
+
+				try {
+					outputFile.mkdir();
+					result = true;
+				} catch (SecurityException se) {
+					// handle it
+				}
+				if (result) {
+					System.out.println("DIR created");
+				}
+				outputFile = new File("src/output/" + matchName + ".JPEG");
+			}
+			// If it does exist, then find make the new file name have a different number
+			if (outputFile.exists()) { // If the file exists
+				int currentInstance = 0;
+				String currentName = outputFile.getName();
+				if (currentName.contains("(")) { // If it has an identifier
+					String newInstance = currentName.substring(currentName.indexOf("(") + 1);
+					currentInstance = Integer.parseInt(newInstance);
+				}
+				// Create a new output file
+				if (((int) currentInstance + 1) == 0) {
+					outputFile = new File("src/output/" + matchName + ".JPEG");
+				} else {
+					outputFile = new File("src/output/" + matchName + "(" + (((int) currentInstance) + 1) + ").JPEG");
+				}
+			}
+
+			// Write it to disk
+			ImageIO.write(imagebuf, "jpeg", outputFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Called at the end of the game, ends game
@@ -638,9 +716,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	// Called any time that you press a button
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == buttons[0]) {
-			setVisible(false);
-			new MazeFrame(mode, mazeFidelity);
-			return;
+			resetMaze();
 		}
 
 		if (e.getSource() == buttons[1]) {
@@ -656,6 +732,11 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		if (e.getSource() == buttons[2]) {
 			openSettings();
+			return;
+		}
+
+		if (e.getSource() == buttons[3]) {
+			saveMaze();
 			return;
 		}
 	}// end action performed

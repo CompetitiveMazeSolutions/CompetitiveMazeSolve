@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 
 public class MazeCell extends JPanel {
 	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
-	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3; // Dead is
+	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3; // For statuses
 	public static final int p1 = 0, p2 = 1;
 
 	private int wallThickness = 2; // Width of wall brush
@@ -57,7 +57,7 @@ public class MazeCell extends JPanel {
 			}
 			g.setColor(c);
 			if (pHead) { // If this is the head of the player in bot mode
-				c = colorsP[3];
+				c = colorsP[PATH];
 				pHead = false;
 				g.setColor(c);
 			}
@@ -140,7 +140,7 @@ public class MazeCell extends JPanel {
 
 	// Sets the gradient color
 	public void setGrad(Color beep) {
-		status = 3;
+		status = PATH;
 		colors[status] = beep;
 		colorsP[status] = beep;
 		repaint();
