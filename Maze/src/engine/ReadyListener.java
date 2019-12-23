@@ -6,13 +6,23 @@ import java.awt.event.KeyListener;
 public class ReadyListener implements KeyListener {
 
 	private MazeFrame parent;
+	private Mode mode;
 	private boolean p1C;
 	private boolean p2C;
 
 	public ReadyListener(MazeFrame parent) {
 		this.parent = parent;
+		mode = parent.getMode();
 		p1C = false;
 		p2C = false;
+	}
+
+	private void processKeys() {
+		if (p1C && p2C) {
+			parent.resetMaze();
+		} else if ((p1C || p2C) && (mode == Mode.CPU || mode == Mode.TT)) {
+			parent.resetMaze();
+		}
 	}
 
 	@Override
@@ -20,7 +30,7 @@ public class ReadyListener implements KeyListener {
 		if (!parent.isOn() && e.getKeyCode() != (KeyEvent.VK_CONTROL))
 			return;
 
-		if (parent.getMode() == Mode.CPU) {
+		if (mode == Mode.CPU) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_RIGHT:
 				parent.playerMove(MazeFrame.RIGHT);
@@ -39,7 +49,7 @@ public class ReadyListener implements KeyListener {
 				break;
 			}
 
-		} else if (parent.getMode() == Mode.P2MODE) {
+		} else if (mode == Mode.P2MODE) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_RIGHT:
 				parent.playerMove(2, MazeFrame.RIGHT);
@@ -92,10 +102,7 @@ public class ReadyListener implements KeyListener {
 				}
 				break;
 			}
-			if (p1C && p2C) {
-				parent.resetMaze();
-			}
-		} else if (parent.getMode() == Mode.TT) {
+		} else if (mode == Mode.TT) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_RIGHT:
 				parent.playerMove(2, MazeFrame.RIGHT);
@@ -125,6 +132,7 @@ public class ReadyListener implements KeyListener {
 			}
 		}
 
+		processKeys();
 	}
 
 	@Override

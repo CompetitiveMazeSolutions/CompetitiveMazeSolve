@@ -21,6 +21,32 @@ public class OverarchingListener implements KeyListener {
 		p2R = false;
 	}
 
+	private void processKeys() {
+		if (p1C || p2C) {
+			parent.resetMaze();
+		}
+
+		if (mode == Mode.CPU) {
+			if (p1R || p2R) {
+				parent.startGame();
+				parent.getButton(1).requestFocus();
+				return;
+			}
+		} else if (mode == Mode.P2MODE) {
+			if (p1R && p2R) {
+				parent.startGame();
+				parent.getButton(1).requestFocus();
+				return;
+			}
+		} else if (mode == Mode.TT) {
+			if (p1R || p2R) {
+				parent.startGame();
+				parent.getButton(1).requestFocus();
+				return;
+			}
+		}
+	}
+
 	@Override
 	public void keyPressed(KeyEvent e) {
 
@@ -40,41 +66,8 @@ public class OverarchingListener implements KeyListener {
 			}
 			break;
 		}
-		if (p1C || p2C) {
-			parent.resetMaze();
-		}
-		if (mode == Mode.CPU) {
-			if (p1R || p2R) {
-				parent.getSolve().requestFocus();
-				for (MazeCell[] out : parent.getCells())
-					for (MazeCell in : out)
-						in.go();
-				parent.setStartTime((int) (System.currentTimeMillis()));
-				parent.setOn(true);
-				new Thread(parent).start();
-				return;
-			}
-		} else if (mode == Mode.P2MODE) {
-			if (p1R && p2R) {
-				parent.getSolve().requestFocus();
-				for (MazeCell[] out : parent.getCells())
-					for (MazeCell in : out)
-						in.go();
-				parent.setOn(true);
-				parent.setStartTime((int) (System.currentTimeMillis()));
-				return;
-			}
-		} else if (mode == Mode.TT) {
-			if (p1R || p2R) {
-				parent.getSolve().requestFocus();
-				for (MazeCell[] out : parent.getCells())
-					for (MazeCell in : out)
-						in.go();
-				parent.setOn(true);
-				parent.setStartTime((int) (System.currentTimeMillis()));
-				return;
-			}
-		}
+
+		processKeys();
 	}
 
 	@Override
