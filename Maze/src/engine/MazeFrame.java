@@ -105,7 +105,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(rows * 40, cols * 40);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setBackground(Color.BLACK);
+		setBackground(Color.WHITE);
 		setVisible(true);
 		setFocusable(true);
 		addKeyListener(frameListener);
@@ -135,7 +135,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(rows * 40, cols * 40);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setBackground(Color.BLACK);
+		setBackground(Color.WHITE);
 		setVisible(true);
 		setFocusable(true);
 		addKeyListener(frameListener);
@@ -165,7 +165,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(rows * 40, cols * 40);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setBackground(Color.BLACK);
+		setBackground(Color.WHITE);
 		setVisible(true);
 		setFocusable(true);
 		addKeyListener(frameListener);
@@ -247,8 +247,12 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			if (mode == P2)
 				tex.peek().setPly(1, p1);
 
-			// Clear out all side walls that need to be cleared
+			/* Clear out all side walls that need to be cleared  [removed: has side barriers]
 			for (int i = (int) (rows * .25); i < rows * .75; i++) {
+				cells[i][0].clearWallDir(LEFT);
+				cells[i][cols - 1].clearWallDir(RIGHT);
+			}*/
+			for (int i = 0; i < rows; i++) {
 				cells[i][0].clearWallDir(LEFT);
 				cells[i][cols - 1].clearWallDir(RIGHT);
 			}
