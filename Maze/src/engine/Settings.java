@@ -17,8 +17,9 @@ public class Settings extends JPanel implements ActionListener, MouseListener {
 	public Settings(MazeFrame parent) {
 		super();
 		this.parent = parent;
-		Color backgroundColor = new Color(parent.getBackground().getRed() + 80, parent.getBackground().getGreen() + 80,
-				parent.getBackground().getBlue() + 80, 200);
+		Color backgroundColor = new Color(Math.min(parent.getBackground().getRed() + 80, 255),
+				Math.min(parent.getBackground().getGreen() + 80, 255),
+				Math.min(parent.getBackground().getBlue() + 80, 255), 220);
 
 		exit = new JButton("Exit");
 		exit.setLocation(parent.getLocation());

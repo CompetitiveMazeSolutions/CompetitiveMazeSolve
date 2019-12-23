@@ -6,7 +6,7 @@ import java.awt.event.KeyListener;
 public class OverarchingListener implements KeyListener {
 
 	private MazeFrame parent;
-	private int mode;
+	private Mode mode;
 	private boolean p1C;
 	private boolean p2C;
 	private boolean p1R;
@@ -43,7 +43,7 @@ public class OverarchingListener implements KeyListener {
 		if (p1C || p2C) {
 			parent.resetMaze();
 		}
-		if (mode == MazeFrame.CPU) {
+		if (mode == Mode.CPU) {
 			if (p1R || p2R) {
 				parent.getSolve().requestFocus();
 				for (MazeCell[] out : parent.getCells())
@@ -54,7 +54,7 @@ public class OverarchingListener implements KeyListener {
 				new Thread(parent).start();
 				return;
 			}
-		} else if (mode == MazeFrame.P2) {
+		} else if (mode == Mode.P2MODE) {
 			if (p1R && p2R) {
 				parent.getSolve().requestFocus();
 				for (MazeCell[] out : parent.getCells())
@@ -64,7 +64,7 @@ public class OverarchingListener implements KeyListener {
 				parent.setStartTime((int) (System.currentTimeMillis()));
 				return;
 			}
-		} else if (mode == MazeFrame.TT) {
+		} else if (mode == Mode.TT) {
 			if (p1R || p2R) {
 				parent.getSolve().requestFocus();
 				for (MazeCell[] out : parent.getCells())

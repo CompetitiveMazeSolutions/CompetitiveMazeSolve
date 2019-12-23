@@ -17,7 +17,7 @@ public class MazeCell extends JPanel {
 	private int row, col; // Location of cell
 	private int ply; // Player
 	private int status; // Determines the color and accessibility
-	private int mode; // Mode of MazeFrame (previously needPly)
+	private Mode mode; // Mode of MazeFrame (previously needPly)
 	private Stroke str; // Brush for walls
 	private Color lineColor = Color.WHITE; // Color of walls
 	private Color textColor = Color.WHITE.darker(); // Color of inside text
@@ -30,7 +30,7 @@ public class MazeCell extends JPanel {
 	private boolean hide; // If the cell is hidden
 	private boolean playered; // Status of a player being in it
 
-	public MazeCell(int r, int c, int mode) {
+	public MazeCell(int r, int c, Mode mode) {
 		super();
 		str = new BasicStroke(wallThickness); // Had a stroke reading this
 		row = r;
@@ -47,7 +47,7 @@ public class MazeCell extends JPanel {
 		super.paintComponent(g); // Makes the maze draw this cell onto it
 
 		Color c;
-		if (mode == MazeFrame.CPU) {
+		if (mode == mode.CPU) {
 			if (!playered) { // look I know it's not a real word, ok?
 				c = new Color(colors[status].getRed(), colors[status].getGreen(), colors[status].getBlue(), 150);
 			} else {

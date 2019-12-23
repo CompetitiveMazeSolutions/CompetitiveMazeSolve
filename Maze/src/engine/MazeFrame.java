@@ -23,12 +23,11 @@ import javax.swing.JPanel;
 public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3; // directions
-	public static final int CPU = 1, P2MODE = 2, TT = 3; // mode of game
 	public static final int BORING = 0, BOXES = 1; // carve mode
 	public static final int BOT = -2, P1CPU = -1, BLANK = 0, P1 = 1, P2 = 2;
 
 	public static int rows, cols; // 20 and 35 best
-	private int mode; // Gamemode
+	private Mode mode; // Gamemode
 	private int aispeed; // Speed of bot
 	private double startTime; // Time game is started
 	private double mazeFidelity; // Called at the end of CarveStep
@@ -80,7 +79,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	/** Constructors **/
 
-	public MazeFrame(int mode, double mazeFidelity, String matchName, int r, int c) {
+	public MazeFrame(Mode mode, double mazeFidelity, String matchName, int r, int c) {
 		super("MAZE");
 
 		this.matchName = matchName;
@@ -113,7 +112,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		requestFocus();
 	}
 
-	public MazeFrame(int mode, double mazeFidelity, int aispeed, String matchName, int r, int c) {
+	public MazeFrame(Mode mode, double mazeFidelity, int aispeed, String matchName, int r, int c) {
 		super("MAZE");
 
 		this.matchName = matchName;
@@ -143,7 +142,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		requestFocus();
 	}
 
-	public MazeFrame(int mode, double mazeFidelity, int aispeed, int stagePreset, String matchName, int r, int c) {
+	public MazeFrame(Mode mode, double mazeFidelity, int aispeed, int stagePreset, String matchName, int r, int c) {
 		super("MAZE");
 
 		this.matchName = matchName;
@@ -243,9 +242,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// Set to be playered
 		mex.peek().setPlayered(true);
 		// Sets color and player of stack starts
-		if (mode == TT || mode == P2) {
+		if (mode == Mode.TT || mode == Mode.P2MODE) {
 			mex.peek().setPly(2, p2);
-			if (mode == P2)
+			if (mode == Mode.P2MODE)
 				tex.peek().setPly(1, p1);
 
 			for (int i = 0; i < rows; i++) {
@@ -261,7 +260,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// Finish it off
 		stepCarve();
 
-		if (mode == TT)
+		if (mode == Mode.TT)
 			begi.setStatus(MazeCell.BLANK);
 	}
 
@@ -349,9 +348,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// Skippable cells based on mode
 		int skipO = 0;
-		if (mode == P2) {
+		if (mode == Mode.P2MODE) {
 			skipO = player % 2 + 1;
-		} else if (mode == TT) {
+		} else if (mode == Mode.TT) {
 			skipO = player;
 		}
 
@@ -733,7 +732,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 					in.go();
 			on = true;
 			startTime = (int) (System.currentTimeMillis());
-			if (mode == CPU)
+			if (mode == Mode.CPU)
 				(new Thread(this)).start();
 			return;
 		}
@@ -786,11 +785,11 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		this.on = on;
 	}
 
-	public int getMode() {
+	public Mode getMode() {
 		return mode;
 	}
 
-	public void setMode(int mode) {
+	public void setMode(Mode mode) {
 		this.mode = mode;
 	}
 
