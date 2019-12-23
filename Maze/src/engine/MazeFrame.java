@@ -349,9 +349,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// Skippable cells based on mode
 		int enemy = player % 2 + 1;
 		int skipO = 0;
-		if (mode == P2) {
+		if (mode == Mode.P2MODE) {
 			skipO = enemy;
-		} else if (mode == TT) {
+		} else if (mode == Mode.TT) {
 			skipO = player;
 		}
 		// Set stacks to player stacks
@@ -543,13 +543,13 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		int xDis = dest.col() - orig.col();
 		// Find the best direction to dest
 		if (yDis < 0)
-			return MazeCell.UP;
+			return UP;
 		if (yDis > 0)
-			return MazeCell.DOWN;
+			return DOWN;
 		if (xDis > 0)
-			return MazeCell.RIGHT;
+			return RIGHT;
 		if (xDis < 0)
-			return MazeCell.LEFT;
+			return LEFT;
 		// Default case is nonexistent direction
 		return -1;
 	}
