@@ -22,9 +22,10 @@ import javax.swing.JPanel;
 
 public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
-	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
-	public static final int CPU = 1, P2 = 2, TT = 3;
-	public static final int BORING = 0, BOXES = 1;
+	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3; // directions
+	public static final int CPU = 1, P2MODE = 2, TT = 3; // mode of game
+	public static final int BORING = 0, BOXES = 1; // carve mode
+	public static final int BOT = -2, P1CPU = -1, BLANK = 0, P1 = 1, P2 = 2;
 
 	public static int rows, cols; // 20 and 35 best
 	private int mode; // Gamemode
@@ -212,8 +213,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// Initialize all buttons and add them to the panel
 		for (JButton b : buttons) {
-			b.addActionListener(this);
 			controls.add(b);
+			b.addActionListener(this);
 		}
 
 		// Add ready listener and set panel to bottom
@@ -247,11 +248,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			if (mode == P2)
 				tex.peek().setPly(1, p1);
 
-			/* Clear out all side walls that need to be cleared  [removed: has side barriers]
-			for (int i = (int) (rows * .25); i < rows * .75; i++) {
-				cells[i][0].clearWallDir(LEFT);
-				cells[i][cols - 1].clearWallDir(RIGHT);
-			}*/
 			for (int i = 0; i < rows; i++) {
 				cells[i][0].clearWallDir(LEFT);
 				cells[i][cols - 1].clearWallDir(RIGHT);
@@ -264,6 +260,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// Finish it off
 		stepCarve();
+
 		if (mode == TT)
 			begi.setStatus(MazeCell.BLANK);
 	}
@@ -277,6 +274,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			for (int i = 0; i < rows; i++)
 				for (int j = 0; j < cols; j++)
 					cells[i][j].setStatus(MazeCell.BLANK);
+
 			// Push the first cell
 			tex.push(begi);
 			tex.peek().setStatus(MazeCell.VISITED);
@@ -337,16 +335,16 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	private boolean solveStep() {
 		if (on) {
 			// If player has reached the beginning
-			if (!mex.isEmpty() && mex.peek() == begi) {
+			if (mex.peek() == begi) {
 				// Player wins
-				win(-1); // -1 since its not the same as P2
+				win(0); // 0 since its not the same as P2 mode
 				return false;
 			}
 
 			// If bot is at the end
 			if (isLast(tex.peek())) {
 				// Bot wins
-				win(0);
+				win(-1); // -1 for bot
 				return false;
 			}
 
@@ -365,8 +363,9 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			}
 			// If not able to move in any direction, move backwards
 			tex.pop().setStatus(MazeCell.DEAD);
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	// Moves players in P2 mode
@@ -466,23 +465,29 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		ArrayList<MazeCell> results = new ArrayList<MazeCell>();
 		// list out directions
 		ArrayList<Integer> dirs = new ArrayList<Integer>();
-		dirs.add(UP);dirs.add(RIGHT);dirs.add(DOWN);dirs.add(LEFT);
+		dirs.add(UP);
+		dirs.add(RIGHT);
+		dirs.add(DOWN);
+		dirs.add(LEFT);
 
-		
-		if(mc.row()==0) { // if on ceiling (must prioritize leaving)
-			if(enlistNeighbors(mc,dirs.remove(2)))results.add(getNeighbor(mc,DOWN)); // remove down from possible, add to list as priority
+		if (mc.row() == 0) { // if on ceiling (must prioritize leaving)
+			if (enlistNeighbors(mc, dirs.remove(2)))
+				results.add(getNeighbor(mc, DOWN)); // remove down from possible, add to list as priority
 
-		}else if(mc.row()==rows-1) { // if on floor (must prioritize leaving)
-			if(enlistNeighbors(mc,dirs.remove(0)))results.add(getNeighbor(mc,UP)); // remove up from possible, add to list as priority
+		} else if (mc.row() == rows - 1) { // if on floor (must prioritize leaving)
+			if (enlistNeighbors(mc, dirs.remove(0)))
+				results.add(getNeighbor(mc, UP)); // remove up from possible, add to list as priority
 		}
-		while(dirs.size()>0) { // add each of dirs to results in random order
-			int chosenIndex = (int)(Math.random()*dirs.size());
+		while (dirs.size() > 0) { // add each of dirs to results in random order
+			int chosenIndex = (int) (Math.random() * dirs.size());
 			int chosenDir = dirs.remove(chosenIndex);
-			if(enlistNeighbors(mc,chosenDir))results.add(getNeighbor(mc,chosenDir));
+			if (enlistNeighbors(mc, chosenDir))
+				results.add(getNeighbor(mc, chosenDir));
 		}
-		
+
 		return results;
 	}
+
 	// if can add neighbor to results
 	private boolean enlistNeighbors(MazeCell mc, int dir) {
 		MazeCell inQuestion = getNeighbor(mc, dir);
@@ -633,11 +638,11 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			// If the directory does not exist, create it
 			if (!outputDir.exists())
 				outputDir.mkdir();
-			
+
 			int currentInstance = 0;
 			String name = matchName + ".JPEG";
 			File outputFile = new File("./output", name);
-			while(outputFile.exists()) {
+			while (outputFile.exists()) {
 				currentInstance++;
 				name = matchName + "(" + currentInstance + ").JPEG";
 				outputFile = new File("./output", name);
@@ -655,7 +660,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// Turn off maze actions
 		on = false;
 
-		if (player == 0) {
+		if (player == -1) { // Bot win
 			// Some gradient setup
 			double i = 0;
 			double t = 0;
@@ -674,7 +679,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			// Display match time
 			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
 			return;
-		} else if (player ==-1) {
+		} else if (player == 0) { // Player in bot mode win
 			// Some gradient setup
 			double i = 0;
 			double t = 0;
@@ -686,9 +691,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 				// Set gradient factor
 				t = i / sizzle;
 				i++;
-				mex.pop().setGrad(new Color((int) (beg.getRed() * t + plead.getRed() * (1 - t)),
-						(int) (beg.getGreen() * t + plead.getGreen() * (1 - t)),
-						(int) (beg.getBlue() * t + plead.getBlue() * (1 - t))));
+				mex.pop()
+						.setGrad(new Color((int) (beg.getRed() * t + plead.getRed() * (1 - t)),
+								(int) (beg.getGreen() * t + plead.getGreen() * (1 - t)),
+								(int) (beg.getBlue() * t + plead.getBlue() * (1 - t))));
 			}
 			// Find match time
 			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));

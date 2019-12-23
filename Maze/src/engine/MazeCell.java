@@ -10,9 +10,7 @@ import java.awt.Stroke;
 import javax.swing.JPanel;
 
 public class MazeCell extends JPanel {
-	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
-	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3; // For statuses
-	public static final int p1 = 1, p2 = 2;
+	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3; // For statuses in bot mode
 
 	private int wallThickness = 2; // Width of wall brush
 	private int padding = 2; // Amount of space to the next cell
@@ -80,13 +78,13 @@ public class MazeCell extends JPanel {
 
 		g.setColor(lineColor);
 		((Graphics2D) g).setStroke(str);
-		if (borders[UP])
+		if (borders[MazeFrame.UP])
 			g.drawLine(0, 0, this.getWidth(), 0);
-		if (borders[RIGHT])
+		if (borders[MazeFrame.RIGHT])
 			g.drawLine(this.getWidth() - padding, 0, this.getWidth() - padding, this.getHeight());
-		if (borders[DOWN])
+		if (borders[MazeFrame.DOWN])
 			g.drawLine(0, this.getHeight() - padding, this.getWidth(), this.getHeight() - padding);
-		if (borders[LEFT])
+		if (borders[MazeFrame.LEFT])
 			g.drawLine(0, 0, 0, this.getHeight());
 
 		g.setColor(textColor);
