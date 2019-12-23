@@ -175,6 +175,11 @@ public class MazeCell extends JPanel {
 		repaint();
 	}
 
+	public void blockWallDir(int dir) {
+		borders[dir] = true;
+		repaint();
+	}
+
 	public String toString() {
 		char yees = (char) ((int) (Math.random() * 94) + 27);
 		return "" + yees;

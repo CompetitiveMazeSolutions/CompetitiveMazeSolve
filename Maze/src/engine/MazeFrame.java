@@ -247,7 +247,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			if (mode == Mode.P2MODE)
 				tex.peek().setPly(1, p1);
 
-			for (int i = 0; i < rows; i++) {
+			for (int i = (int) (rows * .25); i < (int) (rows * .75); i++) {
 				cells[i][0].clearWallDir(LEFT);
 				cells[i][cols - 1].clearWallDir(RIGHT);
 			}
@@ -261,7 +261,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		stepCarve();
 
 		if (mode == Mode.TT)
-			begi.setStatus(MazeCell.BLANK);
+			begi.setStatus(BLANK);
 	}
 
 	// Called by carveARandomMaze for each step
@@ -349,31 +349,35 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// Skippable cells based on mode
 		int enemy = player % 2 + 1;
 		int skipO = 0;
+
 		if (mode == Mode.P2MODE) {
 			skipO = enemy;
 		} else if (mode == Mode.TT) {
 			skipO = player;
 		}
+
 		// Set stacks to player stacks
 		if (player == 2) {
 			pCo = p2;
 			mex = this.mex;
 			tex = this.tex;
 		}
+
 		// Convenience Variables
 		MazeCell head = mex.peek();
 		MazeCell nextOver = getNeighbor(head, dir);
+
 		if (nextOver == null)
 			return;
-		
+
 		if (!head.isBlockedDir(dir) && nextOver.getPly() != enemy) {
-			if (nextOver.getPly() == 0) { 
+			if (nextOver.getPly() == 0) {
 				// into blank
 				head.repaint();
 				mex.push(nextOver);
 				nextOver.setPly(player, pCo);
-				
-			} else if (nextOver.getPly() == player) { 
+
+			} else if (nextOver.getPly() == player) {
 				// into own
 				// do not replace peek() w/ head here
 				while (mex.peek() != nextOver) {
@@ -385,19 +389,19 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			for (int i = 0; i < rows / 5; i++)
 				if (!tex.isEmpty())
 					tex.pop().setPly(0, null);
-			
+
 		} else if (nextOver.getPly() == skipO) {
 			// cell the player lands in
 			MazeCell nextOverPlus = getNeighbor(nextOver, dir);
 			if (nextOverPlus == null)
 				return;
 
-			if (nextOverPlus.getPly() == 0) { 
+			if (nextOverPlus.getPly() == 0) {
 				// can skip over
 				head.repaint();
 				mex.push(nextOverPlus);
 				nextOverPlus.setPly(player, pCo);
-				
+
 			} else if (nextOverPlus.getPly() == player) {
 				// skipping back
 				// do not replace peek() w/ head here
@@ -587,6 +591,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		}
 
 		setVisible(false);
+		System.gc();
 	}
 
 	// Saves the current maze image
@@ -619,6 +624,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			}
 			// Write it to disk
 			ImageIO.write(imagebuf, "jpeg", outputFile);
+			Runtime.getRuntime().exec("explorer.exe /select," + outputFile.getAbsolutePath());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -630,7 +636,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// Turn off maze actions
 		on = false;
 
-		if (player == -1) { // Bot win
+		if (player == BOT) { // Bot win
 			// Some gradient setup
 			double i = 0;
 			double t = 0;
@@ -649,7 +655,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			// Display match time
 			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
 			return;
-		} else if (player == 0) { // Player in bot mode win
+		} else if (player == P1CPU) { // Player in bot mode win
 			// Some gradient setup
 			double i = 0;
 			double t = 0;
@@ -671,7 +677,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			// Display match time
 			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
 			return;
-		} else if (player == 1) {
+		} else if (player == P1) {
 			// Some gradient setup
 			double i = 0;
 			double t = 0;
@@ -694,7 +700,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
 			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
 			return;
-		} else if (player == 2) {
+		} else if (player == P2) {
 			// Some gradient setup
 			double i = 0;
 			double t = 0;

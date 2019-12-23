@@ -12,26 +12,36 @@ import javax.swing.JPanel;
 public class Settings extends JPanel implements ActionListener, MouseListener {
 
 	private MazeFrame parent;
-	private JButton exit;
+	private JButton[] buttons = { new JButton("Exit") };
+	private Color buttonBackground;
+	private Mode mode;
+	private double mazeFidelity;
+	private int aispeed;
+	private int stagePreset;
+	private String matchName;
+	private int r;
+	private int c;
 
 	public Settings(MazeFrame parent) {
 		super();
 		this.parent = parent;
-		Color backgroundColor = new Color(Math.min(parent.getBackground().getRed() + 80, 255),
-				Math.min(parent.getBackground().getGreen() + 80, 255),
-				Math.min(parent.getBackground().getBlue() + 80, 255), 220);
+		this.buttonBackground = new Color(Math.min(parent.getBackground().getRed() - 100, 255),
+				Math.min(parent.getBackground().getGreen() - 100, 255),
+				Math.min(parent.getBackground().getBlue() - 100, 255), 220);
 
-		exit = new JButton("Exit");
-		exit.setLocation(parent.getLocation());
-		exit.setSize(parent.getWidth() / 20, parent.getHeight() / 20);
-		exit.setForeground(Color.WHITE);
-		exit.setBackground(backgroundColor);
-		exit.addActionListener(this);
+		for (JButton b : buttons) {
+			b = new JButton("Exit");
+			b.setSize(parent.getWidth() / 20, parent.getHeight() / 20);
+			b.setForeground(Color.WHITE);
+			b.setBackground(buttonBackground);
+			b.addActionListener(this);
+			add(b);
+		}
+		buttons[0].setLocation(parent.getLocation());
 
 		setLayout(null);
 		setPreferredSize(parent.getSize());
 		setBackground(parent.getBackground());
-		add(exit);
 		setVisible(true);
 	}
 
@@ -67,8 +77,16 @@ public class Settings extends JPanel implements ActionListener, MouseListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == exit) {
-			parent.resetMaze();
+		if (e.getSource() == buttons[0]) {
+			new MazeFrame(mode, mazeFidelity, aispeed, aispeed, matchName, aispeed, aispeed);
+
+			try {
+				Thread.sleep(50 + (r * c) / 1000);
+			} catch (Exception e1) {
+			}
+
+			parent.setVisible(false);
+			System.gc();
 		}
 
 	}
