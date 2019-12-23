@@ -378,9 +378,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		Color pCo = p1;
 
 		// Skippable cells based on mode
+		int enemy = player % 2 + 1;
 		int skipO = 0;
 		if (mode == P2) {
-			skipO = player % 2 + 1;
+			skipO = enemy;
 		} else if (mode == TT) {
 			skipO = player;
 		}
@@ -393,49 +394,52 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		}
 
 		// Convenience Variables
-		MazeCell nextOver = getNeighbor(mex.peek(), dir);
-
-		if (nextOver != null && nextOver.getPly() == 0 && !mex.peek().isBlockedDir(dir)) { // into blank
-
-			mex.peek().setStatus(mex.peek().getStatus());
-			mex.push(nextOver);
-			mex.peek().setPly(player, pCo);
+		MazeCell head = mex.peek();
+		MazeCell nextOver = getNeighbor(head, dir);
+		if (nextOver == null)
 			return;
 
-		} else if (nextOver != null && nextOver.getPly() == player && !mex.peek().isBlockedDir(dir)) { // into own
+		if (!head.isBlockedDir(dir) && nextOver.getPly() != enemy) {
+			if (nextOver.getPly() == 0) { 
+				// into blank
+				head.repaint();
+				mex.push(nextOver);
+				nextOver.setPly(player, pCo);
 
-			MazeCell yes = nextOver;
+			} else if (nextOver.getPly() == player) { 
+				// into own
+				// do not replace peek() w/ head here
+				while (mex.peek() != nextOver) {
+					mex.pop().setPly(0, null);
+				}
 
-			while (mex.peek() != yes) {
-				mex.pop().setPly(0, null);
 			}
-			return;
-
-		} else if (nextOver != null && !tex.isEmpty() && nextOver == tex.peek()) { // into enemy head
-
+		} else if (!tex.isEmpty() && nextOver == tex.peek()) {
+			// into enemy head
 			for (int i = 0; i < rows / 5; i++)
 				if (!tex.isEmpty())
 					tex.pop().setPly(0, null);
-			return;
 
-		} else if (nextOver != null && nextOver.getPly() == skipO && getNeighbor(nextOver, dir) != null
-				&& getNeighbor(nextOver, dir).getPly() == 0) { // able to skip over
+		} else if (nextOver.getPly() == skipO) {
+			// cell the player lands in
+			MazeCell nextOverPlus = getNeighbor(nextOver, dir);
+			if (nextOverPlus == null)
+				return;
 
-			mex.peek().setStatus(mex.peek().getStatus());
-			mex.push(getNeighbor(nextOver, dir));
-			mex.peek().setPly(player, pCo);
-			return;
+			if (nextOverPlus.getPly() == 0) { 
+				// can skip over
+				head.repaint();
+				mex.push(nextOverPlus);
+				nextOverPlus.setPly(player, pCo);
 
-		} else if (nextOver != null && nextOver.getPly() == skipO && getNeighbor(nextOver, dir) != null
-				&& getNeighbor(nextOver, dir).getPly() == player) { // skipping back
+			} else if (nextOverPlus.getPly() == player) {
+				// skipping back
+				// do not replace peek() w/ head here
+				while (mex.peek() != nextOverPlus) {
+					mex.pop().setPly(0, null);
+				}
 
-			MazeCell yes = getNeighbor(nextOver, dir);
-
-			while (mex.peek() != yes) {
-				mex.pop().setPly(0, null);
 			}
-			return;
-
 		}
 	}
 
