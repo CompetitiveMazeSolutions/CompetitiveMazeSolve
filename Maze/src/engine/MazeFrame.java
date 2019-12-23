@@ -607,19 +607,18 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		maze.paint(graphics2D);
 		try {
 			// Writes the image onto a new file
-			File outputFile = new File("src/output/");
+			File outputDir = new File("../output");
 			// If the directory does not exist, create it
-			if (!outputFile.exists()) {
-				outputFile.mkdir();
-				outputFile = new File("src/output/" + matchName + ".JPEG");
-			} else if (outputFile.exists()) { // If the file exists, then find out what number it should have.
-				int currentInstance = 0;
-				String currentName = outputFile.getName();
-				if (currentName.contains("(")) { // If it has an identifier
-					String newInstance = currentName.substring(currentName.indexOf("(") + 1);
-					currentInstance = Integer.parseInt(newInstance);
-					outputFile = new File("src/output/" + matchName + "(" + ((int) currentInstance + 1) + ").JPEG");
-				}
+			if (!outputDir.exists())
+				outputDir.mkdir();
+			
+			int currentInstance = 0;
+			String name = matchName + ".JPEG";
+			File outputFile = new File("../output", name);
+			while(outputFile.exists()) {
+				currentInstance++;
+				name = matchName + "(" + currentInstance + ").JPEG";
+				outputFile = new File("../output", name);
 			}
 			// Write it to disk
 			ImageIO.write(imagebuf, "jpeg", outputFile);
