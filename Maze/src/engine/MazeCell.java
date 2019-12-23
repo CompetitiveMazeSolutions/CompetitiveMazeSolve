@@ -10,16 +10,14 @@ import java.awt.Stroke;
 import javax.swing.JPanel;
 
 public class MazeCell extends JPanel {
-	public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
-	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3; // For statuses
-	public static final int p1 = 1, p2 = 2;
+	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3; // For statuses in bot mode
 
 	private int wallThickness = 2; // Width of wall brush
 	private int padding = 2; // Amount of space to the next cell
 	private int row, col; // Location of cell
 	private int ply; // Player
 	private int status; // Determines the color and accessibility
-	private int mode; // Mode of MazeFrame (previously needPly)
+	private Mode mode; // Mode of MazeFrame (previously needPly)
 	private Stroke str; // Brush for walls
 	private Color lineColor = Color.WHITE; // Color of walls
 	private Color textColor = Color.WHITE.darker(); // Color of inside text
@@ -32,7 +30,7 @@ public class MazeCell extends JPanel {
 	private boolean hide; // If the cell is hidden
 	private boolean playered; // Status of a player being in it
 
-	public MazeCell(int r, int c, int mode) {
+	public MazeCell(int r, int c, Mode mode) {
 		super();
 		str = new BasicStroke(wallThickness); // Had a stroke reading this
 		row = r;
@@ -49,7 +47,7 @@ public class MazeCell extends JPanel {
 		super.paintComponent(g); // Makes the maze draw this cell onto it
 
 		Color c;
-		if (mode == MazeFrame.CPU) {
+		if (mode == mode.CPU) {
 			if (!playered) { // look I know it's not a real word, ok?
 				c = new Color(colors[status].getRed(), colors[status].getGreen(), colors[status].getBlue(), 150);
 			} else {
@@ -80,13 +78,13 @@ public class MazeCell extends JPanel {
 
 		g.setColor(lineColor);
 		((Graphics2D) g).setStroke(str);
-		if (borders[UP])
+		if (borders[MazeFrame.UP])
 			g.drawLine(0, 0, this.getWidth(), 0);
-		if (borders[RIGHT])
+		if (borders[MazeFrame.RIGHT])
 			g.drawLine(this.getWidth() - padding, 0, this.getWidth() - padding, this.getHeight());
-		if (borders[DOWN])
+		if (borders[MazeFrame.DOWN])
 			g.drawLine(0, this.getHeight() - padding, this.getWidth(), this.getHeight() - padding);
-		if (borders[LEFT])
+		if (borders[MazeFrame.LEFT])
 			g.drawLine(0, 0, 0, this.getHeight());
 
 		g.setColor(textColor);

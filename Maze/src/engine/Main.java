@@ -4,7 +4,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// Starting defaults for values and mode
-		final int mode = MazeFrame.TT;
+		final Mode mode = Mode.P2MODE;
 		final double mazeFidelity = .7;
 		final String matchName = null;
 		final int rows = 20;
