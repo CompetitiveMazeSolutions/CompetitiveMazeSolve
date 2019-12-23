@@ -331,12 +331,11 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	// Takes the next step in solving the maze in CPU mode
 	private boolean solveStep() {
-
 		if (on) {
 			// If player has reached the beginning
-			if (mex.peek() == begi) {
+			if (!mex.isEmpty() && mex.peek() == begi) {
 				// Player wins
-				win(2);
+				win(-1); // -1 since its not the same as P2
 				return false;
 			}
 
@@ -648,6 +647,27 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 				// Set the gradient based on gradient factor
 				int gradVal = (int) (255 * (1 - t));
 				tex.pop().setGrad(new Color(gradVal, gradVal, gradVal));
+			}
+			// Find match time
+			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
+			// Display match time
+			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
+			return;
+		} else if (player ==-1) {
+			// Some gradient setup
+			double i = 0;
+			double t = 0;
+			int sizzle = mex.size();
+			// Random color to gradient to
+
+			// While we still have stuff to gradient
+			while (!mex.isEmpty()) {
+				// Set gradient factor
+				t = i / sizzle;
+				i++;
+				mex.pop().setGrad(new Color((int) (beg.getRed() * t + plead.getRed() * (1 - t)),
+						(int) (beg.getGreen() * t + plead.getGreen() * (1 - t)),
+						(int) (beg.getBlue() * t + plead.getBlue() * (1 - t))));
 			}
 			// Find match time
 			int matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
