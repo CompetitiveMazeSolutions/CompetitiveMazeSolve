@@ -426,7 +426,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	}
 
 	// If the possible cell is valid
-	private boolean isInBounds(int r, int c) {
+	private static boolean isInBounds(int r, int c) {
 		return r >= 0 && r < rows && c >= 0 && c < cols;
 	}
 
@@ -496,7 +496,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	}
 
 	// Returns a set of directions in order of importance
-	private int[] getBestDir(MazeCell orig, MazeCell dest) {
+	private static int[] getBestDir(MazeCell orig, MazeCell dest) {
 		// Initialize new moveset
 		int[] moves = new int[4];
 		int yDis = dest.row() - orig.row();
@@ -538,19 +538,20 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	}
 
 	// Returns a direction from one point to the other
-	private int getDirectionFrom(MazeCell orig, MazeCell dest) {
+	private static int getDirectionFrom(MazeCell orig, MazeCell dest) {
+		int yDis = dest.row() - orig.row();
+		int xDis = dest.col() - orig.col();
+		// Find the best direction to dest
+		if (yDis < 0)
+			return MazeCell.UP;
+		if (yDis > 0)
+			return MazeCell.DOWN;
+		if (xDis > 0)
+			return MazeCell.RIGHT;
+		if (xDis < 0)
+			return MazeCell.LEFT;
 		// Default case is nonexistent direction
-		int ret = -1;
-		// Else, find the best direction to dest
-		if (dest.row() < orig.row())
-			ret = UP;
-		if (dest.row() > orig.row())
-			ret = DOWN;
-		if (dest.col() > orig.col())
-			ret = RIGHT;
-		if (dest.col() < orig.col())
-			ret = LEFT;
-		return ret;
+		return -1;
 	}
 
 	// Called when bot thread is started
