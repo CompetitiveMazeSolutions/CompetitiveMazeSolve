@@ -32,7 +32,7 @@ public class OverarchingListener implements KeyListener {
 				parent.getButton(1).requestFocus();
 				return;
 			}
-		} else if (mode == Mode.P2MODE) {
+		} else if (mode == Mode.V2) {
 			if (p1R && p2R) {
 				parent.startGame();
 				parent.getButton(1).requestFocus();
