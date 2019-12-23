@@ -286,7 +286,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			tex.pop().setStatus(MazeCell.DEAD);
 		} else {
 			// Pick a random choice
-			MazeCell chosen1 = bop.get((int) (Math.random() * bop.size()));
+			MazeCell chosen1 = bop.get(0);
 			// Clear walls to new cell and from next space to this one
 			tex.peek().clearWallDir(getDirectionFrom(tex.peek(), chosen1));
 			chosen1.clearWallDir(getDirectionFrom(chosen1, tex.peek()));
@@ -459,14 +459,30 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	// Returns an array of directional neighbor cells to the given cells
 	private ArrayList<MazeCell> blankNeighbors(MazeCell mc) {
 		ArrayList<MazeCell> results = new ArrayList<MazeCell>();
-		// For each direction
-		for (int i = 0; i < 4; i++) {
-			MazeCell inQuestion = getNeighbor(mc, i);
-			// If it is real, and blank
-			if (inQuestion != null && inQuestion.getStatus() == MazeCell.BLANK)
-				results.add(inQuestion);
+		// list out directions
+		ArrayList<Integer> dirs = new ArrayList<Integer>();
+		dirs.add(UP);dirs.add(RIGHT);dirs.add(DOWN);dirs.add(LEFT);
+
+		
+		if(mc.row()==0) { // if on ceiling (must prioritize leaving)
+			if(enlistNeighbors(mc,dirs.remove(2)))results.add(getNeighbor(mc,DOWN)); // remove down from possible, add to list as priority
+
+		}else if(mc.row()==rows-1) { // if on floor (must prioritize leaving)
+			if(enlistNeighbors(mc,dirs.remove(0)))results.add(getNeighbor(mc,UP)); // remove up from possible, add to list as priority
 		}
+		while(dirs.size()>0) { // add each of dirs to results in random order
+			int chosenIndex = (int)(Math.random()*dirs.size());
+			int chosenDir = dirs.remove(chosenIndex);
+			if(enlistNeighbors(mc,chosenDir))results.add(getNeighbor(mc,chosenDir));
+		}
+		
 		return results;
+	}
+	// if can add neighbor to results
+	private boolean enlistNeighbors(MazeCell mc, int dir) {
+		MazeCell inQuestion = getNeighbor(mc, dir);
+		// if it is real, and blank
+		return (inQuestion != null && inQuestion.getStatus() == MazeCell.BLANK);
 	}
 
 	// Returns the closest MazeCell in direction
