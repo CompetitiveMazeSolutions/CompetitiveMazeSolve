@@ -302,35 +302,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		}
 	}
 
-	/*
-	 * private void carveALameMaze() {// "hard code" a maze
-	 * cells[4][0].clearWallRight(); cells[4][0].clearWallLeft();
-	 * cells[4][1].clearWallLeft(); cells[7][9].clearWallRight();
-	 * cells[7][9].clearWallLeft(); cells[7][8].clearWallRight();
-	 * cells[7][8].clearWallLeft(); cells[7][7].clearWallRight();
-	 * cells[7][7].clearWallLeft(); cells[7][6].clearWallRight();
-	 * cells[7][6].clearWallUp(); cells[6][6].clearWallDown();
-	 * cells[6][6].clearWallUp(); cells[5][6].clearWallDown();
-	 * cells[7][5].clearWallRight(); cells[7][6].clearWallLeft();
-	 * cells[4][1].clearWallDown(); cells[5][1].clearWallUp();
-	 * cells[5][1].clearWallRight(); cells[5][2].clearWallLeft();
-	 * cells[5][2].clearWallRight(); cells[5][3].clearWallLeft();
-	 * cells[4][3].clearWallDown(); cells[5][3].clearWallUp();
-	 * cells[3][3].clearWallDown(); cells[4][3].clearWallUp();
-	 * cells[2][3].clearWallDown(); cells[3][3].clearWallUp();
-	 * cells[3][3].clearWallRight(); cells[3][4].clearWallLeft();
-	 * cells[3][4].clearWallRight(); cells[3][5].clearWallLeft();
-	 * cells[3][5].clearWallDown(); cells[4][5].clearWallUp();
-	 * cells[4][5].clearWallRight(); cells[4][6].clearWallLeft();
-	 * cells[4][7].clearWallDown(); cells[5][7].clearWallUp();
-	 * cells[4][6].clearWallRight(); cells[4][7].clearWallLeft();
-	 * cells[5][6].clearWallRight(); cells[5][7].clearWallLeft();
-	 * cells[8][5].clearWallUp(); cells[7][5].clearWallDown();
-	 * cells[6][2].clearWallUp(); cells[5][2].clearWallDown();
-	 * cells[8][4].clearWallRight(); cells[8][5].clearWallLeft();
-	 * tex.push(cells[4][0]); tex.peek().setStatus(MazeCell.VISITED); }
-	 */
-
 	// Takes the next step in solving the maze in CPU mode
 	private boolean solveStep() {
 		if (on) {
@@ -487,7 +458,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		return results;
 	}
 
-	// if can add neighbor to results
+	// If can add neighbor to results
 	private boolean enlistNeighbors(MazeCell mc, int dir) {
 		MazeCell inQuestion = getNeighbor(mc, dir);
 		// if it is real, and blank
