@@ -385,41 +385,38 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		} else if (mode == TT) {
 			skipO = player;
 		}
-
 		// Set stacks to player stacks
 		if (player == 2) {
 			pCo = p2;
 			mex = this.mex;
 			tex = this.tex;
 		}
-
 		// Convenience Variables
 		MazeCell head = mex.peek();
 		MazeCell nextOver = getNeighbor(head, dir);
 		if (nextOver == null)
 			return;
-
+		
 		if (!head.isBlockedDir(dir) && nextOver.getPly() != enemy) {
 			if (nextOver.getPly() == 0) { 
 				// into blank
 				head.repaint();
 				mex.push(nextOver);
 				nextOver.setPly(player, pCo);
-
+				
 			} else if (nextOver.getPly() == player) { 
 				// into own
 				// do not replace peek() w/ head here
 				while (mex.peek() != nextOver) {
 					mex.pop().setPly(0, null);
 				}
-
 			}
 		} else if (!tex.isEmpty() && nextOver == tex.peek()) {
 			// into enemy head
 			for (int i = 0; i < rows / 5; i++)
 				if (!tex.isEmpty())
 					tex.pop().setPly(0, null);
-
+			
 		} else if (nextOver.getPly() == skipO) {
 			// cell the player lands in
 			MazeCell nextOverPlus = getNeighbor(nextOver, dir);
@@ -431,24 +428,24 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 				head.repaint();
 				mex.push(nextOverPlus);
 				nextOverPlus.setPly(player, pCo);
-
+				
 			} else if (nextOverPlus.getPly() == player) {
 				// skipping back
 				// do not replace peek() w/ head here
 				while (mex.peek() != nextOverPlus) {
 					mex.pop().setPly(0, null);
 				}
-
 			}
 		}
 	}
 
 	// playerMove case for bot mode
 	public void playerMove(int dir) {
-		if (getNeighbor(mex.peek(), dir) != null && !mex.peek().isBlockedDir(dir)) {
+		MazeCell nextOver = getNeighbor(mex.peek(), dir);
+		if (nextOver != null && !mex.peek().isBlockedDir(dir)) {
 			mex.peek().setPHead(false);
-			mex.push(getNeighbor(mex.peek(), dir));
-			mex.peek().setPlayered(true);
+			mex.push(nextOver);
+			nextOver.setPlayered(true);
 		}
 	}
 
@@ -490,7 +487,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	private boolean enlistNeighbors(MazeCell mc, int dir) {
 		MazeCell inQuestion = getNeighbor(mc, dir);
 		// if it is real, and blank
-		return (inQuestion != null && inQuestion.getStatus() == MazeCell.BLANK);
+		return (inQuestion != null && inQuestion.isBlank());
 	}
 
 	// Returns the closest MazeCell in direction
@@ -524,7 +521,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	}
 
 	// Returns a set of directions in order of importance
-	private int[] getBestDir(MazeCell orig, MazeCell dest) {
+	private static int[] getBestDir(MazeCell orig, MazeCell dest) {
 		// Initialize new moveset
 		int[] moves = new int[4];
 		int yDis = dest.row() - orig.row();
@@ -566,19 +563,20 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	}
 
 	// Returns a direction from one point to the other
-	private int getDirectionFrom(MazeCell orig, MazeCell dest) {
+	private static int getDirectionFrom(MazeCell orig, MazeCell dest) {
+		int rowdiff = dest.row() - orig.row();
+		int coldiff = dest.col() - orig.col();
+		// Find the best direction to dest
+		if (rowdiff < 0)
+			return MazeCell.UP;
+		if (rowdiff > 0)
+			return MazeCell.DOWN;
+		if (coldiff > 0)
+			return MazeCell.RIGHT;
+		if (coldiff < 0)
+			return MazeCell.LEFT;
 		// Default case is nonexistent direction
-		int ret = -1;
-		// Else, find the best direction to dest
-		if (dest.row() < orig.row())
-			ret = MazeCell.UP;
-		if (dest.row() > orig.row())
-			ret = MazeCell.DOWN;
-		if (dest.col() > orig.col())
-			ret = MazeCell.RIGHT;
-		if (dest.col() < orig.col())
-			ret = MazeCell.LEFT;
-		return ret;
+		return -1;
 	}
 
 	// Called when bot thread is started
@@ -799,10 +797,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	public MazeCell[][] getCells() {
 		return cells;
 
-	}
-
-	public Runnable getRun() {
-		return this;
 	}
 
 	public boolean isOn() {
