@@ -2,7 +2,6 @@ package engine;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -11,12 +10,15 @@ import java.awt.event.MouseListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 public class Settings extends JFrame implements ActionListener, MouseListener {
 
 	private MazeFrame parent;
 	private JPanel UIPanel;
 	private JButton[] buttons = { new JButton("Exit") };
+	private JTextArea[] descriptions = { new JTextArea("Test") };
+	private JTextArea[] fields = { new JTextArea("Test") };
 	private Color buttonBackground;
 	private Mode mode;
 	private double mazeFidelity;
@@ -42,12 +44,13 @@ public class Settings extends JFrame implements ActionListener, MouseListener {
 		this.rows = rows;
 		this.cols = cols;
 
-		setLayout(new GridLayout());
+		setLayout(null);
 		setSize(new Dimension(parent.getWidth() / 2, parent.getHeight() / 2));
-		add(UIPanel);
+		setLocationRelativeTo(parent);
+		UIPanel.setLayout(null);
 		UIPanel.setSize(getSize());
 		UIPanel.setBackground(parent.getBackground());
-		UIPanel.setLayout(null);
+		add(UIPanel);
 		for (JButton b : buttons) {
 			b.setSize(WIDTH / 5, HEIGHT / 5);
 			b.setForeground(Color.WHITE);
@@ -55,6 +58,8 @@ public class Settings extends JFrame implements ActionListener, MouseListener {
 			b.addActionListener(this);
 			UIPanel.add(b);
 		}
+		buttons[0].setLocation(600, -600);
+		buttons[0].setVisible(true);
 		setVisible(true);
 		setFocusable(true);
 		requestFocus();

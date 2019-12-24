@@ -38,6 +38,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	private JPanel controls, lBorder, rBorder, tBorder, maze;
 	private JButton[] buttons = { new JButton("THIS ONE'S TRASH"), new JButton("I'M READY"), new JButton("SETTINGS"),
 			new JButton("SAVE"), new JButton("EXIT") }; // All buttons in control panel
+	private JButton readyButton;
 	private MazeCell[][] cells; // All cells
 	private MazeCell begi, end; // Start and end cells
 	private Stack<MazeCell> tex; // Left side stack
@@ -111,6 +112,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// finishing touches
 		setBackground(Color.WHITE);
+		setForeground(Color.WHITE);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setUndecorated(true);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -124,6 +126,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	/************ Setup Methods ************/
 
+	// Puts black borders on
 	private void setUpEdges() {
 		lBorder = new JPanel();
 		rBorder = new JPanel();
@@ -173,20 +176,26 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// Initialize all buttons and add them to the panel
 		for (JButton b : buttons) {
 			controls.add(b);
+			b.setBackground(Color.GRAY);
+			b.setForeground(Color.WHITE);
 			b.addActionListener(this);
 		}
+
+		readyButton = buttons[1];
 
 		// Add ready listener and set panel to bottom
 		buttons[1].addKeyListener(embededListener);
 		buttons[2].addKeyListener(embededListener);
+		buttons[3].addKeyListener(embededListener);
 		buttons[0].addKeyListener(frameListener);
-		buttons[3].addKeyListener(frameListener);
 		buttons[4].addKeyListener(frameListener);
 		add(controls, BorderLayout.SOUTH);
 	}
 
 	// Called when a new maze is not carved
 	private void carveARandomMaze() {
+
+		maze.setBackground(MazeCell.lineColor);
 
 		// Pick beginning and end
 		begi = cells[(int) (Math.random() * (rows * .5) + rows * .25)][0];
@@ -211,10 +220,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			if (mode == Mode.V2)
 				tex.peek().setPly(1, p1);
 
-			/*for (int i = (int) (rows * .25); i < (int) (rows * .75); i++) {
-				cells[i][0].clearWallDir(LEFT);
-				cells[i][cols - 1].clearWallDir(RIGHT);
-			}*/
 			for (int i = 0; i < rows; i++) {
 				cells[i][0].clearWallDir(LEFT);
 				cells[i][cols - 1].clearWallDir(RIGHT);
@@ -696,6 +701,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			botThread = new Thread(this);
 			botThread.start();
 		}
+		readyButton.requestFocus();
 	}
 
 	/***********************************************/
@@ -777,6 +783,10 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 	public void setStartTime(double startTime) {
 		this.startTime = startTime;
+	}
+
+	public double getMatchTime() {
+		return matchTime;
 	}
 
 	public Thread getThread() {

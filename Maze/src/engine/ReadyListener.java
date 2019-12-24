@@ -8,30 +8,39 @@ public class ReadyListener implements KeyListener {
 	private MazeFrame parent;
 	private Mode mode;
 	private boolean p1C;
+	private boolean p1R;
 	private boolean p2C;
+	private boolean p2R;
 
 	public ReadyListener(MazeFrame parent) {
 		this.parent = parent;
 		mode = parent.getMode();
 		p1C = false;
+		p1R = false;
 		p2C = false;
+		p2R = false;
 	}
 
 	private void processKeys() {
+		if (p1R && p2R) {
+			parent.startGame();
+		}
+
 		if (p1C && p2C) {
-			parent.resetMaze();
-		} else if ((p1C || p2C) && (mode == Mode.CPU || mode == Mode.TT)) {
 			parent.resetMaze();
 		}
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (!parent.isOn() && e.getKeyCode() != (KeyEvent.VK_CONTROL))
+		int keyCode = e.getKeyCode();
+
+		if (!parent.isOn() && (keyCode != KeyEvent.VK_CONTROL && keyCode != KeyEvent.VK_SHIFT)) {
 			return;
+		}
 
 		if (mode == Mode.CPU) {
-			switch (e.getKeyCode()) {
+			switch (keyCode) {
 			case KeyEvent.VK_RIGHT:
 				parent.playerMove(MazeFrame.RIGHT);
 				break;
@@ -47,10 +56,15 @@ public class ReadyListener implements KeyListener {
 			case KeyEvent.VK_CONTROL:
 				parent.resetMaze();
 				break;
+			case KeyEvent.VK_SHIFT:
+				if (!parent.isOn() && parent.getMatchTime() == 0) {
+					parent.startGame();
+				}
+				break;
 			}
 
 		} else if (mode == Mode.V2) {
-			switch (e.getKeyCode()) {
+			switch (keyCode) {
 			case KeyEvent.VK_RIGHT:
 				parent.playerMove(2, MazeFrame.RIGHT);
 				break;
@@ -101,9 +115,18 @@ public class ReadyListener implements KeyListener {
 					p2C = true;
 				}
 				break;
+			case KeyEvent.VK_SHIFT:
+				if (!parent.isOn() && parent.getMatchTime() == 0) {
+					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_LEFT) {
+						p1R = true;
+					} else {
+						p2R = true;
+					}
+				}
+				break;
 			}
 		} else if (mode == Mode.TT) {
-			switch (e.getKeyCode()) {
+			switch (keyCode) {
 			case KeyEvent.VK_RIGHT:
 				parent.playerMove(2, MazeFrame.RIGHT);
 				break;
@@ -128,11 +151,16 @@ public class ReadyListener implements KeyListener {
 			case KeyEvent.VK_CONTROL:
 				parent.resetMaze();
 				break;
-
+			case KeyEvent.VK_SHIFT:
+				if (!parent.isOn() && parent.getMatchTime() == 0) {
+					parent.startGame();
+				}
+				break;
 			}
 		}
 
-		processKeys();
+		if (mode == Mode.V2)
+			processKeys();
 	}
 
 	@Override
@@ -143,6 +171,13 @@ public class ReadyListener implements KeyListener {
 				p1C = false;
 			} else {
 				p2C = false;
+			}
+			break;
+		case KeyEvent.VK_SHIFT:
+			if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_LEFT) {
+				p1R = false;
+			} else {
+				p2R = false;
 			}
 			break;
 		}
