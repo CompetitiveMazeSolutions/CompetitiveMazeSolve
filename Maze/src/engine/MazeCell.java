@@ -11,6 +11,9 @@ import javax.swing.JPanel;
 
 public class MazeCell extends JPanel {
 	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3; // For statuses in bot mode
+	public static final Color lineColor = Color.WHITE; // Color of walls
+	public static final Color textColor = Color.WHITE.darker(); // Color of inside text
+	public static final Color defaultBG = Color.GRAY; // Background of cell
 
 	private int wallThickness = 2; // Width of wall brush
 	private int padding = 2; // Amount of space to the next cell
@@ -19,9 +22,6 @@ public class MazeCell extends JPanel {
 	private int status; // Determines the color and accessibility
 	private Mode mode; // Mode of MazeFrame (previously needPly)
 	private Stroke str; // Brush for walls
-	private Color lineColor = Color.WHITE; // Color of walls
-	private Color textColor = Color.WHITE.darker(); // Color of inside text
-	private Color defaultBG = Color.GRAY; // Background of cell
 	private Color plyCo; // Color of player
 	private Color[] colors = { defaultBG, Color.BLUE, Color.BLACK, Color.CYAN }; // Color of each status
 	private Color[] colorsP = { Color.YELLOW, Color.GREEN, Color.YELLOW.darker(), Color.ORANGE }; // Colors w/ player
