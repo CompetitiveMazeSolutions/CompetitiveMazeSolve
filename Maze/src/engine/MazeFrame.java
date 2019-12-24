@@ -441,32 +441,27 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 	// Returns the closest MazeCell in direction
 	public MazeCell getNeighbor(MazeCell mc, int dir) {
-		// Where moving to
+		int r = mc.row();
+		int c = mc.col();
 		switch (dir) {
 		// If exists, return cell in direction
 		case LEFT:
-			if (isInBounds(mc.row(), mc.col() - 1))
-				return cells[mc.row()][mc.col() - 1];
-			else
-				return null;
+			c--;
+			break;
 		case RIGHT:
-			if (isInBounds(mc.row(), mc.col() + 1))
-				return cells[mc.row()][mc.col() + 1];
-			else
-				return null;
+			c++;
+			break;
 		case DOWN:
-			if (isInBounds(mc.row() + 1, mc.col()))
-				return cells[mc.row() + 1][mc.col()];
-			else
-				return null;
+			r++;
+			break;
 		case UP:
-			if (isInBounds(mc.row() - 1, mc.col()))
-				return cells[mc.row() - 1][mc.col()];
-			else
-				return null;
+			r--;
+			break;
 		default:
 			return null;
 		}
+		if (isInBounds(r, c)) return cells[r][c];
+		else return null;
 	}
 
 	// Returns a set of directions in order of importance
@@ -564,24 +559,21 @@ public class MazeFrame extends JFrame implements ActionListener {
 		Graphics2D graphics2D = imagebuf.createGraphics();
 		maze.paint(graphics2D);
 		try {
-			// Writes the image onto a new file
 			File outputDir = new File("./output");
 			// If the directory does not exist, create it
 			if (!outputDir.exists())
 				outputDir.mkdir();
-
+			// Name file
 			String name;
-			int currentInstance = 0;
 			if (matchTime != 0) {
-				name = (int) (matchTime / 1000) + " seconds " + matchName + ".JPEG";
+				name = (int) (matchTime / 1000) + " seconds " + matchName;
 			} else {
-				name = matchName + ".JPEG";
+				name = matchName;
 			}
-			File outputFile = new File("./output", name);
-			while (outputFile.exists()) {
-				currentInstance++;
-				name = matchName + "(" + currentInstance + ").JPEG";
-				outputFile = new File("./output", name);
+			File outputFile = new File("./output", name + ".JPEG");
+			// If duplicates exist, distinguish by number
+			for (int id = 1; outputFile.exists(); id++) {
+				outputFile = new File("./output", name + "(" + id + ").JPEG");
 			}
 			// Write it to disk
 			ImageIO.write(imagebuf, "jpeg", outputFile);
