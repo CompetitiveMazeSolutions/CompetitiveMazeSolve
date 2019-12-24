@@ -291,16 +291,18 @@ public class MazeFrame extends JFrame implements ActionListener {
 				return false;
 			}
 
+			// Priority queue of direction choices
+			int[] dirspq = getBestDir(tex.peek(), end);
 			// If neither win conditions are met, move on.
-			for (int dir = 0; dir <= 3; dir++) { // for all directions
-
-				// If cell is unblocked, existing, and unvisited
-				if (getNeighbor(tex.peek(), getBestDir(tex.peek(), end)[dir]) != null
-						&& !(tex.peek().isBlockedDir(getBestDir(tex.peek(), end)[dir]))
-						&& getNeighbor(tex.peek(), getBestDir(tex.peek(), end)[dir]).getStatus() == MazeCell.BLANK) {
-					// Add it to list of actions, and make it visited
-					tex.push(getNeighbor(tex.peek(), getBestDir(tex.peek(), end)[dir]));
-					tex.peek().setStatus(MazeCell.VISITED);
+			for (int i = 0; i < 4; i++) {
+				MazeCell option = getNeighbor(tex.peek(), dirspq[i]);
+				// If cell enterable and unvisited
+				if (option != null
+						&& !(tex.peek().isBlockedDir(dirspq[i]))
+						&& option.isBlank()) {
+					// Move into cell
+					tex.push(option);
+					option.setStatus(MazeCell.VISITED);
 					return true;
 				}
 			}
@@ -707,24 +709,13 @@ public class MazeFrame extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == buttons[0]) {
 			resetMaze();
-		}
-
-		if (e.getSource() == buttons[1]) {
+		} else if (e.getSource() == buttons[1]) {
 			startGame();
-			return;
-		}
-
-		if (e.getSource() == buttons[2]) {
+		} else if (e.getSource() == buttons[2]) {
 			openSettings();
-			return;
-		}
-
-		if (e.getSource() == buttons[3]) {
+		} else if (e.getSource() == buttons[3]) {
 			saveMaze();
-			return;
-		}
-
-		if (e.getSource() == buttons[4]) {
+		} else if (e.getSource() == buttons[4]) {
 			System.exit(0);
 		}
 	}// end action performed
@@ -733,65 +724,34 @@ public class MazeFrame extends JFrame implements ActionListener {
 	/* ACCESSORS AND MUTATORS */
 	/**************************/
 
-	public JPanel getGameWindow() {
-		return maze;
-	}
+	public JPanel getGameWindow() {return maze;}
 
-	public JButton getButton(int i) {
-		return buttons[i];
-	}
+	public JButton getButton(int i) {return buttons[i];}
 
-	public Stack<MazeCell> getMex() {
-		return mex;
-	}
+	public Stack<MazeCell> getMex() {return mex;}
 
-	public Stack<MazeCell> getTex() {
-		return tex;
-	}
+	public Stack<MazeCell> getTex() {return tex;}
 
-	public MazeCell[][] getCells() {
-		return cells;
+	public MazeCell[][] getCells() {return cells;}
 
-	}
+	public int getRows() {return rows;}
 
-	public int getRows() {
-		return rows;
-	}
+	public int getColumns() {return cols;}
 
-	public int getColumns() {
-		return cols;
-	}
+	public boolean isOn() {return on;}
 
-	public boolean isOn() {
-		return on;
-	}
+	public void setOn(boolean on) {this.on = on;}
 
-	public void setOn(boolean on) {
-		this.on = on;
-	}
+	public Mode getMode() {return mode;}
 
-	public Mode getMode() {
-		return mode;
-	}
+	public void setMode(Mode mode) {this.mode = mode;}
 
-	public void setMode(Mode mode) {
-		this.mode = mode;
-	}
+	public double getStartTime() {return startTime;}
 
-	public double getStartTime() {
-		return startTime;
-	}
+	public void setStartTime(double startTime) {this.startTime = startTime;}
 
-	public void setStartTime(double startTime) {
-		this.startTime = startTime;
-	}
+	public double getMatchTime() {return matchTime;}
 
-	public double getMatchTime() {
-		return matchTime;
-	}
-
-	public Thread getThread() {
-		return botThread;
-	}
+	public Thread getThread() {return botThread;}
 
 }// end class
