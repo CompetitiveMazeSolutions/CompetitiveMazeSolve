@@ -211,10 +211,6 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 			if (mode == Mode.V2)
 				tex.peek().setPly(1, p1);
 
-			/*for (int i = (int) (rows * .25); i < (int) (rows * .75); i++) {
-				cells[i][0].clearWallDir(LEFT);
-				cells[i][cols - 1].clearWallDir(RIGHT);
-			}*/
 			for (int i = 0; i < rows; i++) {
 				cells[i][0].clearWallDir(LEFT);
 				cells[i][cols - 1].clearWallDir(RIGHT);
