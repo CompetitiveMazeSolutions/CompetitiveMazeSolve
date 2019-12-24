@@ -35,16 +35,17 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	private int stagePreset; // Not implemented
 	private String matchName;// Will be added onto the fileOutput if saved
 
-	private JPanel controls, maze;
+	private JPanel controls, lBorder, rBorder, tBorder, maze;
 	private JButton[] buttons = { new JButton("THIS ONE'S TRASH"), new JButton("I'M READY"), new JButton("SETTINGS"),
-			new JButton("SAVE"), new JButton("EXIT") };
-	private MazeCell[][] cells;
-	private MazeCell begi, end;
-	private Stack<MazeCell> tex;
-	private Stack<MazeCell> mex;
+			new JButton("SAVE"), new JButton("EXIT") }; // All buttons in control panel
+	private MazeCell[][] cells; // All cells
+	private MazeCell begi, end; // Start and end cells
+	private Stack<MazeCell> tex; // Left side stack
+	private Stack<MazeCell> mex; // Right side stack
 	private ReadyListener embededListener; // Put inside I'm Ready button, called on move
-	private OverarchingListener frameListener;
-	public Thread botThread;
+	private OverarchingListener frameListener; // Goes everywhere else
+	private Color borderColor = Color.BLACK;
+	private Thread botThread;
 
 	private boolean on;
 	public int matchTime;
@@ -94,8 +95,8 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		this.mazeFidelity = mazeFidelity;
 		this.aispeed = aispeed;
 		this.stagePreset = stagePreset;
-		this.rows = r;
-		this.cols = c;
+		MazeFrame.rows = r;
+		MazeFrame.cols = c;
 		embededListener = new ReadyListener(this);
 		frameListener = new OverarchingListener(this);
 
@@ -106,6 +107,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		setUpControlPanel();// make the buttons & put them in the north
 		instantiateCells();// give birth to all the mazeCells & get them onto the screen
 		carveARandomMaze();// this will knock down walls to create a maze
+		setUpEdges(); // Fills in other edges with black
 
 		// finishing touches
 		setBackground(Color.WHITE);
@@ -121,6 +123,18 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 	/** End Constructors **/
 
 	/************ Setup Methods ************/
+
+	private void setUpEdges() {
+		lBorder = new JPanel();
+		rBorder = new JPanel();
+		tBorder = new JPanel();
+		lBorder.setBackground(borderColor);
+		rBorder.setBackground(borderColor);
+		tBorder.setBackground(borderColor);
+		add(lBorder, BorderLayout.WEST);
+		add(rBorder, BorderLayout.EAST);
+		add(tBorder, BorderLayout.NORTH);
+	}
 
 	// Makes the maze itself
 	private void instantiateCells() {
@@ -154,7 +168,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 
 		// Create control panel
 		controls = new JPanel();
-		controls.setBackground(this.getBackground());
+		controls.setBackground(Color.BLACK);
 
 		// Initialize all buttons and add them to the panel
 		for (JButton b : buttons) {
