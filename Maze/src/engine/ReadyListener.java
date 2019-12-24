@@ -87,12 +87,12 @@ public class ReadyListener implements KeyListener {
 				parent.playerMove(2, MazeFrame.UP);
 				break;
 			case KeyEvent.VK_D:
-				if (parent.getTex().peek().col() == MazeFrame.Cols - 1
+				if (parent.getTex().peek().col() == parent.getColumns() - 1
 						&& !parent.getTex().peek().isBlockedDir(MazeFrame.RIGHT)) {
 					parent.win(1);
 					return;
 				}
-				if (parent.getTex().peek().col() == MazeFrame.Cols - 2
+				if (parent.getTex().peek().col() == parent.getColumns() - 2
 						&& parent.getNeighbor(parent.getTex().peek(), MazeFrame.RIGHT).getPly() == 2) {
 					parent.win(1);
 					return;
