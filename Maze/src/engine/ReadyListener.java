@@ -49,7 +49,7 @@ public class ReadyListener implements KeyListener {
 				break;
 			}
 
-		} else if (mode == Mode.P2MODE) {
+		} else if (mode == Mode.V2) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_RIGHT:
 				parent.playerMove(2, MazeFrame.RIGHT);

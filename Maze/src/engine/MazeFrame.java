@@ -206,12 +206,16 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		// Set to be playered
 		mex.peek().setPlayered(true);
 		// Sets color and player of stack starts
-		if (mode == Mode.TT || mode == Mode.P2MODE) {
+		if (mode == Mode.TT || mode == Mode.V2) {
 			mex.peek().setPly(2, p2);
-			if (mode == Mode.P2MODE)
+			if (mode == Mode.V2)
 				tex.peek().setPly(1, p1);
 
-			for (int i = (int) (rows * .25); i < (int) (rows * .75); i++) {
+			/*for (int i = (int) (rows * .25); i < (int) (rows * .75); i++) {
+				cells[i][0].clearWallDir(LEFT);
+				cells[i][cols - 1].clearWallDir(RIGHT);
+			}*/
+			for (int i = 0; i < rows; i++) {
 				cells[i][0].clearWallDir(LEFT);
 				cells[i][cols - 1].clearWallDir(RIGHT);
 			}
@@ -314,7 +318,7 @@ public class MazeFrame extends JFrame implements ActionListener, Runnable {
 		int enemy = player % 2 + 1;
 		int skipO = 0;
 
-		if (mode == Mode.P2MODE) {
+		if (mode == Mode.V2) {
 			skipO = enemy;
 		} else if (mode == Mode.TT) {
 			skipO = player;
