@@ -1,5 +1,5 @@
 package engine;
 
 public enum Mode {
-	CPU, P2MODE, TT
+	CPU, V2, TT
 }
