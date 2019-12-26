@@ -1,24 +1,16 @@
 package engine;
 //package FORKIDS;
 
-import java.awt.AWTException;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Robot;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Stack;
-
+import java.util.function.BiConsumer;
 import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class MazeFrame extends JFrame implements ActionListener {
 
@@ -398,7 +390,27 @@ public class MazeFrame extends JFrame implements ActionListener {
 	}
 
 	/**************** UTILITY METHODS ****************/
-
+	// Applies gradient to player stack
+	private static void applyGradient(Stack<MazeCell> stack, Color start, Color end,
+			BiConsumer<MazeCell, Color> painter)
+	{
+		// Obtain color components
+		int r1 = start.getRed(), r2 = end.getRed();
+		int g1 = start.getGreen(), g2 = end.getGreen();
+		int b1 = start.getBlue(), b2 = end.getBlue();
+		// Ratio is from 0 to 1 in increments of 1 / sizzle
+		int sizzle = stack.size() - 1;
+		int i = 0;
+		double ratio;
+		for (MazeCell mc : stack) {
+			ratio = (double) i++ / sizzle;
+			painter.accept(mc,
+					new Color((int) (r1 * (1- ratio) + r2 * ratio),
+							(int) (g1 * (1- ratio) + g2 * ratio),
+							(int) (b1 * (1- ratio) + b2 * ratio)));
+		}
+	}
+	
 	// If the possible cell is valid
 	private boolean isInBounds(int r, int c) {
 		return r >= 0 && r < rows && c >= 0 && c < cols;
@@ -583,100 +595,38 @@ public class MazeFrame extends JFrame implements ActionListener {
 		}
 	}
 
-	// Called at the end of the game, ends game
+	// Called at the end of the game
 	public void win(int player) {
 
 		// Turn off maze actions
 		on = false;
 
+		// Apply gradient to winning player
 		if (player == BOT) { // Bot win
-			// Some gradient setup
-			double i = 0;
-			double t = 0;
-			int sizzle = tex.size();
-			// While we still have stuff to gradient
-			while (!tex.isEmpty()) {
-				// Set gradient factor
-				t = i / sizzle;
-				i++;
-				// Set the gradient based on gradient factor
-				int gradVal = (int) (255 * (1 - t));
-				tex.pop().setGrad(new Color(gradVal, gradVal, gradVal));
-			}
-			// Find match time
-			matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
-			// Display match time
-			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
-			return;
+			MazeFrame.applyGradient(tex, Color.WHITE, Color.BLACK, (MazeCell mc, Color c) -> {
+				mc.setGrad(c);
+			});
 		} else if (player == P1CPU) { // Player in bot mode win
-			// Some gradient setup
-			double i = 0;
-			double t = 0;
-			int sizzle = mex.size();
-			// Random color to gradient to
-
-			// While we still have stuff to gradient
-			while (!mex.isEmpty()) {
-				// Set gradient factor
-				t = i / sizzle;
-				i++;
-				mex.pop()
-						.setGrad(new Color((int) (beg.getRed() * t + plead.getRed() * (1 - t)),
-								(int) (beg.getGreen() * t + plead.getGreen() * (1 - t)),
-								(int) (beg.getBlue() * t + plead.getBlue() * (1 - t))));
-			}
-			// Find match time
-			matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
-			// Display match time
-			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
-			return;
-		} else if (player == P1) {
-			// Some gradient setup
-			double i = 0;
-			double t = 0;
-			int sizzle = tex.size();
-			// Random color to gradient to
+			MazeFrame.applyGradient(mex, beg, plead, (MazeCell mc, Color c) -> {
+				mc.setGrad(c);
+			});
+		} else if (player == P1) { // Player 1 in two-player win
 			Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 					(int) (Math.random() * 256));
-			// While we still have stuff to gradient
-			while (!tex.isEmpty()) {
-				// Set gradient factor
-				t = i / sizzle;
-				i++;
-				// Set player and color based on gradient factor
-				tex.pop().setPly(1,
-						new Color((int) (beg.getRed() * t + badiddle.getRed() * (1 - t)),
-								(int) (beg.getGreen() * t + badiddle.getGreen() * (1 - t)),
-								(int) (beg.getBlue() * t + badiddle.getBlue() * (1 - t))));
-			}
-			// Display match time
-			matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
-			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
-			return;
-		} else if (player == P2) {
-			// Some gradient setup
-			double i = 0;
-			double t = 0;
-			int sizzle = mex.size();
-			// Random color to gradient to
+			MazeFrame.applyGradient(tex, beg, badiddle, (MazeCell mc, Color c) -> {
+				mc.setPly(1, c);
+			});
+		} else if (player == P2) { // Player 2 in two-player win
 			Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 					(int) (Math.random() * 256));
-			// While we still have stuff to gradient
-			while (!mex.isEmpty()) {
-				// Set gradient factor
-				t = i / sizzle;
-				i++;
-				// Set player and color based on gradient factor
-				mex.pop().setPly(2,
-						new Color((int) (plead.getRed() * t + badiddle.getRed() * (1 - t)),
-								(int) (plead.getGreen() * t + badiddle.getGreen() * (1 - t)),
-								(int) (plead.getBlue() * t + badiddle.getBlue() * (1 - t))));
-			}
-			// Display match time
-			matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
-			JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
-			return;
+			MazeFrame.applyGradient(mex, plead, badiddle, (MazeCell mc, Color c) -> {
+				mc.setPly(2, c);
+			});
 		}
+		
+		// Display match time
+		matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
+		JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
 	}
 
 	public void startGame() {
