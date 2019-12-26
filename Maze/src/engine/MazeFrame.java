@@ -391,6 +391,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 	/**************** UTILITY METHODS ****************/
 	// Applies gradient to player stack
+	// painter is function that updates a cell's color
 	private static void applyGradient(Stack<MazeCell> stack, Color start, Color end,
 			BiConsumer<MazeCell, Color> painter)
 	{
