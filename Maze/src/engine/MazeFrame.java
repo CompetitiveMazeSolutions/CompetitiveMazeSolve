@@ -43,33 +43,12 @@ public class MazeFrame extends JFrame implements ActionListener {
 	private boolean on;
 	public int matchTime;
 
-	/*
-	 * dumb private Color beg = new Color(1,1,1); private Color plead = new
-	 * Color(255,255,255);
-	 */
-	/*
-	 * snekl private Color beg = new Color(50,100,255); private Color plead = new
-	 * Color(255,100,50);
-	 */
-	/*
-	 * festivo private Color beg = new Color(200,30,10); private Color plead = new
-	 * Color(10,200,30);
-	 */
-	/*
-	 * ug private Color beg = new Color(50,20,0); private Color plead = new
-	 * Color(0,20,50);
-	 */
-	/*
-	 * BURN IN HECK private Color beg = new Color(100,0,0); private Color plead =
-	 * new Color(255,255,50);
-	 */
-
-	/// *random
+	// Colors for end gradient
 	private Color beg = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 			(int) (Math.random() * 256));
 	private Color plead = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 			(int) (Math.random() * 256));
-	// */
+	
 
 	private final Color p1 = beg;
 	private final Color p2 = plead;
