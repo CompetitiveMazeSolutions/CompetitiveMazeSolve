@@ -108,10 +108,10 @@ public class MazeCell extends JPanel {
 	}
 
 	// Sets status of being playered
-	public void setPlayered(boolean trü) {
-		if (!pHead && trü)
+	public void setPlayered(boolean truu) {
+		if (!pHead && truu)
 			pHead = true;
-		playered = trü;
+		playered = truu;
 		repaint();
 	}
 
