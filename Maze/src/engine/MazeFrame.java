@@ -1,7 +1,12 @@
 package engine;
 //package FORKIDS;
 
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -9,8 +14,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.function.BiConsumer;
+
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class MazeFrame extends JFrame implements ActionListener {
 
@@ -610,19 +619,21 @@ public class MazeFrame extends JFrame implements ActionListener {
 	}
 
 	public void startGame() {
-		for (MazeCell[] out : cells)
-			for (MazeCell in : out)
-				in.go();
-		on = true;
-		startTime = (int) (System.currentTimeMillis());
-		if (mode == Mode.CPU) {
-			botThread = new Thread(() -> {
-				while (solveStep())
-					pause(aispeed);
-			});
-			botThread.start();
+		if (!on) {
+			for (MazeCell[] out : cells)
+				for (MazeCell in : out)
+					in.go();
+			on = true;
+			startTime = (int) (System.currentTimeMillis());
+			if (mode == Mode.CPU) {
+				botThread = new Thread(() -> {
+					while (solveStep())
+						pause(aispeed);
+				});
+				botThread.start();
+			}
+			readyButton.requestFocus();
 		}
-		readyButton.requestFocus();
 	}
 
 	/***********************************************/
