@@ -12,6 +12,9 @@ public class ReadyListener implements KeyListener {
 	private boolean p2C;
 	private boolean p2R;
 
+
+	private boolean[] teamreach;
+
 	public ReadyListener(MazeFrame parent) {
 		this.parent = parent;
 		mode = parent.getMode();
@@ -19,6 +22,7 @@ public class ReadyListener implements KeyListener {
 		p1R = false;
 		p2C = false;
 		p2R = false;
+
 	}
 
 	private void processKeys() {
@@ -170,9 +174,66 @@ public class ReadyListener implements KeyListener {
 				}
 				break;
 			}
-		}
+		} else if (mode == Mode.T4) {
 
-		if (mode == Mode.V2)
+			switch(keyCode){
+			case KeyEvent.VK_CONTROL:
+				parent.resetMaze();
+				break;
+			case KeyEvent.VK_SHIFT:
+				if (!parent.isOn() && parent.getMatchTime() == 0) {
+					if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_LEFT) {
+						p1R = true;
+					} else {
+						p2R = true;
+					}
+				}
+				break;}
+
+
+			for(int i=0; i<4; i++){
+
+				if (keyCode == MazeFrame.KEYS[i][MazeFrame.RIGHT]){
+					if (parent.getStex(i).peek().col() == parent.getColumns() - 1
+							&& !parent.getStex(i).peek()
+									.isBlockedDir(MazeFrame.RIGHT))
+					{
+						teamreach[i]=true;
+						return;
+					}
+					/*if (parent.getTex().peek().col() == parent.getColumns() - 2
+							&& parent.getNeighbor(parent.getTex().peek(),
+									MazeFrame.RIGHT).getPly() == 2)
+					{
+						teamreach[i]=true;
+						return;
+					}*/
+					parent.playerMove(i/2+1, i%2+1, MazeFrame.RIGHT);
+				}else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.LEFT])){
+					if (parent.getStex(i).peek().col() == 0
+							&& !parent.getStex(i).peek().isBlockedDir(MazeFrame.LEFT))
+					{
+						teamreach[i]=true;
+						return;
+					}
+					/*if (parent.getMex().peek().col() == 1 && parent
+							.getNeighbor(parent.getMex().peek(), MazeFrame.LEFT)
+							.getPly() == 2)
+					{
+						teamreach[i]=true;
+						return;
+					}*/
+					parent.playerMove(i/2+1, i%2+1, MazeFrame.LEFT);
+				}else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.DOWN])){
+					parent.playerMove(i/2+1, i%2+1, MazeFrame.DOWN);
+				}else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.UP])){
+					parent.playerMove(i/2+1, i%2+1, MazeFrame.UP);
+				}
+				}
+			}
+
+
+		if (mode == Mode.V2 || mode == Mode.T4)
 			processKeys();
 	}
 
