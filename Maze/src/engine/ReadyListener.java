@@ -13,7 +13,7 @@ public class ReadyListener implements KeyListener {
 	private boolean p2R;
 
 
-	private boolean[] teamreach;
+	private boolean[] teamreach = {false,false,false,false};
 
 	public ReadyListener(MazeFrame parent) {
 		this.parent = parent;
@@ -194,11 +194,13 @@ public class ReadyListener implements KeyListener {
 			for(int i=0; i<4; i++){
 
 				if (keyCode == MazeFrame.KEYS[i][MazeFrame.RIGHT]){
-					if (parent.getStex(i).peek().col() == parent.getColumns() - 1
+					if (i/2==0 && parent.getStex(i).peek().col() == parent.getColumns() - 1
 							&& !parent.getStex(i).peek()
 									.isBlockedDir(MazeFrame.RIGHT))
 					{
 						teamreach[i]=true;
+						if(teamreach[1-(i%2) + (i>=2 ? 2 : 0)])
+							parent.teamWin(i/2+1);
 						return;
 					}
 					/*if (parent.getTex().peek().col() == parent.getColumns() - 2
@@ -210,10 +212,12 @@ public class ReadyListener implements KeyListener {
 					}*/
 					parent.playerMove(i/2+1, i%2+1, MazeFrame.RIGHT);
 				}else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.LEFT])){
-					if (parent.getStex(i).peek().col() == 0
+					if (i/2==1 && parent.getStex(i).peek().col() == 0
 							&& !parent.getStex(i).peek().isBlockedDir(MazeFrame.LEFT))
 					{
 						teamreach[i]=true;
+						if(teamreach[1-(i%2) + (i>=2 ? 2 : 0)])
+							parent.teamWin(i/2+1);
 						return;
 					}
 					/*if (parent.getMex().peek().col() == 1 && parent

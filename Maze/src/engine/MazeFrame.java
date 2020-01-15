@@ -238,7 +238,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 			}
 		}else if(mode == Mode.T4){
 			for(int i=0; i<4; i++){
-				chui.get(i).peek().setPly(i, colorTeams[i]);
+				chui.get(i).peek().setPly(i+1, colorTeams[i]);
 			}
 			for (int i = 0; i < rows; i++) {
 				cells[i][0].clearWallDir(LEFT);
@@ -384,7 +384,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 		} else if (!tex.isEmpty() && nextOver == tex.peek()) {
 			// into enemy head
 			for (int i = 0; i < rows / 5; i++)
-				if (!tex.isEmpty())
+				if (tex.size()>1)
 					tex.pop().setPly(0, null);
 
 		} else if (nextOver.getPly() == skipO) {
@@ -424,7 +424,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 		int me = (team-1)*2+(player-1);
 		Color pCo = colorTeams[me];
 		Stack<MazeCell> myStack = chui.get(me);
-		Stack<MazeCell> teamStack = chui.get((team-1)+(player%2));
+		Stack<MazeCell> teamStack = chui.get((team-1)*2+(player%2));
 
 		Stack<MazeCell> en1Stack = chui.get(2*(team%2));
 		Stack<MazeCell> en2Stack = chui.get(2*(team%2)+1);
@@ -453,16 +453,22 @@ public class MazeFrame extends JFrame implements ActionListener {
 		} else if (!en1Stack.isEmpty() && nextOver == en1Stack.peek()) {
 			// into enemy head
 			for (int i = 0; i < rows / 5; i++)
-				if (!en1Stack.isEmpty())
+				if (en1Stack.size()>1)
 					en1Stack.pop().setPly(0, null);
 
 		} else if (!en2Stack.isEmpty() && nextOver == en2Stack.peek()) {
 			// into enemy head
 			for (int i = 0; i < rows / 5; i++)
-				if (!en2Stack.isEmpty())
+				if (en2Stack.size()>1)
 					en2Stack.pop().setPly(0, null);
 
-		}else if (nextOver.getPly() != 0 && nextOver.getPly()!= me+1) {
+		} else if (!teamStack.isEmpty() && nextOver == teamStack.peek()) {
+			// into teammate head
+			for (int i = 0; i < rows / 5; i++)
+				if (teamStack.size()>1)
+					teamStack.pop().setPly(0, null);
+
+		} else if (nextOver.getPly() != 0 && nextOver.getPly()!= me+1) {
 			// cell the player lands in
 			MazeCell nextOverPlus = getNeighbor(nextOver, dir);
 			if (nextOverPlus == null)
