@@ -450,19 +450,19 @@ public class MazeFrame extends JFrame implements ActionListener {
 					myStack.pop().setPly(0, null);
 				}
 			}
-		} else if (!en1Stack.isEmpty() && nextOver == en1Stack.peek()) {
+		} else if (en1Stack.size()>1 && nextOver == en1Stack.peek()) {
 			// into enemy head
 			for (int i = 0; i < rows / 5; i++)
 				if (en1Stack.size()>1)
 					en1Stack.pop().setPly(0, null);
 
-		} else if (!en2Stack.isEmpty() && nextOver == en2Stack.peek()) {
+		} else if (en2Stack.size()>1 && nextOver == en2Stack.peek()) {
 			// into enemy head
 			for (int i = 0; i < rows / 5; i++)
 				if (en2Stack.size()>1)
 					en2Stack.pop().setPly(0, null);
 
-		} else if (!teamStack.isEmpty() && nextOver == teamStack.peek()) {
+		} else if (teamStack.size()>1 && nextOver == teamStack.peek()) {
 			// into teammate head
 			for (int i = 0; i < rows / 5; i++)
 				if (teamStack.size()>1)

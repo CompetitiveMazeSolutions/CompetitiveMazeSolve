@@ -203,13 +203,15 @@ public class ReadyListener implements KeyListener {
 							parent.teamWin(i/2+1);
 						return;
 					}
-					/*if (parent.getTex().peek().col() == parent.getColumns() - 2
-							&& parent.getNeighbor(parent.getTex().peek(),
-									MazeFrame.RIGHT).getPly() == 2)
+					if (i/2==0 && parent.getStex(i).peek().col() == parent.getColumns() - 2
+							&& parent.getNeighbor(parent.getStex(i).peek(), MazeFrame.RIGHT).getPly() != i 
+							&& parent.getNeighbor(parent.getStex(i).peek(), MazeFrame.RIGHT).getPly() != 0)
 					{
 						teamreach[i]=true;
+						if(teamreach[1-(i%2) + (i>=2 ? 2 : 0)])
+							parent.teamWin(i/2+1);
 						return;
-					}*/
+					}
 					parent.playerMove(i/2+1, i%2+1, MazeFrame.RIGHT);
 				}else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.LEFT])){
 					if (i/2==1 && parent.getStex(i).peek().col() == 0
@@ -220,13 +222,15 @@ public class ReadyListener implements KeyListener {
 							parent.teamWin(i/2+1);
 						return;
 					}
-					/*if (parent.getMex().peek().col() == 1 && parent
-							.getNeighbor(parent.getMex().peek(), MazeFrame.LEFT)
-							.getPly() == 2)
+					if (i/2==1 && parent.getStex(i).peek().col() == 1 
+							&& parent.getNeighbor(parent.getStex(i).peek(), MazeFrame.LEFT).getPly() !=i
+							&& parent.getNeighbor(parent.getStex(i).peek(), MazeFrame.LEFT).getPly() !=0)
 					{
 						teamreach[i]=true;
+						if(teamreach[1-(i%2) + (i>=2 ? 2 : 0)])
+							parent.teamWin(i/2+1);
 						return;
-					}*/
+					}
 					parent.playerMove(i/2+1, i%2+1, MazeFrame.LEFT);
 				}else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.DOWN])){
 					parent.playerMove(i/2+1, i%2+1, MazeFrame.DOWN);
