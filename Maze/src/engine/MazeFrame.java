@@ -67,11 +67,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 			(int) (Math.random() * 256));
 	private Color plead = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 			(int) (Math.random() * 256));
-	private Color[] colorTeams = {
-			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256)),
-			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256)),
-			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256)),
-			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256))};
+	private Color[] colorTeams = {beg,beg,beg,beg};
 
 	private final Color p1 = beg;
 	private final Color p2 = plead;
@@ -159,6 +155,40 @@ public class MazeFrame extends JFrame implements ActionListener {
 				maze.add(cells[i][j]); // Add each cell to maze panel
 			}
 		}
+
+		// Set colors in teams
+				if(mode == Mode.T4){
+					colorTeams = new Color[4];
+					colorTeams[0] = beg;
+					colorTeams[2] = plead;
+					int differ = 100;
+					for(int i=1; i<4; i+=2){
+						ArrayList<Double> colorAssign = new ArrayList<Double>();
+						colorAssign.add(Math.random());
+						colorAssign.add(Math.random()*(1-colorAssign.get(0)));
+						colorAssign.add(1-colorAssign.get(1)-colorAssign.get(0));
+						int[] newColor = new int[3];
+						int[] oldColor = {colorTeams[i-1].getRed(), colorTeams[i-1].getGreen(), colorTeams[i-1].getBlue()};
+						for(int j=0; j<3; j++){
+							int addTest = (int)(oldColor[j]+differ*colorAssign.get((int)(Math.random()*colorAssign.size())));
+							int subtractTest = (int)(oldColor[j]-differ*colorAssign.get((int)(Math.random()*colorAssign.size())));
+							if(addTest<255 && subtractTest>0){
+								if(Math.random()>=.5){
+									newColor[j] = addTest;
+								}else{
+									newColor[j] = subtractTest;
+								}
+							}else if (subtractTest<0){
+								newColor[j] = addTest;
+							}else{
+								newColor[j] = subtractTest;
+							}
+						}
+						colorTeams[i]=new Color(newColor[0],newColor[1],newColor[2]);
+
+					}
+				}
+
 
 		// Put the maze on the screen
 		this.add(maze, BorderLayout.CENTER);
@@ -257,6 +287,9 @@ public class MazeFrame extends JFrame implements ActionListener {
 			begi.setStatus(BLANK);
 		if(mode==Mode.T4)
 			begi.setPly(1, colorTeams[0]);
+
+
+
 	}
 
 	// Called by carveARandomMaze for each step
