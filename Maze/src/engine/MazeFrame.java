@@ -9,6 +9,7 @@ import java.awt.GridLayout;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -27,6 +28,14 @@ public class MazeFrame extends JFrame implements ActionListener {
 	public static final int BORING = 0, BOXES = 1; // carve mode
 	public static final int BOT = -2, P1CPU = -1, BLANK = 0, P1 = 1, P2 = 2;
 
+	public static final int[][] KEYS = {
+			{KeyEvent.VK_W, KeyEvent.VK_D, KeyEvent.VK_S, KeyEvent.VK_A},
+			{KeyEvent.VK_I, KeyEvent.VK_L, KeyEvent.VK_K, KeyEvent.VK_J},
+			{KeyEvent.VK_UP, KeyEvent.VK_RIGHT, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT},
+			{KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD4},
+	};
+
+
 	private int rows; // 20 and 35 best
 	private int cols;
 	private Mode mode; // Gamemode
@@ -41,9 +50,10 @@ public class MazeFrame extends JFrame implements ActionListener {
 			new JButton("SAVE"), new JButton("EXIT") }; // All buttons in control panel
 	private JButton readyButton;
 	private MazeCell[][] cells; // All cells
-	private MazeCell begi, end; // Start and end cells
+	private MazeCell begi, end, begi2, end2; // Start and end cells
 	private Stack<MazeCell> tex; // Left side stack
 	private Stack<MazeCell> mex; // Right side stack
+	private ArrayList<Stack<MazeCell>> chui;
 	private ReadyListener embededListener; // Put inside I'm Ready button, called on move
 	private OverarchingListener frameListener; // Goes everywhere else
 	private Color borderColor = Color.BLACK;
@@ -57,7 +67,11 @@ public class MazeFrame extends JFrame implements ActionListener {
 			(int) (Math.random() * 256));
 	private Color plead = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 			(int) (Math.random() * 256));
-	
+	private Color[] colorTeams = {
+			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256)),
+			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256)),
+			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256)),
+			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256))};
 
 	private final Color p1 = beg;
 	private final Color p2 = plead;
@@ -125,7 +139,11 @@ public class MazeFrame extends JFrame implements ActionListener {
 		// Initialize new stacks
 		tex = new Stack<MazeCell>();
 		mex = new Stack<MazeCell>();
-
+		chui = new ArrayList<Stack<MazeCell>>();
+		if(mode==Mode.T4){
+			for(int i = 0; i<4; i++)
+				chui.add(new Stack<MazeCell>());
+		}
 		// Initialize new maze panel
 		maze = new JPanel();
 		maze.setBackground(this.getBackground());
@@ -180,6 +198,19 @@ public class MazeFrame extends JFrame implements ActionListener {
 		// Pick beginning and end
 		begi = cells[(int) (Math.random() * (rows * .5) + rows * .25)][0];
 		end = cells[(int) (Math.random() * (rows * .5) + rows * .25)][cols - 1];
+
+		if(mode==Mode.T4){
+			 begi2=begi;end2=end;
+			 while(begi2==begi)
+				 begi2 = cells[(int) (Math.random() * (rows * .5) + rows * .25)][0];
+			 while(end2==end)
+				 end2 = cells[(int) (Math.random() * (rows * .5) + rows * .25)][cols - 1];
+			 chui.get(0).push(begi);
+			 chui.get(1).push(begi2);
+			 chui.get(2).push(end);
+			 chui.get(3).push(end2);
+		}
+
 		// Sets starting state for carveAI
 		begi.setStatus(MazeCell.VISITED);
 		end.setStatus(MazeCell.BLANK);
@@ -194,12 +225,21 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 		// Set to be playered
 		mex.peek().setPlayered(true);
+
 		// Sets color and player of stack starts
 		if (mode == Mode.TT || mode == Mode.V2) {
 			mex.peek().setPly(2, p2);
 			if (mode == Mode.V2)
 				tex.peek().setPly(1, p1);
 
+			for (int i = 0; i < rows; i++) {
+				cells[i][0].clearWallDir(LEFT);
+				cells[i][cols - 1].clearWallDir(RIGHT);
+			}
+		}else if(mode == Mode.T4){
+			for(int i=0; i<4; i++){
+				chui.get(i).peek().setPly(i+1, colorTeams[i]);
+			}
 			for (int i = 0; i < rows; i++) {
 				cells[i][0].clearWallDir(LEFT);
 				cells[i][cols - 1].clearWallDir(RIGHT);
@@ -213,8 +253,10 @@ public class MazeFrame extends JFrame implements ActionListener {
 		// Finish it off
 		stepCarve();
 
-		if (mode == Mode.TT)
+		if (!(mode == Mode.CPU))
 			begi.setStatus(BLANK);
+		if(mode==Mode.T4)
+			begi.setPly(1, colorTeams[0]);
 	}
 
 	// Called by carveARandomMaze for each step
@@ -342,7 +384,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 		} else if (!tex.isEmpty() && nextOver == tex.peek()) {
 			// into enemy head
 			for (int i = 0; i < rows / 5; i++)
-				if (!tex.isEmpty())
+				if (tex.size()>1)
 					tex.pop().setPly(0, null);
 
 		} else if (nextOver.getPly() == skipO) {
@@ -376,6 +418,98 @@ public class MazeFrame extends JFrame implements ActionListener {
 			nextOver.setPlayered(true);
 		}
 	}
+	//playerMove case for teams mode
+	public void playerMove(int team, int player, int dir){
+
+		int me = (team-1)*2+(player-1);
+		Color pCo = colorTeams[me];
+		Stack<MazeCell> myStack = chui.get(me);
+		Stack<MazeCell> teamStack = chui.get((team-1)*2+(player%2));
+
+		Stack<MazeCell> en1Stack = chui.get(2*(team%2));
+		Stack<MazeCell> en2Stack = chui.get(2*(team%2)+1);
+
+		// Convenience Variables
+		MazeCell head = myStack.peek();
+		MazeCell nextOver = getNeighbor(head, dir);
+
+		if (nextOver == null)
+			return;
+
+		if (!head.isBlockedDir(dir) &&( nextOver.getPly() == 0 || nextOver.getPly() == me+1)) {
+			if (nextOver.getPly() == 0) {
+				// into blank
+				head.repaint();
+				myStack.push(nextOver);
+				nextOver.setPly(me+1, pCo);
+
+			} else if (nextOver.getPly() == me+1) {
+				// into own
+				// do not replace peek() w/ head here
+				while (myStack.peek() != nextOver) {
+					myStack.pop().setPly(0, null);
+				}
+			}
+		} else if (en1Stack.size()>1 && nextOver == en1Stack.peek()) {
+			// into enemy head
+			for (int i = 0; i < rows / 5; i++)
+				if (en1Stack.size()>1)
+					en1Stack.pop().setPly(0, null);
+
+		} else if (en2Stack.size()>1 && nextOver == en2Stack.peek()) {
+			// into enemy head
+			for (int i = 0; i < rows / 5; i++)
+				if (en2Stack.size()>1)
+					en2Stack.pop().setPly(0, null);
+
+		} else if (teamStack.size()>1 && nextOver == teamStack.peek()) {
+			// into teammate head
+			for (int i = 0; i < rows / 5; i++)
+				if (teamStack.size()>1)
+					teamStack.pop().setPly(0, null);
+
+		} else if (nextOver.getPly() == (team-1)*2+(player%2)+1 && getNeighbor(nextOver, dir)!=null) {
+			// if into team
+			MazeCell movingCells = getNeighbor(nextOver, dir);
+			// if block of enemy
+			while(getNeighbor(movingCells, dir)!=null && (movingCells.getPly()==(2*(team%2))+1 || movingCells.getPly()==(2*(team%2))+2)) {
+				movingCells = getNeighbor(movingCells, dir);
+			}
+			// if blank to go into
+			if (movingCells.getPly() == 0) {
+				// can skip over
+				head.repaint();
+				myStack.push(movingCells);
+				movingCells.setPly(me+1, pCo);
+
+			} else if (movingCells.getPly() == me+1) {
+				// skipping back
+				// do not replace peek() w/ head here
+				while (myStack.peek() != movingCells) {
+					myStack.pop().setPly(0, null);
+				}
+			}
+		} else if (nextOver.getPly() != 0 && nextOver.getPly()!= me+1) {
+			// cell the player lands in
+			MazeCell nextOverPlus = getNeighbor(nextOver, dir);
+			if (nextOverPlus == null)
+				return;
+
+			if (nextOverPlus.getPly() == 0) {
+				// can skip over
+				head.repaint();
+				myStack.push(nextOverPlus);
+				nextOverPlus.setPly(me+1, pCo);
+
+			} else if (nextOverPlus.getPly() == me+1) {
+				// skipping back
+				// do not replace peek() w/ head here
+				while (myStack.peek() != nextOverPlus) {
+					myStack.pop().setPly(0, null);
+				}
+			}
+		}
+	}
 
 	/**************** UTILITY METHODS ****************/
 	// Applies gradient to player stack
@@ -399,7 +533,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 							(int) (b1 * (1- ratio) + b2 * ratio)));
 		}
 	}
-	
+
 	// If the possible cell is valid
 	private boolean isInBounds(int r, int c) {
 		return r >= 0 && r < rows && c >= 0 && c < cols;
@@ -608,8 +742,19 @@ public class MazeFrame extends JFrame implements ActionListener {
 				mc.setPly(2, c);
 			});
 		}
-		
+
 		// Display match time
+		matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
+		JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
+	}
+	public void teamWin(int team){
+		on=false;
+		for(int i=2*(team-1); i<=2*(team-1)+1; i++){
+			Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
+					(int) (Math.random() * 256));
+			MazeFrame.applyGradient(chui.get(i), colorTeams[i], badiddle, (MazeCell mc, Color c) -> {
+				mc.setPly(1, c);});
+		}
 		matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
 		JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
 	}
@@ -660,6 +805,8 @@ public class MazeFrame extends JFrame implements ActionListener {
 	public Stack<MazeCell> getMex() {return mex;}
 
 	public Stack<MazeCell> getTex() {return tex;}
+
+	public Stack<MazeCell> getStex(int p) {return chui.get(p);}
 
 	public MazeCell[][] getCells() {return cells;}
 
