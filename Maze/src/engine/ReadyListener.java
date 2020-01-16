@@ -178,7 +178,11 @@ public class ReadyListener implements KeyListener {
 
 			switch (keyCode) {
 			case KeyEvent.VK_CONTROL:
-				parent.resetMaze();
+				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_LEFT) {
+					p1C = true;
+				} else {
+					p2C = true;
+				}
 				break;
 			case KeyEvent.VK_SHIFT:
 				if (!parent.isOn() && parent.getMatchTime() == 0) {
