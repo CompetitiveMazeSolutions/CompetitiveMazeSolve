@@ -176,7 +176,7 @@ public class ReadyListener implements KeyListener {
 			}
 		} else if (mode == Mode.T4) {
 
-			switch(keyCode){
+			switch (keyCode) {
 			case KeyEvent.VK_CONTROL:
 				parent.resetMaze();
 				break;
@@ -188,61 +188,57 @@ public class ReadyListener implements KeyListener {
 						p2R = true;
 					}
 				}
-				break;}
+				break;
+			}
 
+			for (int i = 0; i < 4; i++) {
+				int tm = i >> 1;
+				int enm = tm ^ 1;
+				int ply = i & 1;
+				int tmate = i ^ 1;
 
-			for(int i=0; i<4; i++){
-
-				if (keyCode == MazeFrame.KEYS[i][MazeFrame.RIGHT]){
-					if (i/2==0 && parent.getStex(i).peek().col() == parent.getColumns() - 1
-							&& !parent.getStex(i).peek()
-									.isBlockedDir(MazeFrame.RIGHT))
-					{
-						teamreach[i]=true;
-						if(teamreach[1-(i%2) + (i>=2 ? 2 : 0)])
-							parent.teamWin(i/2+1);
-						return;
-					}
-					if (i/2==0 && parent.getStex(i).peek().col() == parent.getColumns() - 2
-							&& parent.getNeighbor(parent.getStex(i).peek(), MazeFrame.RIGHT).getPly() != i 
-							&& parent.getNeighbor(parent.getStex(i).peek(), MazeFrame.RIGHT).getPly() != 0)
-					{
-						teamreach[i]=true;
-						if(teamreach[1-(i%2) + (i>=2 ? 2 : 0)])
-							parent.teamWin(i/2+1);
-						return;
-					}
-					parent.playerMove(i/2+1, i%2+1, MazeFrame.RIGHT);
-				}else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.LEFT])){
-					if (i/2==1 && parent.getStex(i).peek().col() == 0
-							&& !parent.getStex(i).peek().isBlockedDir(MazeFrame.LEFT))
-					{
-						teamreach[i]=true;
-						if(teamreach[1-(i%2) + (i>=2 ? 2 : 0)])
-							parent.teamWin(i/2+1);
-						return;
-					}
-					if (i/2==1 && parent.getStex(i).peek().col() == 1 
-							&& parent.getNeighbor(parent.getStex(i).peek(), MazeFrame.LEFT).getPly() !=i
-							&& parent.getNeighbor(parent.getStex(i).peek(), MazeFrame.LEFT).getPly() !=0)
-					{
-						teamreach[i]=true;
-						if(teamreach[1-(i%2) + (i>=2 ? 2 : 0)])
-							parent.teamWin(i/2+1);
-						return;
-					}
-					parent.playerMove(i/2+1, i%2+1, MazeFrame.LEFT);
-				}else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.DOWN])){
-					parent.playerMove(i/2+1, i%2+1, MazeFrame.DOWN);
-				}else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.UP])){
-					parent.playerMove(i/2+1, i%2+1, MazeFrame.UP);
-				}
+				MazeCell mc = parent.getStex(i).peek();
+				if (keyCode == MazeFrame.KEYS[i][MazeFrame.RIGHT]) {
+					MazeCell next = parent.getNeighbor(mc, MazeFrame.RIGHT);
+					MazeCell nextOver = null;
+					if (next != null)
+						nextOver = parent.getNeighbor(next, MazeFrame.RIGHT);
+					
+					if (tm == 0 && ((mc.col() == parent.getColumns() - 1 && !mc.isBlockedDir(MazeFrame.RIGHT))
+							|| (mc.col() == parent.getColumns() - 2 && next.getPly() != i + 1 && next.getPly() != 0)
+							|| (mc.col() == parent.getColumns() - 3 && next.getPly() == tmate + 1
+									&& parent.boostEnd(nextOver, tm+1, MazeFrame.RIGHT) == null)))
+						setTeamReach(i);
+					else
+						parent.playerMove(tm + 1, ply + 1, MazeFrame.RIGHT);
+				} else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.LEFT])) {
+					MazeCell next = parent.getNeighbor(mc, MazeFrame.LEFT);
+					MazeCell nextOver = null;
+					if (next != null)
+						nextOver = parent.getNeighbor(next, MazeFrame.LEFT);
+					if (tm == 1 && ((mc.col() == 0 && !mc.isBlockedDir(MazeFrame.LEFT))
+							|| (mc.col() == 1 && next.getPly() != i + 1 && next.getPly() != 0)
+							|| (mc.col() == 2 && next.getPly() == tmate + 1 && parent.boostEnd(nextOver, tm+1, MazeFrame.LEFT) == null)))
+						setTeamReach(i);
+					else
+						parent.playerMove(tm + 1, ply + 1, MazeFrame.LEFT);
+				} else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.DOWN])) {
+					parent.playerMove(tm + 1, ply + 1, MazeFrame.DOWN);
+				} else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.UP])) {
+					parent.playerMove(tm + 1, ply + 1, MazeFrame.UP);
 				}
 			}
+		}
 
 
 		if (mode == Mode.V2 || mode == Mode.T4)
 			processKeys();
+	}
+	
+	private void setTeamReach(int i) {
+		teamreach[i] = true;
+		if (teamreach[i^1])
+			parent.teamWin((i>>1) + 1);
 	}
 
 	@Override

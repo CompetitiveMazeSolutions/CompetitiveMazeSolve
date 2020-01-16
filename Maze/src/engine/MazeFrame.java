@@ -544,6 +544,13 @@ public class MazeFrame extends JFrame implements ActionListener {
 	}
 
 	/**************** UTILITY METHODS ****************/
+	public MazeCell boostEnd(MazeCell start, int team, int dir) {
+		int enem = ((team-1) ^ 1)+1;
+		MazeCell movingCell = start;
+		while(movingCell != null && movingCell.getPly() == enem)
+			movingCell = getNeighbor(movingCell, dir);
+		return movingCell;
+	}
 	// Applies gradient to player stack
 	// painter is function that updates a cell's color
 	private static void applyGradient(Stack<MazeCell> stack, Color start, Color end,
