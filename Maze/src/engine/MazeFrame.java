@@ -468,6 +468,27 @@ public class MazeFrame extends JFrame implements ActionListener {
 				if (teamStack.size()>1)
 					teamStack.pop().setPly(0, null);
 
+		} else if (nextOver.getPly() == (team-1)*2+(player%2)+1 && getNeighbor(nextOver, dir)!=null) {
+			// if into team
+			MazeCell movingCells = getNeighbor(nextOver, dir);
+			// if block of enemy
+			while(getNeighbor(movingCells, dir)!=null && (movingCells.getPly()==(2*(team%2))+1 || movingCells.getPly()==(2*(team%2))+2)) {
+				movingCells = getNeighbor(movingCells, dir);
+			}
+			// if blank to go into
+			if (movingCells.getPly() == 0) {
+				// can skip over
+				head.repaint();
+				myStack.push(movingCells);
+				movingCells.setPly(me+1, pCo);
+
+			} else if (movingCells.getPly() == me+1) {
+				// skipping back
+				// do not replace peek() w/ head here
+				while (myStack.peek() != movingCells) {
+					myStack.pop().setPly(0, null);
+				}
+			}
 		} else if (nextOver.getPly() != 0 && nextOver.getPly()!= me+1) {
 			// cell the player lands in
 			MazeCell nextOverPlus = getNeighbor(nextOver, dir);
