@@ -592,13 +592,9 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 		// Apply gradient to winning player
 		if (player == BOT) { // Bot win
-			MazeFrame.applyGradient(tex, Color.WHITE, Color.BLACK, (MazeCell mc, Color c) -> {
-				mc.setGrad(c);
-			});
+			MazeFrame.applyGradient(tex, Color.WHITE, Color.BLACK, MazeCell::setGrad);
 		} else if (player == P1CPU) { // Player in bot mode win
-			MazeFrame.applyGradient(mex, beg, plead, (MazeCell mc, Color c) -> {
-				mc.setGrad(c);
-			});
+			MazeFrame.applyGradient(mex, beg, plead, MazeCell::setGrad);
 		} else if (player == P1) { // Player 1 in two-player win
 			Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 					(int) (Math.random() * 256));
