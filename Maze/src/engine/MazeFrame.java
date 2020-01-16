@@ -230,15 +230,14 @@ public class MazeFrame extends JFrame implements ActionListener {
 		end = cells[(int) (Math.random() * (rows * .5) + rows * .25)][cols - 1];
 
 		if(mode==Mode.T4){
-			 begi2=begi;end2=end;
-			 while(begi2==begi)
-				 begi2 = cells[(int) (Math.random() * (rows * .5) + rows * .25)][0];
-			 while(end2==end)
-				 end2 = cells[(int) (Math.random() * (rows * .5) + rows * .25)][cols - 1];
-			 chui.get(0).push(begi);
-			 chui.get(1).push(begi2);
-			 chui.get(2).push(end);
-			 chui.get(3).push(end2);
+			begi = cells[(int) (Math.random() * (rows * .5))][0];
+			begi2 = cells[(int) (Math.random() * (rows * .5) + rows * .5)][0];
+			end2 = cells[(int) (Math.random() * (rows * .5))][cols - 1];
+			end = cells[(int) (Math.random() * (rows * .5) + rows * .5)][cols - 1];
+			chui.get(0).push(begi);
+			chui.get(1).push(begi2);
+			chui.get(2).push(end);
+			chui.get(3).push(end2);
 		}
 
 		// Sets starting state for carveAI
