@@ -67,11 +67,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 			(int) (Math.random() * 256));
 	private Color plead = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 			(int) (Math.random() * 256));
-	private Color[] colorTeams = {
-			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256)),
-			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256)),
-			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256)),
-			new Color((int) (Math.random() * 256), (int) (Math.random() * 256),(int) (Math.random() * 256))};
+	private Color[] colorTeams = {beg,beg,beg,beg};
 
 	private final Color p1 = beg;
 	private final Color p2 = plead;
@@ -160,6 +156,40 @@ public class MazeFrame extends JFrame implements ActionListener {
 			}
 		}
 
+		// Set colors in teams
+				if(mode == Mode.T4){
+					colorTeams = new Color[4];
+					colorTeams[0] = beg;
+					colorTeams[2] = plead;
+					int differ = 100;
+					for(int i=1; i<4; i+=2){
+						ArrayList<Double> colorAssign = new ArrayList<Double>();
+						colorAssign.add(Math.random());
+						colorAssign.add(Math.random()*(1-colorAssign.get(0)));
+						colorAssign.add(1-colorAssign.get(1)-colorAssign.get(0));
+						int[] newColor = new int[3];
+						int[] oldColor = {colorTeams[i-1].getRed(), colorTeams[i-1].getGreen(), colorTeams[i-1].getBlue()};
+						for(int j=0; j<3; j++){
+							int addTest = (int)(oldColor[j]+differ*colorAssign.get((int)(Math.random()*colorAssign.size())));
+							int subtractTest = (int)(oldColor[j]-differ*colorAssign.get((int)(Math.random()*colorAssign.size())));
+							if(addTest<255 && subtractTest>0){
+								if(Math.random()>=.5){
+									newColor[j] = addTest;
+								}else{
+									newColor[j] = subtractTest;
+								}
+							}else if (subtractTest<0){
+								newColor[j] = addTest;
+							}else{
+								newColor[j] = subtractTest;
+							}
+						}
+						colorTeams[i]=new Color(newColor[0],newColor[1],newColor[2]);
+
+					}
+				}
+
+
 		// Put the maze on the screen
 		this.add(maze, BorderLayout.CENTER);
 	}
@@ -200,15 +230,14 @@ public class MazeFrame extends JFrame implements ActionListener {
 		end = cells[(int) (Math.random() * (rows * .5) + rows * .25)][cols - 1];
 
 		if(mode==Mode.T4){
-			 begi2=begi;end2=end;
-			 while(begi2==begi)
-				 begi2 = cells[(int) (Math.random() * (rows * .5) + rows * .25)][0];
-			 while(end2==end)
-				 end2 = cells[(int) (Math.random() * (rows * .5) + rows * .25)][cols - 1];
-			 chui.get(0).push(begi);
-			 chui.get(1).push(begi2);
-			 chui.get(2).push(end);
-			 chui.get(3).push(end2);
+			begi = cells[(int) (Math.random() * (rows * .5))][0];
+			begi2 = cells[(int) (Math.random() * (rows * .5) + rows * .5)][0];
+			end2 = cells[(int) (Math.random() * (rows * .5))][cols - 1];
+			end = cells[(int) (Math.random() * (rows * .5) + rows * .5)][cols - 1];
+			chui.get(0).push(begi);
+			chui.get(1).push(begi2);
+			chui.get(2).push(end);
+			chui.get(3).push(end2);
 		}
 
 		// Sets starting state for carveAI
@@ -257,6 +286,9 @@ public class MazeFrame extends JFrame implements ActionListener {
 			begi.setStatus(BLANK);
 		if(mode==Mode.T4)
 			begi.setPly(1, colorTeams[0]);
+
+
+
 	}
 
 	// Called by carveARandomMaze for each step
