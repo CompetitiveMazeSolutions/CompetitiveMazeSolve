@@ -157,37 +157,37 @@ public class MazeFrame extends JFrame implements ActionListener {
 		}
 
 		// Set colors in teams
-				if(mode == Mode.T4){
-					colorTeams = new Color[4];
-					colorTeams[0] = beg;
-					colorTeams[2] = plead;
-					int differ = 100;
-					for(int i=1; i<4; i+=2){
-						ArrayList<Double> colorAssign = new ArrayList<Double>();
-						colorAssign.add(Math.random());
-						colorAssign.add(Math.random()*(1-colorAssign.get(0)));
-						colorAssign.add(1-colorAssign.get(1)-colorAssign.get(0));
-						int[] newColor = new int[3];
-						int[] oldColor = {colorTeams[i-1].getRed(), colorTeams[i-1].getGreen(), colorTeams[i-1].getBlue()};
-						for(int j=0; j<3; j++){
-							int addTest = (int)(oldColor[j]+differ*colorAssign.get((int)(Math.random()*colorAssign.size())));
-							int subtractTest = (int)(oldColor[j]-differ*colorAssign.get((int)(Math.random()*colorAssign.size())));
-							if(addTest<255 && subtractTest>0){
-								if(Math.random()>=.5){
-									newColor[j] = addTest;
-								}else{
-									newColor[j] = subtractTest;
-								}
-							}else if (subtractTest<0){
-								newColor[j] = addTest;
-							}else{
-								newColor[j] = subtractTest;
-							}
+		if(mode == Mode.T4){
+			colorTeams = new Color[4];
+			colorTeams[0] = beg;
+			colorTeams[2] = plead;
+			int differ = 100;
+			for(int i=1; i<4; i+=2){
+				ArrayList<Double> colorAssign = new ArrayList<Double>();
+				colorAssign.add(Math.random());
+				colorAssign.add(Math.random()*(1-colorAssign.get(0)));
+				colorAssign.add(1-colorAssign.get(1)-colorAssign.get(0));
+				int[] newColor = new int[3];
+				int[] oldColor = {colorTeams[i-1].getRed(), colorTeams[i-1].getGreen(), colorTeams[i-1].getBlue()};
+				for(int j=0; j<3; j++){
+					int addTest = (int)(oldColor[j]+differ*colorAssign.get((int)(Math.random()*colorAssign.size())));
+					int subtractTest = (int)(oldColor[j]-differ*colorAssign.get((int)(Math.random()*colorAssign.size())));
+					if(addTest<255 && subtractTest>0){
+						if(Math.random()>=.5){
+							newColor[j] = addTest;
+						}else{
+							newColor[j] = subtractTest;
 						}
-						colorTeams[i]=new Color(newColor[0],newColor[1],newColor[2]);
-
+					}else if (subtractTest<0){
+						newColor[j] = addTest;
+					}else{
+						newColor[j] = subtractTest;
 					}
 				}
+				colorTeams[i]=new Color(newColor[0],newColor[1],newColor[2]);
+
+			}
+		}
 
 
 		// Put the maze on the screen
@@ -408,16 +408,11 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 			} else if (nextOver.getPly() == player) {
 				// into own
-				// do not replace peek() w/ head here
-				while (mex.peek() != nextOver) {
-					mex.pop().setPly(0, null);
-				}
+				MazeFrame.splicePath(mex, nextOver);
 			}
 		} else if (!tex.isEmpty() && nextOver == tex.peek()) {
 			// into enemy head
-			for (int i = 0; i < rows / 5; i++)
-				if (tex.size()>1)
-					tex.pop().setPly(0, null);
+			attack(tex);
 
 		} else if (nextOver.getPly() == skipO) {
 			// cell the player lands in
@@ -433,10 +428,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 			} else if (nextOverPlus.getPly() == player) {
 				// skipping back
-				// do not replace peek() w/ head here
-				while (mex.peek() != nextOverPlus) {
-					mex.pop().setPly(0, null);
-				}
+				MazeFrame.splicePath(mex, nextOverPlus);
 			}
 		}
 	}
@@ -454,55 +446,47 @@ public class MazeFrame extends JFrame implements ActionListener {
 	public void playerMove(int team, int player, int dir){
 		int me = (team-1)*2+(player-1);
 		int tmate = me ^ 1;
+		int enem = (team-1)^1;
 		Color pCo = colorTeams[me];
 		Stack<MazeCell> myStack = chui.get(me);
 		Stack<MazeCell> teamStack = chui.get(tmate);
 
-		Stack<MazeCell> en1Stack = chui.get(2*(team%2));
-		Stack<MazeCell> en2Stack = chui.get(2*(team%2)+1);
+		Stack<MazeCell> en1Stack = chui.get(2*enem);
+		Stack<MazeCell> en2Stack = chui.get(2*enem+1);
 
 		// Convenience Variables
 		MazeCell head = myStack.peek();
 		MazeCell nextOver = getNeighbor(head, dir);
-
 		if (nextOver == null)
 			return;
+		int nextPly = nextOver.getPly();
 
-		if (!head.isBlockedDir(dir) &&( nextOver.getPly() == 0 || nextOver.getPly() == me+1)) {
-			if (nextOver.getPly() == 0) {
+		if (!head.isBlockedDir(dir) && (nextPly == 0 || nextPly == me+1)) {
+			if (nextPly == 0) {
 				// into blank
 				head.repaint();
 				myStack.push(nextOver);
 				nextOver.setPly(me+1, pCo);
 
-			} else if (nextOver.getPly() == me+1) {
+			} else if (nextPly == me+1) {
 				// into own
-				// do not replace peek() w/ head here
-				while (myStack.peek() != nextOver) {
-					myStack.pop().setPly(0, null);
-				}
+				MazeFrame.splicePath(myStack, nextOver);
 			}
 		} else if (en1Stack.size()>1 && nextOver == en1Stack.peek()) {
 			// into enemy head
-			for (int i = 0; i < rows / 5; i++)
-				if (en1Stack.size()>1)
-					en1Stack.pop().setPly(0, null);
+			attack(en1Stack);
 
 		} else if (en2Stack.size()>1 && nextOver == en2Stack.peek()) {
 			// into enemy head
-			for (int i = 0; i < rows / 5; i++)
-				if (en2Stack.size()>1)
-					en2Stack.pop().setPly(0, null);
+			attack(en2Stack);
 
 		} else if (teamStack.size()>1 && nextOver == teamStack.peek()) {
 			// into teammate head
-			for (int i = 0; i < rows / 5; i++)
-				if (teamStack.size()>1)
-					teamStack.pop().setPly(0, null);
+			attack(teamStack);
 
-		} else if (nextOver.getPly() == tmate+1 && getNeighbor(nextOver, dir)!=null) {
+		} else if (nextPly == tmate+1 && getNeighbor(nextOver, dir)!=null) {
 			// find end of potential boost
-			MazeCell movingCells = boostEnd(getNeighbor(nextOver, dir), team, dir);
+			MazeCell movingCells = boostEnd(nextOver, team, dir);
 			if (movingCells == null)
 				return;
 			// if blank to go into
@@ -514,10 +498,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 			} else if (movingCells.getPly() == me+1) {
 				// skipping back
-				// do not replace peek() w/ head here
-				while (myStack.peek() != movingCells) {
-					myStack.pop().setPly(0, null);
-				}
+				MazeFrame.splicePath(myStack, movingCells);
 			}
 		} else if (nextOver.getPly() != 0 && nextOver.getPly()!= me+1) {
 			// cell the player lands in
@@ -533,10 +514,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 			} else if (nextOverPlus.getPly() == me+1) {
 				// skipping back
-				// do not replace peek() w/ head here
-				while (myStack.peek() != nextOverPlus) {
-					myStack.pop().setPly(0, null);
-				}
+				MazeFrame.splicePath(myStack, nextOverPlus);
 			}
 		}
 	}
@@ -563,17 +541,32 @@ public class MazeFrame extends JFrame implements ActionListener {
 							(int) (b1 * (1- ratio) + b2 * ratio)));
 		}
 	}
+	
+	// Deletes (rows/5) cells from victim
+	private void attack(Stack<MazeCell> bonked)
+	{
+		for (int i = 0; i < rows / 5; ++i)
+			if (bonked.size()>1)
+				bonked.pop().setPly(0, null);
+	}
+	
+	// Pop stack until back on dest
+	private static void splicePath(Stack<MazeCell> stack, MazeCell dest)
+	{
+		while (stack.peek() != dest)
+			stack.pop().setPly(0, null);
+	}
 
 	// If the possible cell is valid
 	private boolean isInBounds(int r, int c) {
 		return r >= 0 && r < rows && c >= 0 && c < cols;
 	}
 
-	// Computes the end of a potential boost given cell past team-mate
+	// Computes the end of a potential boost given skipped team-mate cell
 	public MazeCell boostEnd(MazeCell start, int team, int dir)
 	{
 		int enem = ((team - 1) ^ 1);
-		MazeCell movingCell = start;
+		MazeCell movingCell = getNeighbor(start, dir);
 		while (movingCell != null && (movingCell.getPly() - 1) >> 1 == enem)
 			movingCell = getNeighbor(movingCell, dir);
 		return movingCell;
@@ -787,6 +780,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 		matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
 		JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
 	}
+	
 	public void teamWin(int team){
 		on=false;
 		for(int i=2*(team-1); i<=2*(team-1)+1; i++){
