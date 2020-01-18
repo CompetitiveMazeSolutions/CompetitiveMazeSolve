@@ -47,7 +47,7 @@ public class MazeCell extends JPanel {
 		super.paintComponent(g); // Makes the maze draw this cell onto it
 
 		Color c;
-		if (mode == mode.CPU) {
+		if (mode == Mode.CPU) {
 			if (!playered) { // look I know it's not a real word, ok?
 				c = new Color(colors[status].getRed(), colors[status].getGreen(), colors[status].getBlue(), 150);
 			} else {
