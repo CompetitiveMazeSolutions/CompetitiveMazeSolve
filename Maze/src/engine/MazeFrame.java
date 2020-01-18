@@ -452,11 +452,11 @@ public class MazeFrame extends JFrame implements ActionListener {
 	}
 	//playerMove case for teams mode
 	public void playerMove(int team, int player, int dir){
-
 		int me = (team-1)*2+(player-1);
+		int tmate = me ^ 1;
 		Color pCo = colorTeams[me];
 		Stack<MazeCell> myStack = chui.get(me);
-		Stack<MazeCell> teamStack = chui.get((team-1)*2+(player%2));
+		Stack<MazeCell> teamStack = chui.get(tmate);
 
 		Stack<MazeCell> en1Stack = chui.get(2*(team%2));
 		Stack<MazeCell> en2Stack = chui.get(2*(team%2)+1);
@@ -500,13 +500,11 @@ public class MazeFrame extends JFrame implements ActionListener {
 				if (teamStack.size()>1)
 					teamStack.pop().setPly(0, null);
 
-		} else if (nextOver.getPly() == (team-1)*2+(player%2)+1 && getNeighbor(nextOver, dir)!=null) {
-			// if into team
-			MazeCell movingCells = getNeighbor(nextOver, dir);
-			// if block of enemy
-			while(getNeighbor(movingCells, dir)!=null && (movingCells.getPly()==(2*(team%2))+1 || movingCells.getPly()==(2*(team%2))+2)) {
-				movingCells = getNeighbor(movingCells, dir);
-			}
+		} else if (nextOver.getPly() == tmate+1 && getNeighbor(nextOver, dir)!=null) {
+			// find end of potential boost
+			MazeCell movingCells = boostEnd(getNeighbor(nextOver, dir), team, dir);
+			if (movingCells == null)
+				return;
 			// if blank to go into
 			if (movingCells.getPly() == 0) {
 				// can skip over
@@ -544,13 +542,6 @@ public class MazeFrame extends JFrame implements ActionListener {
 	}
 
 	/**************** UTILITY METHODS ****************/
-	public MazeCell boostEnd(MazeCell start, int team, int dir) {
-		int enem = ((team-1) ^ 1)+1;
-		MazeCell movingCell = start;
-		while(movingCell != null && movingCell.getPly() == enem)
-			movingCell = getNeighbor(movingCell, dir);
-		return movingCell;
-	}
 	// Applies gradient to player stack
 	// painter is function that updates a cell's color
 	private static void applyGradient(Stack<MazeCell> stack, Color start, Color end,
@@ -576,6 +567,16 @@ public class MazeFrame extends JFrame implements ActionListener {
 	// If the possible cell is valid
 	private boolean isInBounds(int r, int c) {
 		return r >= 0 && r < rows && c >= 0 && c < cols;
+	}
+
+	// Computes the end of a potential boost given cell past team-mate
+	public MazeCell boostEnd(MazeCell start, int team, int dir)
+	{
+		int enem = ((team - 1) ^ 1);
+		MazeCell movingCell = start;
+		while (movingCell != null && (movingCell.getPly() - 1) >> 1 == enem)
+			movingCell = getNeighbor(movingCell, dir);
+		return movingCell;
 	}
 
 	// Returns an array of directional neighbor cells to the given cells

@@ -195,40 +195,44 @@ public class ReadyListener implements KeyListener {
 				break;
 			}
 
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 4; i++)
+			{
 				int tm = i >> 1;
 				int enm = tm ^ 1;
 				int ply = i & 1;
 				int tmate = i ^ 1;
 
 				MazeCell mc = parent.getStex(i).peek();
-				if (keyCode == MazeFrame.KEYS[i][MazeFrame.RIGHT]) {
+				if (keyCode == MazeFrame.KEYS[i][MazeFrame.RIGHT])
+				{
+					int cols = parent.getColumns();
 					MazeCell next = parent.getNeighbor(mc, MazeFrame.RIGHT);
-					MazeCell nextOver = null;
-					if (next != null)
-						nextOver = parent.getNeighbor(next, MazeFrame.RIGHT);
-					
-					if (tm == 0 && ((mc.col() == parent.getColumns() - 1 && !mc.isBlockedDir(MazeFrame.RIGHT))
-							|| (mc.col() == parent.getColumns() - 2 && next.getPly() != i + 1 && next.getPly() != 0)
-							|| (mc.col() == parent.getColumns() - 3 && next.getPly() == tmate + 1
-									&& parent.boostEnd(nextOver, tm+1, MazeFrame.RIGHT) == null)))
+					if (tm == 0 && ((mc.col() == cols - 1 && !mc.isBlockedDir(MazeFrame.RIGHT))
+							|| (mc.col() == cols - 2 && next.getPly() != i + 1 && next.getPly() != 0)
+							|| (mc.col() <= cols - 3 && next.getPly() == tmate + 1
+									&& parent.boostEnd(parent.getNeighbor(next, MazeFrame.RIGHT), tm+1, MazeFrame.RIGHT) == null)))
 						setTeamReach(i);
 					else
 						parent.playerMove(tm + 1, ply + 1, MazeFrame.RIGHT);
-				} else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.LEFT])) {
+					
+				} 
+				else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.LEFT]))
+				{
 					MazeCell next = parent.getNeighbor(mc, MazeFrame.LEFT);
-					MazeCell nextOver = null;
-					if (next != null)
-						nextOver = parent.getNeighbor(next, MazeFrame.LEFT);
 					if (tm == 1 && ((mc.col() == 0 && !mc.isBlockedDir(MazeFrame.LEFT))
 							|| (mc.col() == 1 && next.getPly() != i + 1 && next.getPly() != 0)
-							|| (mc.col() == 2 && next.getPly() == tmate + 1 && parent.boostEnd(nextOver, tm+1, MazeFrame.LEFT) == null)))
+							|| (mc.col() >= 2 && next.getPly() == tmate + 1 && parent.boostEnd(parent.getNeighbor(next, MazeFrame.LEFT), tm+1, MazeFrame.LEFT) == null)))
 						setTeamReach(i);
 					else
 						parent.playerMove(tm + 1, ply + 1, MazeFrame.LEFT);
-				} else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.DOWN])) {
+					
+				} 
+				else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.DOWN]))
+				{
 					parent.playerMove(tm + 1, ply + 1, MazeFrame.DOWN);
-				} else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.UP])) {
+				} 
+				else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.UP]))
+				{
 					parent.playerMove(tm + 1, ply + 1, MazeFrame.UP);
 				}
 			}
