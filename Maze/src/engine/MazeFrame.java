@@ -448,7 +448,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 	private boolean enlistNeighbors(MazeCell mc, int dir) {
 		MazeCell inQuestion = getNeighbor(mc, dir);
 		// if it is real, and blank
-		return (inQuestion != null && inQuestion.getStatus() == MazeCell.BLANK);
+		return (inQuestion != null && inQuestion.isBlank());
 	}
 
 	// Returns the closest MazeCell in direction
