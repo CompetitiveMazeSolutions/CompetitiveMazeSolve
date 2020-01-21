@@ -28,7 +28,7 @@ public class Settings extends JFrame implements ActionListener, MouseListener {
 	private int rows;
 	private int cols;
 
-	public Settings(MazeFrame parent, Mode mode, double mazeFidelity, int aispeed, int stagePreset, String matchName,
+	public Settings(MazeFrame parent, Mode mode, double mazeFidelity, int aispeed, String matchName,
 			int rows, int cols) {
 		super("Settings");
 		UIPanel = new JPanel();
@@ -98,7 +98,7 @@ public class Settings extends JFrame implements ActionListener, MouseListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == buttons[0]) {
-			new MazeFrame(mode, mazeFidelity, aispeed, stagePreset, matchName, rows, cols);
+			new MazeFrame(mode, mazeFidelity, aispeed, matchName, rows, cols);
 			parent.setVisible(false);
 			Thread t = parent.getThread();
 			if (t != null)

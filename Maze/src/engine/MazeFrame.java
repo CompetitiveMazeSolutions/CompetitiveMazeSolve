@@ -42,7 +42,6 @@ public class MazeFrame extends JFrame implements ActionListener {
 	private int aispeed; // Speed of bot
 	private double startTime; // Time game is started
 	private double mazeFidelity; // Called at the end of CarveStep
-	private int stagePreset; // Not implemented
 	private String matchName;// Will be added onto the fileOutput if saved
 
 	private JPanel controls, lBorder, rBorder, tBorder, maze;
@@ -75,17 +74,16 @@ public class MazeFrame extends JFrame implements ActionListener {
 	/** Constructors **/
 
 	public MazeFrame(Mode mode, double mazeFidelity, String matchName, int r, int c) {
-		this(mode, mazeFidelity, (int) (200 - (200 * (1 - mazeFidelity))), BORING, matchName, r, c);
+		this(mode, mazeFidelity, (int) (200 - (200 * (1 - mazeFidelity))), matchName, r, c);
 	}
 
-	public MazeFrame(Mode mode, double mazeFidelity, int aispeed, int stagePreset, String matchName, int r, int c) {
+	public MazeFrame(Mode mode, double mazeFidelity, int aispeed, String matchName, int r, int c) {
 		super("Maze");
 
 		this.matchName = matchName;
 		this.mode = mode;
 		this.mazeFidelity = mazeFidelity;
 		this.aispeed = aispeed;
-		this.stagePreset = stagePreset;
 		this.rows = r;
 		this.cols = c;
 		embededListener = new ReadyListener(this);
@@ -158,33 +156,35 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 		// Set colors in teams
 		if(mode == Mode.T4){
-			colorTeams = new Color[4];
-			colorTeams[0] = beg;
-			colorTeams[2] = plead;
-			int differ = 100;
+			colorTeams = new Color[4]; //color for each player
+			colorTeams[0] = beg; //t1 p1
+			colorTeams[2] = plead; //t2 p1
+			int differ = 100; //total amount of RGB difference
 			for(int i=1; i<4; i+=2){
 				ArrayList<Double> colorAssign = new ArrayList<Double>();
-				colorAssign.add(Math.random());
-				colorAssign.add(Math.random()*(1-colorAssign.get(0)));
-				colorAssign.add(1-colorAssign.get(1)-colorAssign.get(0));
+				colorAssign.add(Math.random()); //random percent
+				colorAssign.add(Math.random()*(1-colorAssign.get(0))); //random of remaining percent
+				colorAssign.add(1-colorAssign.get(1)-colorAssign.get(0)); //remaining percent
 				int[] newColor = new int[3];
 				int[] oldColor = {colorTeams[i-1].getRed(), colorTeams[i-1].getGreen(), colorTeams[i-1].getBlue()};
-				for(int j=0; j<3; j++){
-					int addTest = (int)(oldColor[j]+differ*colorAssign.get((int)(Math.random()*colorAssign.size())));
-					int subtractTest = (int)(oldColor[j]-differ*colorAssign.get((int)(Math.random()*colorAssign.size())));
-					if(addTest<255 && subtractTest>0){
+				for(int j=0; j<3; j++){ //for red, green, and blue
+					double percentChosen = colorAssign.remove((int)(Math.random()*colorAssign.size())); //use a percent from list
+					int addTest = (int)(oldColor[j]+differ*percentChosen); //if increase value
+					int subtractTest = (int)(oldColor[j]-differ*percentChosen); //if decrease value
+					
+					if(addTest<255 && subtractTest>0){ //if in bounds, randomly choose direction
 						if(Math.random()>=.5){
 							newColor[j] = addTest;
 						}else{
 							newColor[j] = subtractTest;
 						}
-					}else if (subtractTest<0){
+					}else if (subtractTest<0){ //if cant go down, go up
 						newColor[j] = addTest;
 					}else{
-						newColor[j] = subtractTest;
+						newColor[j] = subtractTest; //if cant go up, go down
 					}
 				}
-				colorTeams[i]=new Color(newColor[0],newColor[1],newColor[2]);
+				colorTeams[i]=new Color(newColor[0],newColor[1],newColor[2]); //set color to adjusted red, green, and blue
 
 			}
 		}
@@ -701,7 +701,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 	// Creates a new settings pane
 	public void openSettings() {
-		new Settings(this, mode, mazeFidelity, aispeed, stagePreset, matchName, rows, cols);
+		new Settings(this, mode, mazeFidelity, aispeed, matchName, rows, cols);
 	}
 
 	// Fully resets this maze's frame
