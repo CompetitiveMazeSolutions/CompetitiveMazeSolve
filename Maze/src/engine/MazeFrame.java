@@ -780,7 +780,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 				mc.setPly(1, c);});
 		}
 		matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
-		JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
+		JOptionPane.showMessageDialog(this, "Team "+team+" Win\n"+(double) matchTime / 1000 + " seconds");
 	}
 
 	public void startGame() {
