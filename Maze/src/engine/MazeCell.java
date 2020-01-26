@@ -30,6 +30,8 @@ public class MazeCell extends JPanel {
 	private boolean hide; // If the cell is hidden
 	private boolean playered; // Status of a player being in it
 
+	private char yees = (char) ((int) (Math.random() * 94) + 27);//symbol
+	
 	public MazeCell(int r, int c, Mode mode) {
 		super();
 		str = new BasicStroke(wallThickness); // Had a stroke reading this
@@ -181,7 +183,6 @@ public class MazeCell extends JPanel {
 	}
 
 	public String toString() {
-		char yees = (char) ((int) (Math.random() * 94) + 27);
 		return "" + yees;
 	}
 
