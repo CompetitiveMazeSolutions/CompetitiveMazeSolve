@@ -2,15 +2,13 @@ package engine;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import consts.Mode;
 
 public class OverarchingListener implements KeyListener {
 
 	private MazeFrame parent;
 	private Mode mode;
-	private boolean p1C;
-	private boolean p2C;
-	private boolean p1R;
-	private boolean p2R;
+	private boolean p1C, p2C, p1R, p2R;
 
 	public OverarchingListener(MazeFrame parent) {
 		this.parent = parent;

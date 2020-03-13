@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.event.*;
 
 import javax.swing.*;
+import consts.Mode;
 public class Settings extends JFrame implements ActionListener, MouseListener {
 
 	private MazeFrame parent;
@@ -45,13 +46,13 @@ public class Settings extends JFrame implements ActionListener, MouseListener {
 		UIPanel.setBackground(parent.getBackground());
 		add(UIPanel);
 		for (JButton b : buttons) {
-			b.setSize(WIDTH / 5, HEIGHT / 5);
+			b.setSize(UIPanel.getWidth() / 5, UIPanel.getHeight() / 5);
 			b.setForeground(Color.WHITE);
 			b.setBackground(buttonBackground);
 			b.addActionListener(this);
 			UIPanel.add(b);
 		}
-		buttons[0].setLocation(600, -600);
+		//buttons[0].setLocation(600, 600);
 		buttons[0].setVisible(true);
 		setVisible(true);
 		setFocusable(true);

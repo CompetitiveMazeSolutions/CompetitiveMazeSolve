@@ -2,17 +2,13 @@ package engine;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import consts.*;
 
 public class ReadyListener implements KeyListener {
 
 	private MazeFrame parent;
 	private Mode mode;
-	private boolean p1C;
-	private boolean p1R;
-	private boolean p2C;
-	private boolean p2R;
-
-
+	private boolean p1C,p1R,p2C,p2R;
 	private boolean[] teamreach = {false,false,false,false};
 
 	public ReadyListener(MazeFrame parent) {
@@ -54,16 +50,16 @@ public class ReadyListener implements KeyListener {
 		case CPU:
 			switch (keyCode) {
 			case KeyEvent.VK_RIGHT:
-				parent.playerMove(MazeFrame.RIGHT);
+				parent.playerMove(Direction.RIGHT);
 				break;
 			case KeyEvent.VK_LEFT:
-				parent.playerMove(MazeFrame.LEFT);
+				parent.playerMove(Direction.LEFT);
 				break;
 			case KeyEvent.VK_DOWN:
-				parent.playerMove(MazeFrame.DOWN);
+				parent.playerMove(Direction.DOWN);
 				break;
 			case KeyEvent.VK_UP:
-				parent.playerMove(MazeFrame.UP);
+				parent.playerMove(Direction.UP);
 				break;
 			case KeyEvent.VK_CONTROL:
 				parent.resetMaze();
@@ -78,54 +74,54 @@ public class ReadyListener implements KeyListener {
 		case V2:
 			switch (keyCode) {
 			case KeyEvent.VK_RIGHT :
-				parent.playerMove(2, MazeFrame.RIGHT);
+				parent.playerMove(Player.P2, Direction.RIGHT);
 				break;
 			case KeyEvent.VK_LEFT :
 				MazeCell head = parent.getMex().peek();
 				if (head.col() == 0
-						&& !head.isBlockedDir(MazeFrame.LEFT))
+						&& !head.isBlockedDir(Direction.LEFT))
 				{
 					parent.win(2);
 					return;
 				}
 				if (head.col() == 1
-						&& parent.getNeighbor(head, MazeFrame.LEFT).getPly() == 1)
+						&& parent.getNeighbor(head, Direction.LEFT).getPly() == Player.P1)
 				{
 					parent.win(2);
 					return;
 				}
-				parent.playerMove(2, MazeFrame.LEFT);
+				parent.playerMove(Player.P2, Direction.LEFT);
 				break;
 			case KeyEvent.VK_DOWN :
-				parent.playerMove(2, MazeFrame.DOWN);
+				parent.playerMove(Player.P2, Direction.DOWN);
 				break;
 			case KeyEvent.VK_UP :
-				parent.playerMove(2, MazeFrame.UP);
+				parent.playerMove(Player.P2, Direction.UP);
 				break;
 			case KeyEvent.VK_D:
 				head = parent.getTex().peek();
 				if (head.col() == parent.getColumns() - 1
-						&& !head.isBlockedDir(MazeFrame.RIGHT))
+						&& !head.isBlockedDir(Direction.RIGHT))
 				{
 					parent.win(1);
 					return;
 				}
 				if (head.col() == parent.getColumns() - 2
-						&& parent.getNeighbor(head, MazeFrame.RIGHT).getPly() == 2)
+						&& parent.getNeighbor(head, Direction.RIGHT).getPly() == Player.P2)
 				{
 					parent.win(1);
 					return;
 				}
-				parent.playerMove(1, MazeFrame.RIGHT);
+				parent.playerMove(Player.P1, Direction.RIGHT);
 				break;
 			case KeyEvent.VK_A:
-				parent.playerMove(1, MazeFrame.LEFT);
+				parent.playerMove(Player.P1, Direction.LEFT);
 				break;
 			case KeyEvent.VK_S:
-				parent.playerMove(1, MazeFrame.DOWN);
+				parent.playerMove(Player.P1, Direction.DOWN);
 				break;
 			case KeyEvent.VK_W:
-				parent.playerMove(1, MazeFrame.UP);
+				parent.playerMove(Player.P1, Direction.UP);
 				break;
 			case KeyEvent.VK_CONTROL:
 				if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_LEFT) {
@@ -148,29 +144,29 @@ public class ReadyListener implements KeyListener {
 		case TT:
 			switch (keyCode) {
 			case KeyEvent.VK_RIGHT:
-				parent.playerMove(2, MazeFrame.RIGHT);
+				parent.playerMove(Player.P2, Direction.RIGHT);
 				break;
 			case KeyEvent.VK_LEFT:
 				MazeCell head = parent.getMex().peek();
 				if (head.col() == 0
-						&& !head.isBlockedDir(MazeFrame.LEFT))
+						&& !head.isBlockedDir(Direction.LEFT))
 				{
 					parent.win(2);
 					return;
 				}
 				if (head.col() == 1
-						&& parent.getNeighbor(head, MazeFrame.LEFT).getPly() == 2)
+						&& parent.getNeighbor(head, Direction.LEFT).getPly() == Player.P2)
 				{
 					parent.win(2);
 					return;
 				}
-				parent.playerMove(2, MazeFrame.LEFT);
+				parent.playerMove(Player.P2, Direction.LEFT);
 				break;
 			case KeyEvent.VK_DOWN:
-				parent.playerMove(2, MazeFrame.DOWN);
+				parent.playerMove(Player.P2, Direction.DOWN);
 				break;
 			case KeyEvent.VK_UP:
-				parent.playerMove(2, MazeFrame.UP);
+				parent.playerMove(Player.P2, Direction.UP);
 				break;
 			case KeyEvent.VK_CONTROL:
 				parent.resetMaze();
@@ -202,41 +198,44 @@ public class ReadyListener implements KeyListener {
 				break;
 			}
 
-			for (int i = 0; i < 4; i++)
+			KeyInfo ki = MazeFrame.KEYS.get(keyCode);
+			Player ply = ki.player;
+			Player tmate = ply.teammate();
+			int tm = ply.ordinal() >> 1;
+			
+			MazeCell mc = parent.getStex(ply.ordinal()).peek();
+			MazeCell next = parent.getNeighbor(mc, ki.direction);
+			Player nxPly = null;
+			if (next != null) nxPly = next.getPly();
+			
+			switch (ki.direction)
 			{
-				int tm = i >> 1;
-				int ply = i & 1;
-				int tmate = i ^ 1;
-				MazeCell mc = parent.getStex(i).peek();
-				if (keyCode == MazeFrame.KEYS[i][MazeFrame.RIGHT])
-				{
-					int cols = parent.getColumns();
-					MazeCell next = parent.getNeighbor(mc, MazeFrame.RIGHT);
-					int nxPly = 0;
-					if (next != null) nxPly = next.getPly();
-					if (tm == 0 && ((mc.col() == cols - 1 && !mc.isBlockedDir(MazeFrame.RIGHT))
-							|| (mc.col() == cols - 2 && nxPly != i + 1 && nxPly != 0)
-							|| (nxPly == tmate + 1 && parent.boostEnd(next, tm + 1, MazeFrame.RIGHT) == null)))
-						setTeamReach(i);
-					else
-						parent.playerMove(tm + 1, ply + 1, MazeFrame.RIGHT);
-				} 
-				else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.LEFT]))
-				{
-					MazeCell next = parent.getNeighbor(mc, MazeFrame.LEFT);
-					int nxPly = 0;
-					if (next != null) nxPly = next.getPly();
-					if (tm == 1 && ((mc.col() == 0 && !mc.isBlockedDir(MazeFrame.LEFT))
-							|| (mc.col() == 1 && nxPly != i + 1 && nxPly != 0)
-							|| (nxPly == tmate + 1 && parent.boostEnd(next, tm + 1, MazeFrame.LEFT) == null)))
-						setTeamReach(i);
-					else
-						parent.playerMove(tm + 1, ply + 1, MazeFrame.LEFT);
-				} 
-				else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.DOWN]))
-					parent.playerMove(tm + 1, ply + 1, MazeFrame.DOWN);
-				else if ((keyCode == MazeFrame.KEYS[i][MazeFrame.UP]))
-					parent.playerMove(tm + 1, ply + 1, MazeFrame.UP);
+			case RIGHT :
+				int cols = parent.getColumns();
+				if (tm == 0 && ((mc.col() == cols - 1
+						&& !mc.isBlockedDir(Direction.RIGHT))
+						|| (mc.col() == cols - 2 && nxPly != ply
+								&& nxPly != null)
+						|| (nxPly == tmate && parent.boostEnd(next, tm + 1,
+								Direction.RIGHT) == null)))
+					setTeamReach(ply.ordinal());
+				else
+					parent.teamPlayerMove(ply, Direction.RIGHT);
+				break;
+			case LEFT :
+				if (tm == 1 && ((mc.col() == 0
+						&& !mc.isBlockedDir(Direction.LEFT))
+						|| (mc.col() == 1 && nxPly != ply && nxPly != null)
+						|| (nxPly == tmate && parent.boostEnd(next, tm + 1,
+								Direction.LEFT) == null)))
+					setTeamReach(ply.ordinal());
+				else
+					parent.teamPlayerMove(ply, Direction.LEFT);
+				break;
+			case UP :
+			case DOWN :
+				parent.teamPlayerMove(ply, ki.direction);
+				break;
 			}
 			break;
 		}

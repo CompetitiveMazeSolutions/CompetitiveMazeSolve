@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 
 import javax.swing.JPanel;
+import consts.*;
 
 public class MazeCell extends JPanel {
 	public static final int BLANK = 0, VISITED = 1, DEAD = 2, PATH = 3; // For statuses in bot mode
@@ -18,7 +19,7 @@ public class MazeCell extends JPanel {
 	private int wallThickness = 2; // Width of wall brush
 	private int padding = 2; // Amount of space to the next cell
 	private int row, col; // Location of cell
-	private int ply; // Player
+	private Player ply; // Player
 	private int status; // Determines the color and accessibility
 	private Mode mode; // Mode of MazeFrame (previously needPly)
 	private Stroke str; // Brush for walls
@@ -61,13 +62,13 @@ public class MazeCell extends JPanel {
 				pHead = false;
 				g.setColor(c);
 			}
-		} else if (ply != 0) { // If not bot mode, and a player exists
+		} else if (ply != null) { // If not bot mode, and a player exists
 			c = new Color(plyCo.getRed(), plyCo.getGreen(), plyCo.getBlue(), 200);
 			g.setColor(c);
 		}
 
 		int roll = (int) (Math.random() * 35) + 130; // Roll for how dark the cell is
-		if (status == BLANK && !(playered) && ply == 0) {
+		if (status == BLANK && !(playered) && ply == null) {
 			if (hide) {
 				g.setColor(Color.WHITE);
 			} else {
@@ -80,13 +81,13 @@ public class MazeCell extends JPanel {
 
 		g.setColor(lineColor);
 		((Graphics2D) g).setStroke(str);
-		if (borders[MazeFrame.UP])
+		if (borders[Direction.UP.ordinal()])
 			g.drawLine(0, 0, this.getWidth(), 0);
-		if (borders[MazeFrame.RIGHT])
+		if (borders[Direction.RIGHT.ordinal()])
 			g.drawLine(this.getWidth() - padding, 0, this.getWidth() - padding, this.getHeight());
-		if (borders[MazeFrame.DOWN])
+		if (borders[Direction.DOWN.ordinal()])
 			g.drawLine(0, this.getHeight() - padding, this.getWidth(), this.getHeight() - padding);
-		if (borders[MazeFrame.LEFT])
+		if (borders[Direction.LEFT.ordinal()])
 			g.drawLine(0, 0, 0, this.getHeight());
 
 		g.setColor(textColor);
@@ -127,14 +128,14 @@ public class MazeCell extends JPanel {
 	}
 
 	// Sets player and player color
-	public void setPly(int x, Color colour) {
+	public void setPly(Player x, Color colour) {
 		ply = x;
 		plyCo = colour;
 		repaint();
 	}
 
 	// Gets the current player
-	public int getPly() {
+	public Player getPly() {
 		return ply;
 	}
 
@@ -168,17 +169,17 @@ public class MazeCell extends JPanel {
 		return status;
 	}
 
-	public boolean isBlockedDir(int dir) {
-		return borders[dir];
+	public boolean isBlockedDir(Direction dir) {
+		return borders[dir.ordinal()];
 	}
 
-	public void clearWallDir(int dir) {
-		borders[dir] = false;
+	public void clearWallDir(Direction dir) {
+		borders[dir.ordinal()] = false;
 		repaint();
 	}
 
-	public void blockWallDir(int dir) {
-		borders[dir] = true;
+	public void blockWallDir(Direction dir) {
+		borders[dir.ordinal()] = true;
 		repaint();
 	}
 
