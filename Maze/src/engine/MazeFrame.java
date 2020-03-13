@@ -574,7 +574,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 	{
 		int enem = ((team - 1) ^ 1);
 		MazeCell movingCell = getNeighbor(start, dir);
-		while (movingCell != null && movingCell.getPly().ordinal() >> 1 == enem)
+		while (movingCell != null && movingCell.getPly() != null && movingCell.getPly().ordinal() >> 1 == enem)
 			movingCell = getNeighbor(movingCell, dir);
 		return movingCell;
 	}

@@ -199,6 +199,7 @@ public class ReadyListener implements KeyListener {
 			}
 
 			KeyInfo ki = MazeFrame.KEYS.get(keyCode);
+			if (ki == null) break;
 			Player ply = ki.player;
 			Player tmate = ply.teammate();
 			int tm = ply.ordinal() >> 1;
