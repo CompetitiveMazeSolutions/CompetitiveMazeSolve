@@ -2,9 +2,43 @@ package engine;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.HashMap;
+import java.util.Map;
 import consts.*;
 
 public class ReadyListener implements KeyListener {
+	
+	private static class KeyInfo {
+		Direction direction;
+		Player player;
+		KeyInfo(Direction dir, Player ply) {
+			direction = dir;
+			player = ply;
+		}
+	}
+	
+	private static final Map<Integer,KeyInfo> KEYS = new HashMap<>();
+	static {
+		KEYS.put(KeyEvent.VK_W, new KeyInfo(Direction.UP, Player.P1));
+		KEYS.put(KeyEvent.VK_D, new KeyInfo(Direction.RIGHT, Player.P1));
+		KEYS.put(KeyEvent.VK_S, new KeyInfo(Direction.DOWN, Player.P1));
+		KEYS.put(KeyEvent.VK_A, new KeyInfo(Direction.LEFT, Player.P1));
+		
+		KEYS.put(KeyEvent.VK_I, new KeyInfo(Direction.UP, Player.P2));
+		KEYS.put(KeyEvent.VK_L, new KeyInfo(Direction.RIGHT, Player.P2));
+		KEYS.put(KeyEvent.VK_K, new KeyInfo(Direction.DOWN, Player.P2));
+		KEYS.put(KeyEvent.VK_J, new KeyInfo(Direction.LEFT, Player.P2));
+		
+		KEYS.put(KeyEvent.VK_UP, new KeyInfo(Direction.UP, Player.P3));
+		KEYS.put(KeyEvent.VK_RIGHT, new KeyInfo(Direction.RIGHT, Player.P3));
+		KEYS.put(KeyEvent.VK_DOWN, new KeyInfo(Direction.DOWN, Player.P3));
+		KEYS.put(KeyEvent.VK_LEFT, new KeyInfo(Direction.LEFT, Player.P3));
+		
+		KEYS.put(KeyEvent.VK_NUMPAD8, new KeyInfo(Direction.UP, Player.P4));
+		KEYS.put(KeyEvent.VK_NUMPAD6, new KeyInfo(Direction.RIGHT, Player.P4));
+		KEYS.put(KeyEvent.VK_NUMPAD5, new KeyInfo(Direction.DOWN, Player.P4));
+		KEYS.put(KeyEvent.VK_NUMPAD4, new KeyInfo(Direction.LEFT, Player.P4));
+	}
 
 	private MazeFrame parent;
 	private Mode mode;
@@ -31,10 +65,10 @@ public class ReadyListener implements KeyListener {
 		}
 	}
 	
-	private void setTeamReach(int i) {
-		teamreach[i] = true;
-		if (teamreach[i^1])
-			parent.teamWin((i>>1) + 1);
+	private void setTeamReach(Player p) {
+		teamreach[p.ordinal()] = true;
+		if (teamreach[p.teammate().ordinal()])
+			parent.teamWin(p);
 	}
 	
 	@Override
@@ -198,7 +232,7 @@ public class ReadyListener implements KeyListener {
 				break;
 			}
 
-			KeyInfo ki = MazeFrame.KEYS.get(keyCode);
+			KeyInfo ki = KEYS.get(keyCode);
 			if (ki == null) break;
 			Player ply = ki.player;
 			Player tmate = ply.teammate();
@@ -219,7 +253,7 @@ public class ReadyListener implements KeyListener {
 								&& nxPly != null)
 						|| (nxPly == tmate && parent.boostEnd(next, tm + 1,
 								Direction.RIGHT) == null)))
-					setTeamReach(ply.ordinal());
+					setTeamReach(ply);
 				else
 					parent.teamPlayerMove(ply, Direction.RIGHT);
 				break;
@@ -229,7 +263,7 @@ public class ReadyListener implements KeyListener {
 						|| (mc.col() == 1 && nxPly != ply && nxPly != null)
 						|| (nxPly == tmate && parent.boostEnd(next, tm + 1,
 								Direction.LEFT) == null)))
-					setTeamReach(ply.ordinal());
+					setTeamReach(ply);
 				else
 					parent.teamPlayerMove(ply, Direction.LEFT);
 				break;

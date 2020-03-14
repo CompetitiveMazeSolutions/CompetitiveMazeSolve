@@ -36,6 +36,20 @@ public class MazeCell extends JPanel {
 
 		setBackground(defaultBG);
 	}
+	
+	// Returns a direction from one point to the other
+	public Direction directionTo(MazeCell dest)
+	{
+		int yDis = dest.row - this.row;
+		int xDis = dest.col - this.col;
+		// Find the best direction to dest
+		if (yDis < 0) return Direction.UP;
+		if (yDis > 0) return Direction.DOWN;
+		if (xDis > 0) return Direction.RIGHT;
+		if (xDis < 0) return Direction.LEFT;
+		// Default case is nonexistent direction
+		return null;
+	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g); // Makes the maze draw this cell onto it

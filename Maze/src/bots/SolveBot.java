@@ -34,7 +34,7 @@ public class SolveBot extends Bot implements Runnable
 			}
 
 			// Priority queue of direction choices
-			Direction[] dirspq = MazeFrame.getBestDir(tex.peek(), end);
+			Direction[] dirspq = SolveBot.getBestDir(tex.peek(), end);
 			// If neither win conditions are met, move on.
 			for (int i = 0; i < 4; i++) {
 				MazeCell option = game.getNeighbor(tex.peek(), dirspq[i]);
@@ -58,6 +58,47 @@ public class SolveBot extends Bot implements Runnable
 		return false;
 	}
 	
+	// Returns a set of directions in order of importance
+	private static Direction[] getBestDir(MazeCell orig, MazeCell dest) {
+			// Initialize new moveset
+			Direction[] moves = new Direction[4];
+			int yDis = dest.row() - orig.row();
+			int xDis = dest.col() - orig.col();
+			// If closer in y than in x
+			if (Math.abs(xDis) <= Math.abs(yDis)) {
+				// Decide which direction is best in order
+				if (yDis <= 0) {
+					moves[0] = Direction.UP;
+					moves[2] = Direction.DOWN;
+				} else {
+					moves[0] = Direction.DOWN;
+					moves[2] = Direction.UP;
+				}
+				if (xDis <= 0) {
+					moves[1] = Direction.RIGHT;
+					moves[3] = Direction.LEFT;
+				} else {
+					moves[1] = Direction.RIGHT;
+					moves[3] = Direction.LEFT;
+				}
+			} else {
+				if (xDis <= 0) {
+					moves[0] = Direction.RIGHT;
+					moves[3] = Direction.LEFT;
+				} else {
+					moves[0] = Direction.RIGHT;
+					moves[3] = Direction.LEFT;
+				}
+				if (yDis <= 0) {
+					moves[1] = Direction.UP;
+					moves[2] = Direction.DOWN;
+				} else {
+					moves[1] = Direction.DOWN;
+					moves[2] = Direction.UP;
+				}
+			}
+			return moves;
+		}
 	
 
 	@Override

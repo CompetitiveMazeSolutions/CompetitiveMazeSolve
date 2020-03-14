@@ -26,8 +26,8 @@ public class CarveBot extends Bot
 			// Pick a random choice
 			MazeCell chosen1 = bop.get(0);
 			// Clear walls to new cell and from next space to this one
-			tex.peek().clearWallDir(MazeFrame.getDirectionFrom(tex.peek(), chosen1));
-			chosen1.clearWallDir(MazeFrame.getDirectionFrom(chosen1, tex.peek()));
+			tex.peek().clearWallDir(tex.peek().directionTo(chosen1));
+			chosen1.clearWallDir(chosen1.directionTo(tex.peek()));
 			// Make the new cell visited
 			setStatus(chosen1, Bot.VISITED);
 			// Push it to carve stack

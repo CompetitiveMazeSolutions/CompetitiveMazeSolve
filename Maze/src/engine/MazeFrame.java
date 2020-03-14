@@ -1,63 +1,20 @@
 package engine;
 //package FORKIDS;
 
-import java.awt.AWTException;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Robot;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.BiConsumer;
 import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import bots.Bot;
-import bots.CarveBot;
-import bots.SolveBot;
-import consts.Direction;
-import consts.KeyInfo;
-import consts.Mode;
-import consts.Player;
+import javax.swing.*;
+import bots.*;
+import consts.*;
 
 public class MazeFrame extends JFrame implements ActionListener {
-
-	//public static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3; // directions
 	public static final int BORING = 0, BOXES = 1; // carve mode
 	public static final int BOT = -2, P1CPU = -1, BLANK = 0, P1 = 1, P2 = 2;
-	public static final Map<Integer,KeyInfo> KEYS = new HashMap<>();
-	static {
-		KEYS.put(KeyEvent.VK_W, new KeyInfo(Direction.UP, Player.P1));
-		KEYS.put(KeyEvent.VK_D, new KeyInfo(Direction.RIGHT, Player.P1));
-		KEYS.put(KeyEvent.VK_S, new KeyInfo(Direction.DOWN, Player.P1));
-		KEYS.put(KeyEvent.VK_A, new KeyInfo(Direction.LEFT, Player.P1));
-		
-		KEYS.put(KeyEvent.VK_I, new KeyInfo(Direction.UP, Player.P2));
-		KEYS.put(KeyEvent.VK_L, new KeyInfo(Direction.RIGHT, Player.P2));
-		KEYS.put(KeyEvent.VK_K, new KeyInfo(Direction.DOWN, Player.P2));
-		KEYS.put(KeyEvent.VK_J, new KeyInfo(Direction.LEFT, Player.P2));
-		
-		KEYS.put(KeyEvent.VK_UP, new KeyInfo(Direction.UP, Player.P3));
-		KEYS.put(KeyEvent.VK_RIGHT, new KeyInfo(Direction.RIGHT, Player.P3));
-		KEYS.put(KeyEvent.VK_DOWN, new KeyInfo(Direction.DOWN, Player.P3));
-		KEYS.put(KeyEvent.VK_LEFT, new KeyInfo(Direction.LEFT, Player.P3));
-		
-		KEYS.put(KeyEvent.VK_NUMPAD8, new KeyInfo(Direction.UP, Player.P4));
-		KEYS.put(KeyEvent.VK_NUMPAD6, new KeyInfo(Direction.RIGHT, Player.P4));
-		KEYS.put(KeyEvent.VK_NUMPAD5, new KeyInfo(Direction.DOWN, Player.P4));
-		KEYS.put(KeyEvent.VK_NUMPAD4, new KeyInfo(Direction.LEFT, Player.P4));
-	}
 
 	private int rows; // 20 and 35 best
 	private int cols;
@@ -316,12 +273,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 		if(mode==Mode.T4)
 			begi.setPly(Player.P1, colorTeams[0]);
-
-
-
 	}
-	// Takes the next step in solving the maze in CPU mode
-	
 
 	// Moves players in P2 mode
 	public void playerMove(Player player, Direction dir) {
@@ -554,65 +506,6 @@ public class MazeFrame extends JFrame implements ActionListener {
 		else return null;
 	}
 
-	// Returns a set of directions in order of importance
-	public static Direction[] getBestDir(MazeCell orig, MazeCell dest) {
-		// Initialize new moveset
-		Direction[] moves = new Direction[4];
-		int yDis = dest.row() - orig.row();
-		int xDis = dest.col() - orig.col();
-		// If closer in y than in x
-		if (Math.abs(xDis) <= Math.abs(yDis)) {
-			// Decide which direction is best in order
-			if (yDis <= 0) {
-				moves[0] = Direction.UP;
-				moves[2] = Direction.DOWN;
-			} else {
-				moves[0] = Direction.DOWN;
-				moves[2] = Direction.UP;
-			}
-			if (xDis <= 0) {
-				moves[1] = Direction.RIGHT;
-				moves[3] = Direction.LEFT;
-			} else {
-				moves[1] = Direction.RIGHT;
-				moves[3] = Direction.LEFT;
-			}
-		} else {
-			if (xDis <= 0) {
-				moves[0] = Direction.RIGHT;
-				moves[3] = Direction.LEFT;
-			} else {
-				moves[0] = Direction.RIGHT;
-				moves[3] = Direction.LEFT;
-			}
-			if (yDis <= 0) {
-				moves[1] = Direction.UP;
-				moves[2] = Direction.DOWN;
-			} else {
-				moves[1] = Direction.DOWN;
-				moves[2] = Direction.UP;
-			}
-		}
-		return moves;
-	}
-
-	// Returns a direction from one point to the other
-	public static Direction getDirectionFrom(MazeCell orig, MazeCell dest) {
-		int yDis = dest.row() - orig.row();
-		int xDis = dest.col() - orig.col();
-		// Find the best direction to dest
-		if (yDis < 0)
-			return Direction.UP;
-		if (yDis > 0)
-			return Direction.DOWN;
-		if (xDis > 0)
-			return Direction.RIGHT;
-		if (xDis < 0)
-			return Direction.LEFT;
-		// Default case is nonexistent direction
-		return null;
-	}
-
 	// Creates a new settings pane
 	public void openSettings() {
 		new Settings(this, mode, mazeFidelity, aispeed, matchName, rows, cols);
@@ -687,30 +580,27 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 		// Turn off maze actions
 		on = false;
+		Stack<MazeCell> stex = null;
+		Color dabiddle = null;
+		Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
+				(int) (Math.random() * 256));
 		if (player == Player.P1) { // Player 1 in two-player win
-			Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
-					(int) (Math.random() * 256));
-			MazeFrame.applyGradient(tex, beg, badiddle, (MazeCell mc, Color c) -> {
-				mc.setPly(Player.P1, c);
-			});
+			stex = tex; dabiddle = beg;
 		} else if (player == Player.P2) { // Player 2 in two-player win
-			Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
-					(int) (Math.random() * 256));
-			MazeFrame.applyGradient(mex, plead, badiddle, (MazeCell mc, Color c) -> {
-				mc.setPly(Player.P2, c);
-			});
+			stex = mex; dabiddle = plead;
 		}
+		MazeFrame.applyGradient(stex, dabiddle, badiddle, (MazeCell mc, Color c) -> {
+			mc.setPly(player, c);
+		});
 
 		// Display match time
 		matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
 		JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
 	}
 	
-	public void teamWin(int team){
+	public void teamWin(Player player){
 		on=false;
-		Player p1 = Player.values()[2*(team-1)];
-		Player p2 = p1.teammate();
-		Player[] teamps = {p1,p2};
+		Player[] teamps = {player, player.teammate()};
 		for(Player p : teamps){
 			Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 					(int) (Math.random() * 256));
@@ -719,7 +609,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 			});
 		}
 		matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
-		JOptionPane.showMessageDialog(this, "Team "+team+" Win\n"+(double) matchTime / 1000 + " seconds");
+		JOptionPane.showMessageDialog(this, "Team "+((player.ordinal()>>1)+1)+" Win\n"+(double) matchTime / 1000 + " seconds");
 	}
 
 	public void startGame() {
@@ -768,19 +658,13 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 	public Stack<MazeCell> getStex(int p) {return chui.get(p);}
 
-	public MazeCell[][] getCells() {return cells;}
-
 	public int getRows() {return rows;}
 
 	public int getColumns() {return cols;}
 
 	public boolean isOn() {return on;}
 
-	public void setOn(boolean on) {this.on = on;}
-
 	public Mode getMode() {return mode;}
-
-	public void setMode(Mode mode) {this.mode = mode;}
 
 	public double getStartTime() {return startTime;}
 
@@ -788,6 +672,6 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 	public double getMatchTime() {return matchTime;}
 
-	public Thread getThread() {return botThread;}
+	public Thread getThread(){return botThread;}
 
 }// end class
