@@ -1,15 +1,35 @@
 package engine;
 //package FORKIDS;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.AWTException;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Robot;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 import java.util.function.BiConsumer;
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import consts.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import bots.Bot;
+import bots.CarveBot;
+import bots.SolveBot;
+import consts.Direction;
+import consts.KeyInfo;
+import consts.Mode;
+import consts.Player;
 
 public class MazeFrame extends JFrame implements ActionListener {
 
@@ -44,7 +64,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 	private Mode mode; // Gamemode
 	private int aispeed; // Speed of bot
 	private double startTime; // Time game is started
-	private double mazeFidelity; // Called at the end of CarveStep
+	public double mazeFidelity; // Called at the end of CarveStep
 	private String matchName;// Will be added onto the fileOutput if saved
 
 	private JPanel controls, lBorder, rBorder, tBorder, maze;
@@ -59,6 +79,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 	private ReadyListener embededListener; // Put inside I'm Ready button, called on move
 	private OverarchingListener frameListener; // Goes everywhere else
 	private Color borderColor = Color.BLACK;
+	private SolveBot solver;
 	private Thread botThread;
 
 	private boolean on;
@@ -89,6 +110,8 @@ public class MazeFrame extends JFrame implements ActionListener {
 		this.aispeed = aispeed;
 		this.rows = r;
 		this.cols = c;
+		if (mode == Mode.CPU)
+			this.solver = new SolveBot(this, aispeed);
 		embededListener = new ReadyListener(this);
 		frameListener = new OverarchingListener(this);
 
@@ -150,10 +173,19 @@ public class MazeFrame extends JFrame implements ActionListener {
 		cells = new MazeCell[rows][cols];
 
 		// Fill in the cell array
-		for (int i = 0; i < cells.length; i++) {
-			for (int j = 0; j < cells[i].length; j++) {
-				cells[i][j] = new MazeCell(i, j, mode);
-				maze.add(cells[i][j]); // Add each cell to maze panel
+		if (mode == Mode.CPU) {
+			for (int i = 0; i < cells.length; i++) {
+				for (int j = 0; j < cells[i].length; j++) {
+					cells[i][j] = new BotMazeCell(i, j, solver);
+					maze.add(cells[i][j]);
+				}
+			}
+		} else {
+			for (int i = 0; i < cells.length; i++) {
+				for (int j = 0; j < cells[i].length; j++) {
+					cells[i][j] = new MazeCell(i, j);
+					maze.add(cells[i][j]);
+				}
 			}
 		}
 
@@ -242,10 +274,9 @@ public class MazeFrame extends JFrame implements ActionListener {
 			chui.get(2).push(end);
 			chui.get(3).push(end2);
 		}
-
-		// Sets starting state for carveAI
-		begi.setStatus(MazeCell.VISITED);
-		end.setStatus(MazeCell.BLANK);
+		
+		if (mode == Mode.CPU)
+			solver.setEndPoints(begi, end);
 
 		// Make beginning and end
 		begi.clearWallDir(Direction.LEFT);
@@ -256,7 +287,10 @@ public class MazeFrame extends JFrame implements ActionListener {
 		mex.push(end);
 
 		// Set to be playered
-		mex.peek().setPlayered(true);
+		if (mode == Mode.CPU) {
+			mex.peek().setPly(Player.P2, null);
+			tex.peek().setPly(Player.P1, null);
+		}
 
 		// Sets color and player of stack starts
 		if (mode == Mode.TT || mode == Mode.V2) {
@@ -278,97 +312,16 @@ public class MazeFrame extends JFrame implements ActionListener {
 			}
 		}
 
-		// Carve the maze
-		while (!tex.isEmpty())
-			stepCarve();
+		new CarveBot(this, begi).carveMaze();
 
-		// Finish it off
-		stepCarve();
-
-		if (!(mode == Mode.CPU))
-			begi.setStatus(BLANK);
 		if(mode==Mode.T4)
 			begi.setPly(Player.P1, colorTeams[0]);
 
 
 
 	}
-
-	// Called by carveARandomMaze for each step
-	private void stepCarve() {
-
-		// If this is the first or last step
-		if (tex.isEmpty()) {
-			// Set all cells to be blanks
-			for (int i = 0; i < rows; i++)
-				for (int j = 0; j < cols; j++)
-					cells[i][j].setStatus(MazeCell.BLANK);
-
-			// Push the first cell
-			tex.push(begi);
-			tex.peek().setStatus(MazeCell.VISITED);
-			return;
-		}
-		// Create a new array of neighbors
-		ArrayList<MazeCell> bop = blankNeighbors(tex.peek());
-		// If no options
-		if (bop.isEmpty()) {
-			// Back up boi
-			tex.pop().setStatus(MazeCell.DEAD);
-		} else {
-			// Pick a random choice
-			MazeCell chosen1 = bop.get(0);
-			// Clear walls to new cell and from next space to this one
-			tex.peek().clearWallDir(getDirectionFrom(tex.peek(), chosen1));
-			chosen1.clearWallDir(getDirectionFrom(chosen1, tex.peek()));
-			// Make the new cell visited
-			chosen1.setStatus(MazeCell.VISITED);
-			// Push it to carve stack
-			tex.push(chosen1);
-			// Randomly reset new space and make it reachable again
-			if (Math.random() > mazeFidelity)
-				tex.pop().setStatus(MazeCell.BLANK);
-		}
-	}
-
 	// Takes the next step in solving the maze in CPU mode
-	private boolean solveStep() {
-		if (on) {
-			// If player has reached the beginning
-			if (mex.peek() == begi) {
-				// Player wins
-				win(P1CPU); 
-				return false;
-			}
-
-			// If bot is at the end
-			if (tex.peek() == end) {
-				// Bot wins
-				win(BOT); 
-				return false;
-			}
-
-			// Priority queue of direction choices
-			Direction[] dirspq = getBestDir(tex.peek(), end);
-			// If neither win conditions are met, move on.
-			for (int i = 0; i < 4; i++) {
-				MazeCell option = getNeighbor(tex.peek(), dirspq[i]);
-				// If cell enterable and unvisited
-				if (option != null
-						&& !(tex.peek().isBlockedDir(dirspq[i]))
-						&& option.isBlank()) {
-					// Move into cell
-					tex.push(option);
-					option.setStatus(MazeCell.VISITED);
-					return true;
-				}
-			}
-			// If not able to move in any direction, move backwards
-			tex.pop().setStatus(MazeCell.DEAD);
-			return true;
-		}
-		return false;
-	}
+	
 
 	// Moves players in P2 mode
 	public void playerMove(Player player, Direction dir) {
@@ -397,11 +350,10 @@ public class MazeFrame extends JFrame implements ActionListener {
 		} else if (mode == Mode.TT) {
 			skipO = player;
 		}
-
+		
 		// Convenience Variables
 		MazeCell head = mex.peek();
 		MazeCell nextOver = getNeighbor(head, dir);
-
 		if (nextOver == null)
 			return;
 
@@ -411,7 +363,6 @@ public class MazeFrame extends JFrame implements ActionListener {
 				head.repaint();
 				mex.push(nextOver);
 				nextOver.setPly(player, pCo);
-
 			} else if (nextOver.getPly() == player) {
 				// into own
 				MazeFrame.splicePath(mex, nextOver);
@@ -419,19 +370,16 @@ public class MazeFrame extends JFrame implements ActionListener {
 		} else if (!tex.isEmpty() && nextOver == tex.peek()) {
 			// into enemy head
 			attack(tex);
-
 		} else if (nextOver.getPly() == skipO) {
 			// cell the player lands in
 			MazeCell nextOverPlus = getNeighbor(nextOver, dir);
 			if (nextOverPlus == null)
 				return;
-
 			if (nextOverPlus.getPly() == null) {
 				// can skip over
 				head.repaint();
 				mex.push(nextOverPlus);
 				nextOverPlus.setPly(player, pCo);
-
 			} else if (nextOverPlus.getPly() == player) {
 				// skipping back
 				MazeFrame.splicePath(mex, nextOverPlus);
@@ -443,9 +391,11 @@ public class MazeFrame extends JFrame implements ActionListener {
 	public void playerMove(Direction dir) {
 		MazeCell nextOver = getNeighbor(mex.peek(), dir);
 		if (nextOver != null && !mex.peek().isBlockedDir(dir)) {
-			mex.peek().setPHead(false);
+			((BotMazeCell) mex.peek()).setPHead(false);
 			mex.push(nextOver);
-			nextOver.setPlayered(true);
+			nextOver.setPly(Player.P2, null);
+			if (nextOver == begi)
+				botWin(Player.P2);
 		}
 	}
 	//playerMove case for teams mode
@@ -529,8 +479,8 @@ public class MazeFrame extends JFrame implements ActionListener {
 	/**************** UTILITY METHODS ****************/
 	// Applies gradient to player stack
 	// painter is function that updates a cell's color
-	private static void applyGradient(Stack<MazeCell> stack, Color start, Color end,
-			BiConsumer<MazeCell, Color> painter)
+	private static <U extends MazeCell> void applyGradient(Stack<MazeCell> stack, Color start, Color end,
+			BiConsumer<U, Color> painter)
 	{
 		// Obtain color components
 		int r1 = start.getRed(), r2 = end.getRed();
@@ -542,7 +492,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 		double ratio;
 		for (MazeCell mc : stack) {
 			ratio = (double) i++ / sizzle;
-			painter.accept(mc,
+			painter.accept((U) mc,
 					new Color((int) (r1 * (1- ratio) + r2 * ratio),
 							(int) (g1 * (1- ratio) + g2 * ratio),
 							(int) (b1 * (1- ratio) + b2 * ratio)));
@@ -579,37 +529,6 @@ public class MazeFrame extends JFrame implements ActionListener {
 		return movingCell;
 	}
 
-	// Returns an array of directional neighbor cells to the given cells
-	private ArrayList<MazeCell> blankNeighbors(MazeCell mc) {
-		ArrayList<MazeCell> results = new ArrayList<MazeCell>();
-		// list out directions
-		ArrayList<Direction> dirs = new ArrayList<Direction>(Arrays.asList(Direction.values()));
-
-		if (mc.row() == 0) { // if on ceiling (must prioritize leaving)
-			if (enlistNeighbors(mc, dirs.remove(2)))
-				results.add(getNeighbor(mc, Direction.DOWN)); // remove down from possible, add to list as priority
-
-		} else if (mc.row() == rows - 1) { // if on floor (must prioritize leaving)
-			if (enlistNeighbors(mc, dirs.remove(0)))
-				results.add(getNeighbor(mc, Direction.UP)); // remove up from possible, add to list as priority
-		}
-		while (dirs.size() > 0) { // add each of dirs to results in random order
-			int chosenIndex = (int) (Math.random() * dirs.size());
-			Direction chosenDir = dirs.remove(chosenIndex);
-			if (enlistNeighbors(mc, chosenDir))
-				results.add(getNeighbor(mc, chosenDir));
-		}
-
-		return results;
-	}
-
-	// If can add neighbor to results
-	private boolean enlistNeighbors(MazeCell mc, Direction dir) {
-		MazeCell inQuestion = getNeighbor(mc, dir);
-		// if it is real, and blank
-		return (inQuestion != null && inQuestion.isBlank());
-	}
-
 	// Returns the closest MazeCell in direction
 	public MazeCell getNeighbor(MazeCell mc, Direction dir) {
 		int r = mc.row();
@@ -636,7 +555,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 	}
 
 	// Returns a set of directions in order of importance
-	private static Direction[] getBestDir(MazeCell orig, MazeCell dest) {
+	public static Direction[] getBestDir(MazeCell orig, MazeCell dest) {
 		// Initialize new moveset
 		Direction[] moves = new Direction[4];
 		int yDis = dest.row() - orig.row();
@@ -678,7 +597,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 	}
 
 	// Returns a direction from one point to the other
-	private static Direction getDirectionFrom(MazeCell orig, MazeCell dest) {
+	public static Direction getDirectionFrom(MazeCell orig, MazeCell dest) {
 		int yDis = dest.row() - orig.row();
 		int xDis = dest.col() - orig.col();
 		// Find the best direction to dest
@@ -692,14 +611,6 @@ public class MazeFrame extends JFrame implements ActionListener {
 			return Direction.LEFT;
 		// Default case is nonexistent direction
 		return null;
-	}
-
-	// Pauses this thread
-	public void pause(int t) {
-		try {
-			Thread.sleep(t);
-		} catch (InterruptedException e) {
-		}
 	}
 
 	// Creates a new settings pane
@@ -755,23 +666,34 @@ public class MazeFrame extends JFrame implements ActionListener {
 	}
 
 	// Called at the end of the game
-	public void win(int player) {
+	public void botWin(Player player) {
 
 		// Turn off maze actions
 		on = false;
 
 		// Apply gradient to winning player
-		if (player == BOT) { // Bot win
-			MazeFrame.applyGradient(tex, Color.WHITE, Color.BLACK, MazeCell::setGrad);
-		} else if (player == P1CPU) { // Player in bot mode win
-			MazeFrame.applyGradient(mex, beg, plead, MazeCell::setGrad);
-		} else if (player == P1) { // Player 1 in two-player win
+		if (player == Player.P1) { // Bot win
+			MazeFrame.applyGradient(tex, Color.WHITE, Color.BLACK, BotMazeCell::setGrad);
+		} else if (player == Player.P2) { // Player in bot mode win
+			MazeFrame.applyGradient(mex, beg, plead, BotMazeCell::setGrad);
+		}
+
+		// Display match time
+		matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
+		JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
+	}
+	
+	public void versusWin(Player player) {
+
+		// Turn off maze actions
+		on = false;
+		if (player == Player.P1) { // Player 1 in two-player win
 			Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 					(int) (Math.random() * 256));
 			MazeFrame.applyGradient(tex, beg, badiddle, (MazeCell mc, Color c) -> {
 				mc.setPly(Player.P1, c);
 			});
-		} else if (player == P2) { // Player 2 in two-player win
+		} else if (player == Player.P2) { // Player 2 in two-player win
 			Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 					(int) (Math.random() * 256));
 			MazeFrame.applyGradient(mex, plead, badiddle, (MazeCell mc, Color c) -> {
@@ -808,10 +730,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 			on = true;
 			startTime = (int) (System.currentTimeMillis());
 			if (mode == Mode.CPU) {
-				botThread = new Thread(() -> {
-					while (solveStep())
-						pause(aispeed);
-				});
+				botThread = new Thread(solver);
 				botThread.start();
 			}
 			readyButton.requestFocus();

@@ -2,17 +2,25 @@ package engine;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.function.BiPredicate;
 import consts.Mode;
 
 public class OverarchingListener implements KeyListener {
 
 	private MazeFrame parent;
-	private Mode mode;
+	private BiPredicate<Boolean, Boolean> startCondition;
 	private boolean p1C, p2C, p1R, p2R;
 
 	public OverarchingListener(MazeFrame parent) {
 		this.parent = parent;
-		mode = parent.getMode();
+		switch (parent.getMode()) {
+		case CPU: case TT:
+			startCondition = (a,b) -> a || b;
+			break;
+		case V2: case T4:
+			startCondition = (a,b) -> a && b;
+			break;
+		}
 		p1C = false;
 		p2C = false;
 		p1R = false;
@@ -24,25 +32,10 @@ public class OverarchingListener implements KeyListener {
 			parent.resetMaze();
 		}
 
-		if (mode == Mode.CPU) {
-			if (p1R || p2R) {
-				parent.startGame();
-				parent.getButton(1).requestFocus();
-				return;
-			}
-		} else if (mode == Mode.V2 || mode == Mode.T4) {
-			if (p1R && p2R) {
-				parent.startGame();
-				parent.getButton(1).requestFocus();
-				return;
-			}
-		} else if (mode == Mode.TT) {
-			if (p1R || p2R) {
-				parent.startGame();
-				parent.getButton(1).requestFocus();
-				return;
-			}
-		}
+		if (startCondition.test(p1R, p2R)) {
+			parent.startGame();
+			parent.getButton(1).requestFocus();
+		} 
 	}
 
 	@Override

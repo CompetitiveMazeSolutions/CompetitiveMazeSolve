@@ -81,13 +81,13 @@ public class ReadyListener implements KeyListener {
 				if (head.col() == 0
 						&& !head.isBlockedDir(Direction.LEFT))
 				{
-					parent.win(2);
+					parent.versusWin(Player.P2);
 					return;
 				}
 				if (head.col() == 1
 						&& parent.getNeighbor(head, Direction.LEFT).getPly() == Player.P1)
 				{
-					parent.win(2);
+					parent.versusWin(Player.P2);
 					return;
 				}
 				parent.playerMove(Player.P2, Direction.LEFT);
@@ -103,13 +103,13 @@ public class ReadyListener implements KeyListener {
 				if (head.col() == parent.getColumns() - 1
 						&& !head.isBlockedDir(Direction.RIGHT))
 				{
-					parent.win(1);
+					parent.versusWin(Player.P1);
 					return;
 				}
 				if (head.col() == parent.getColumns() - 2
 						&& parent.getNeighbor(head, Direction.RIGHT).getPly() == Player.P2)
 				{
-					parent.win(1);
+					parent.versusWin(Player.P1);
 					return;
 				}
 				parent.playerMove(Player.P1, Direction.RIGHT);
@@ -151,13 +151,13 @@ public class ReadyListener implements KeyListener {
 				if (head.col() == 0
 						&& !head.isBlockedDir(Direction.LEFT))
 				{
-					parent.win(2);
+					parent.versusWin(Player.P2);
 					return;
 				}
 				if (head.col() == 1
 						&& parent.getNeighbor(head, Direction.LEFT).getPly() == Player.P2)
 				{
-					parent.win(2);
+					parent.versusWin(Player.P2);
 					return;
 				}
 				parent.playerMove(Player.P2, Direction.LEFT);
