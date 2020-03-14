@@ -1,12 +1,8 @@
 package bots;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Stack;
-import consts.Direction;
-import consts.Player;
-import engine.MazeCell;
-import engine.MazeFrame;
+import consts.*;
+import engine.*;
 
 public class SolveBot extends Bot implements Runnable
 {
@@ -26,23 +22,19 @@ public class SolveBot extends Bot implements Runnable
 	private boolean solveStep() {
 		if (game.isOn()) {
 			Stack<MazeCell> tex = game.getTex();
-			// If bot is at the end
 			if (tex.peek() == end) {
-				// Bot wins
+				// Bot wins if at end
 				game.botWin(Player.P1); 
 				return false;
 			}
-
 			// Priority queue of direction choices
 			Direction[] dirspq = SolveBot.getBestDir(tex.peek(), end);
-			// If neither win conditions are met, move on.
 			for (int i = 0; i < 4; i++) {
 				MazeCell option = game.getNeighbor(tex.peek(), dirspq[i]);
-				// If cell enterable and unvisited
+				// If cell enterable and unvisited, advance
 				if (option != null
 						&& !(tex.peek().isBlockedDir(dirspq[i]))
 						&& getStatus(option) == Bot.BLANK) {
-					// Move into cell
 					tex.push(option);
 					option.setPly(Player.P1, null);
 					setStatus(option, Bot.VISITED);
@@ -60,13 +52,11 @@ public class SolveBot extends Bot implements Runnable
 	
 	// Returns a set of directions in order of importance
 	private static Direction[] getBestDir(MazeCell orig, MazeCell dest) {
-			// Initialize new moveset
 			Direction[] moves = new Direction[4];
 			int yDis = dest.row() - orig.row();
 			int xDis = dest.col() - orig.col();
 			// If closer in y than in x
 			if (Math.abs(xDis) <= Math.abs(yDis)) {
-				// Decide which direction is best in order
 				if (yDis <= 0) {
 					moves[0] = Direction.UP;
 					moves[2] = Direction.DOWN;
@@ -112,7 +102,6 @@ public class SolveBot extends Bot implements Runnable
 	private void pause(int t) {
 		try {
 			Thread.sleep(t);
-		} catch (InterruptedException e) {
-		}
+		} catch (InterruptedException e) {}
 	}
 }

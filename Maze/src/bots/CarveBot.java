@@ -1,8 +1,9 @@
 package bots;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
-import engine.*;
+import engine.MazeCell;
+import engine.MazeFrame;
 
 public class CarveBot extends Bot
 {
@@ -16,23 +17,18 @@ public class CarveBot extends Bot
 	}
 	
 	private void stepCarve() {
-		// Create a new array of neighbors
-		ArrayList<MazeCell> bop = blankNeighbors(tex.peek());
-		// If no options
+		List<MazeCell> bop = blankNeighbors(tex.peek());
 		if (bop.isEmpty()) {
 			// Back up boi
 			setStatus(tex.pop(), Bot.DEAD);
 		} else {
-			// Pick a random choice
+			// Pick a choice and go in
 			MazeCell chosen1 = bop.get(0);
-			// Clear walls to new cell and from next space to this one
 			tex.peek().clearWallDir(tex.peek().directionTo(chosen1));
 			chosen1.clearWallDir(chosen1.directionTo(tex.peek()));
-			// Make the new cell visited
 			setStatus(chosen1, Bot.VISITED);
-			// Push it to carve stack
 			tex.push(chosen1);
-			// Randomly reset new space and make it reachable again
+			// Go back out occasionally
 			if (Math.random() > game.mazeFidelity)
 				setStatus(tex.pop(), Bot.BLANK);
 		}

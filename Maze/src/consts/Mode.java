@@ -1,5 +1,6 @@
 package consts;
 
-public enum Mode {
+public enum Mode
+{
 	CPU, V2, TT, T4
 }

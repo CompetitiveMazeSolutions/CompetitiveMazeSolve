@@ -6,7 +6,6 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
-import java.util.function.BiConsumer;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import bots.*;
@@ -343,7 +342,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 	public void playerMove(Direction dir) {
 		MazeCell nextOver = getNeighbor(mex.peek(), dir);
 		if (nextOver != null && !mex.peek().isBlockedDir(dir)) {
-			((BotMazeCell) mex.peek()).setPHead(false);
+			mex.peek().repaint();
 			mex.push(nextOver);
 			nextOver.setPly(Player.P2, null);
 			if (nextOver == begi)
@@ -430,9 +429,8 @@ public class MazeFrame extends JFrame implements ActionListener {
 
 	/**************** UTILITY METHODS ****************/
 	// Applies gradient to player stack
-	// painter is function that updates a cell's color
-	private static <U extends MazeCell> void applyGradient(Stack<MazeCell> stack, Color start, Color end,
-			BiConsumer<U, Color> painter)
+	private static void applyGradient(Stack<MazeCell> stack, Color start, Color end,
+			Player p)
 	{
 		// Obtain color components
 		int r1 = start.getRed(), r2 = end.getRed();
@@ -444,10 +442,10 @@ public class MazeFrame extends JFrame implements ActionListener {
 		double ratio;
 		for (MazeCell mc : stack) {
 			ratio = (double) i++ / sizzle;
-			painter.accept((U) mc,
-					new Color((int) (r1 * (1- ratio) + r2 * ratio),
-							(int) (g1 * (1- ratio) + g2 * ratio),
-							(int) (b1 * (1- ratio) + b2 * ratio)));
+			mc.setPly(p,
+					new Color((int) (r1 * (1 - ratio) + r2 * ratio),
+							(int) (g1 * (1 - ratio) + g2 * ratio),
+							(int) (b1 * (1 - ratio) + b2 * ratio)));
 		}
 	}
 	
@@ -557,45 +555,32 @@ public class MazeFrame extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
 	}
-
-	// Called at the end of the game
-	public void botWin(Player player) {
-
-		// Turn off maze actions
+	
+	public void playerWin(Player player, Stack<MazeCell> stex,  Color dabiddle, Color badiddle) {
 		on = false;
-
-		// Apply gradient to winning player
-		if (player == Player.P1) { // Bot win
-			MazeFrame.applyGradient(tex, Color.WHITE, Color.BLACK, BotMazeCell::setGrad);
-		} else if (player == Player.P2) { // Player in bot mode win
-			MazeFrame.applyGradient(mex, beg, plead, BotMazeCell::setGrad);
-		}
-
+		MazeFrame.applyGradient(stex, dabiddle, badiddle, player);
 		// Display match time
 		matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
 		JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
 	}
+
+	// Called at the end of the game
+	public void botWin(Player player) {
+		if (player == Player.P1) // Bot win
+			playerWin(player, tex, Color.WHITE, Color.BLACK);
+		else if (player == Player.P2) // Player in bot mode win
+			playerWin(player, mex, beg, plead);
+	}
 	
 	public void versusWin(Player player) {
-
-		// Turn off maze actions
-		on = false;
-		Stack<MazeCell> stex = null;
-		Color dabiddle = null;
 		Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 				(int) (Math.random() * 256));
 		if (player == Player.P1) { // Player 1 in two-player win
-			stex = tex; dabiddle = beg;
+			playerWin(player, tex, beg, badiddle);
 		} else if (player == Player.P2) { // Player 2 in two-player win
-			stex = mex; dabiddle = plead;
+			playerWin(player, mex, plead, badiddle);
 		}
-		MazeFrame.applyGradient(stex, dabiddle, badiddle, (MazeCell mc, Color c) -> {
-			mc.setPly(player, c);
-		});
-
-		// Display match time
-		matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
-		JOptionPane.showMessageDialog(this, (double) matchTime / 1000 + " seconds");
+		
 	}
 	
 	public void teamWin(Player player){
@@ -604,9 +589,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 		for(Player p : teamps){
 			Color badiddle = new Color((int) (Math.random() * 256), (int) (Math.random() * 256),
 					(int) (Math.random() * 256));
-			MazeFrame.applyGradient(chui.get(p.ordinal()), colorTeams[p.ordinal()], badiddle, (MazeCell mc, Color c) -> {
-				mc.setPly(p, c);
-			});
+			MazeFrame.applyGradient(chui.get(p.ordinal()), colorTeams[p.ordinal()], badiddle, p);
 		}
 		matchTime = (int) (((int) (System.currentTimeMillis()) - startTime));
 		JOptionPane.showMessageDialog(this, "Team "+((player.ordinal()>>1)+1)+" Win\n"+(double) matchTime / 1000 + " seconds");

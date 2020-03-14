@@ -49,18 +49,10 @@ public class BotMazeCell extends MazeCell
 			pHead = true;
 			playered = true;
 		}
+		if (x != null) {
+			isPath = true;
+			pathColor = x;
+		}
 		super.setPly(ply, x);
-	}
-	
-	public void setGrad(Color beep) {
-		isPath = true;
-		pathColor = beep;
-		repaint();
-	}
-	
-	public void setPHead(boolean pHead) {
-		//this.pHead = pHead;
-		playered = true;
-		repaint();
 	}
 }
