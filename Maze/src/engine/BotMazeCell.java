@@ -7,8 +7,8 @@ import consts.*;
 // Extension onto MazeCell to implement special BotMode Coloring
 public class BotMazeCell extends MazeCell
 {
-	private Color[] colors = { defaultBG, Color.BLUE, Color.BLACK, Color.CYAN }; // Color of each status
-	private Color[] colorsP = { Color.YELLOW, Color.GREEN, Color.YELLOW.darker(), Color.ORANGE }; // Colors w/ player
+	private static final Color[] colors = { defaultBG, Color.BLUE, Color.BLACK, Color.CYAN }; // Color of each status
+	private static final Color[] colorsP = { Color.YELLOW, Color.GREEN, Color.YELLOW.darker(), Color.ORANGE }; // Colors w/ player
 	private boolean pHead, playered, isPath;
 	private Color pathColor;
 	private Bot bot;

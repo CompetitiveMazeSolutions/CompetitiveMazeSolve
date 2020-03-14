@@ -253,25 +253,34 @@ public class MazeFrame extends JFrame implements ActionListener {
 			mex.peek().setPly(Player.P2, p2);
 			if (mode == Mode.V2)
 				tex.peek().setPly(Player.P1, p1);
-
-			for (int i = 0; i < rows; i++) {
-				cells[i][0].clearWallDir(Direction.LEFT);
-				cells[i][cols - 1].clearWallDir(Direction.RIGHT);
-			}
 		}else if(mode == Mode.T4){
-			for(Player p : Player.values()){
+			for(Player p : Player.values())
 				chui.get(p.ordinal()).peek().setPly(p, colorTeams[p.ordinal()]);
-			}
+		}
+		if (mode != Mode.CPU)
 			for (int i = 0; i < rows; i++) {
 				cells[i][0].clearWallDir(Direction.LEFT);
 				cells[i][cols - 1].clearWallDir(Direction.RIGHT);
 			}
-		}
 
 		new CarveBot(this, begi).carveMaze();
 
 		if(mode==Mode.T4)
 			begi.setPly(Player.P1, colorTeams[0]);
+	}
+
+	private void skipOverTo(MazeCell mc, Stack<MazeCell> stex, Player p, Color pCo) {
+		if (mc == null)
+			return;
+		if (mc.getPly() == null) {
+			// can skip over
+			stex.peek().repaint();
+			stex.push(mc);
+			mc.setPly(p, pCo);
+		} else if (mc.getPly() == p) {
+			// skipping back
+			MazeFrame.splicePath(stex, mc);
+		}
 	}
 
 	// Moves players in P2 mode
@@ -292,16 +301,13 @@ public class MazeFrame extends JFrame implements ActionListener {
 			enemy = Player.P1;
 			break;
 		}
-
 		// Skippable cells based on mode
 		Player skipO = null;
-
 		if (mode == Mode.V2) {
 			skipO = enemy;
 		} else if (mode == Mode.TT) {
 			skipO = player;
 		}
-		
 		// Convenience Variables
 		MazeCell head = mex.peek();
 		MazeCell nextOver = getNeighbor(head, dir);
@@ -309,32 +315,13 @@ public class MazeFrame extends JFrame implements ActionListener {
 			return;
 
 		if (!head.isBlockedDir(dir) && nextOver.getPly() != enemy) {
-			if (nextOver.getPly() == null) {
-				// into blank
-				head.repaint();
-				mex.push(nextOver);
-				nextOver.setPly(player, pCo);
-			} else if (nextOver.getPly() == player) {
-				// into own
-				MazeFrame.splicePath(mex, nextOver);
-			}
+			skipOverTo(nextOver, mex, player, pCo);
 		} else if (!tex.isEmpty() && nextOver == tex.peek()) {
 			// into enemy head
 			attack(tex);
 		} else if (nextOver.getPly() == skipO) {
 			// cell the player lands in
-			MazeCell nextOverPlus = getNeighbor(nextOver, dir);
-			if (nextOverPlus == null)
-				return;
-			if (nextOverPlus.getPly() == null) {
-				// can skip over
-				head.repaint();
-				mex.push(nextOverPlus);
-				nextOverPlus.setPly(player, pCo);
-			} else if (nextOverPlus.getPly() == player) {
-				// skipping back
-				MazeFrame.splicePath(mex, nextOverPlus);
-			}
+			skipOverTo(getNeighbor(nextOver, dir), mex, player, pCo);
 		}
 	}
 
@@ -355,13 +342,13 @@ public class MazeFrame extends JFrame implements ActionListener {
 		Player me = player;
 		Player tmate = me.teammate();
 		int enem = (team-1)^1;
+		
 		Color pCo = colorTeams[me.ordinal()];
 		Stack<MazeCell> myStack = chui.get(me.ordinal());
-		Stack<MazeCell> teamStack = chui.get(tmate.ordinal());
-
-		Stack<MazeCell> en1Stack = chui.get(2*enem);
-		Stack<MazeCell> en2Stack = chui.get(2*enem+1);
-
+		ArrayList<Stack<MazeCell>> attackable = new ArrayList<>();
+		attackable.add(chui.get(tmate.ordinal()));
+		attackable.add(chui.get(2*enem));
+		attackable.add(chui.get(2*enem+1));
 		// Convenience Variables
 		MazeCell head = myStack.peek();
 		MazeCell nextOver = getNeighbor(head, dir);
@@ -370,67 +357,28 @@ public class MazeFrame extends JFrame implements ActionListener {
 		Player nextPly = nextOver.getPly();
 
 		if (!head.isBlockedDir(dir) && (nextPly == null || nextPly == me)) {
-			if (nextPly == null) {
-				// into blank
-				head.repaint();
-				myStack.push(nextOver);
-				nextOver.setPly(me, pCo);
-
-			} else if (nextPly == me) {
-				// into own
-				MazeFrame.splicePath(myStack, nextOver);
-			}
-		} else if (en1Stack.size()>1 && nextOver == en1Stack.peek()) {
-			// into enemy head
-			attack(en1Stack);
-
-		} else if (en2Stack.size()>1 && nextOver == en2Stack.peek()) {
-			// into enemy head
-			attack(en2Stack);
-
-		} else if (teamStack.size()>1 && nextOver == teamStack.peek()) {
-			// into teammate head
-			attack(teamStack);
-
-		} else if (nextPly == tmate && getNeighbor(nextOver, dir)!=null) {
-			// find end of potential boost
-			MazeCell movingCells = boostEnd(nextOver, team, dir);
-			if (movingCells == null)
+			skipOverTo(nextOver, myStack, me, pCo);
+			return;
+		}
+		for (Stack<MazeCell> stex : attackable) {
+			if (stex.size()>1 && nextOver == stex.peek()) {
+				// into teammate or enemy head
+				attack(stex);
 				return;
-			// if blank to go into
-			if (movingCells.getPly() == null) {
-				// can skip over
-				head.repaint();
-				myStack.push(movingCells);
-				movingCells.setPly(me, pCo);
-
-			} else if (movingCells.getPly() == me) {
-				// skipping back
-				MazeFrame.splicePath(myStack, movingCells);
 			}
+		}
+		if (nextPly == tmate && getNeighbor(nextOver, dir)!=null) {
+			// find end of potential boost
+			skipOverTo(boostEnd(nextOver, team, dir), myStack, me, pCo);
 		} else if (nextOver.getPly() != null && nextOver.getPly() != me) {
 			// cell the player lands in
-			MazeCell nextOverPlus = getNeighbor(nextOver, dir);
-			if (nextOverPlus == null)
-				return;
-
-			if (nextOverPlus.getPly() == null) {
-				// can skip over
-				head.repaint();
-				myStack.push(nextOverPlus);
-				nextOverPlus.setPly(me, pCo);
-
-			} else if (nextOverPlus.getPly() == me) {
-				// skipping back
-				MazeFrame.splicePath(myStack, nextOverPlus);
-			}
+			skipOverTo(getNeighbor(nextOver, dir), myStack, me, pCo);
 		}
 	}
 
 	/**************** UTILITY METHODS ****************/
 	// Applies gradient to player stack
-	private static void applyGradient(Stack<MazeCell> stack, Color start, Color end,
-			Player p)
+	private static void applyGradient(Stack<MazeCell> stack, Color start, Color end, Player p)
 	{
 		// Obtain color components
 		int r1 = start.getRed(), r2 = end.getRed();
@@ -452,9 +400,8 @@ public class MazeFrame extends JFrame implements ActionListener {
 	// Deletes (rows/5) cells from victim
 	private void attack(Stack<MazeCell> bonked)
 	{
-		for (int i = 0; i < rows / 5; ++i)
-			if (bonked.size()>1)
-				bonked.pop().setPly(null, null);
+		for (int i = 0; i < rows / 5 && bonked.size() > 1; ++i)
+			bonked.pop().setPly(null, null);
 	}
 	
 	// Pop stack until back on dest
