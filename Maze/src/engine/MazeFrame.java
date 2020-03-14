@@ -20,7 +20,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 	private Mode mode; // Gamemode
 	private int aispeed; // Speed of bot
 	private double startTime; // Time game is started
-	public double mazeFidelity; // Called at the end of CarveStep
+	private double mazeFidelity; // Called at the end of CarveStep
 	private String matchName;// Will be added onto the fileOutput if saved
 
 	private JPanel controls, lBorder, rBorder, tBorder, maze;
@@ -36,6 +36,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 	private OverarchingListener frameListener; // Goes everywhere else
 	private Color borderColor = Color.BLACK;
 	private SolveBot solver;
+	private CarveBot carver;
 	private Thread botThread;
 
 	private boolean on;
@@ -66,6 +67,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 		this.aispeed = aispeed;
 		this.rows = r;
 		this.cols = c;
+		this.carver = new CarveBot(this, mazeFidelity);
 		if (mode == Mode.CPU)
 			this.solver = new SolveBot(this, aispeed);
 		embededListener = new ReadyListener(this);
@@ -262,8 +264,8 @@ public class MazeFrame extends JFrame implements ActionListener {
 				cells[i][0].clearWallDir(Direction.LEFT);
 				cells[i][cols - 1].clearWallDir(Direction.RIGHT);
 			}
-
-		new CarveBot(this, begi).carveMaze();
+		carver.setStartPoint(begi);
+		carver.carveMaze();
 
 		if(mode==Mode.T4)
 			begi.setPly(Player.P1, colorTeams[0]);
