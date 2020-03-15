@@ -12,11 +12,9 @@ import bots.*;
 import consts.*;
 
 public class MazeFrame extends JFrame implements ActionListener {
-	public static final int BORING = 0, BOXES = 1; // carve mode
-	public static final int BOT = -2, P1CPU = -1, BLANK = 0, P1 = 1, P2 = 2;
 
-	private int rows; // 20 and 35 best
-	private int cols;
+	private final int rows; // 20 and 35 best
+	private final int cols;
 	private Mode mode; // Gamemode
 	private int aispeed; // Speed of bot
 	private double startTime; // Time game is started
@@ -29,8 +27,8 @@ public class MazeFrame extends JFrame implements ActionListener {
 	private JButton readyButton;
 	private MazeCell[][] cells; // All cells
 	private MazeCell begi, end, begi2, end2; // Start and end cells
-	private Stack<MazeCell> tex; // Left side stack
-	private Stack<MazeCell> mex; // Right side stack
+	private Stack<MazeCell>	tex, // Left side stack
+							mex; // Right side stack
 	private ArrayList<Stack<MazeCell>> chui;
 	private ReadyListener embededListener; // Put inside I'm Ready button, called on move
 	private OverarchingListener frameListener; // Goes everywhere else
