@@ -251,7 +251,7 @@ public class ReadyListener implements KeyListener {
 						&& !mc.isBlockedDir(Direction.RIGHT))
 						|| (mc.col() == cols - 2 && nxPly != ply
 								&& nxPly != null)
-						|| (nxPly == tmate && parent.boostEnd(next, tm + 1,
+						|| (nxPly == tmate && parent.boostEnd(next, ply,
 								Direction.RIGHT) == null)))
 					setTeamReach(ply);
 				else
@@ -261,7 +261,7 @@ public class ReadyListener implements KeyListener {
 				if (tm == 1 && ((mc.col() == 0
 						&& !mc.isBlockedDir(Direction.LEFT))
 						|| (mc.col() == 1 && nxPly != ply && nxPly != null)
-						|| (nxPly == tmate && parent.boostEnd(next, tm + 1,
+						|| (nxPly == tmate && parent.boostEnd(next, ply,
 								Direction.LEFT) == null)))
 					setTeamReach(ply);
 				else

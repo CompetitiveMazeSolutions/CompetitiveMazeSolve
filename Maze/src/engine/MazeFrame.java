@@ -340,10 +340,9 @@ public class MazeFrame extends JFrame implements ActionListener {
 	}
 	//playerMove case for teams mode
 	public void teamPlayerMove(Player player, Direction dir){
-		int team = (player.ordinal() >> 1) + 1;
 		Player me = player;
 		Player tmate = me.teammate();
-		int enem = (team-1)^1;
+		int enem = (player.ordinal() >> 1)^1;
 		
 		Color pCo = colorTeams[me.ordinal()];
 		Stack<MazeCell> myStack = chui.get(me.ordinal());
@@ -371,7 +370,7 @@ public class MazeFrame extends JFrame implements ActionListener {
 		}
 		if (nextPly == tmate && getNeighbor(nextOver, dir)!=null) {
 			// find end of potential boost
-			skipOverTo(boostEnd(nextOver, team, dir), myStack, me, pCo);
+			skipOverTo(boostEnd(nextOver, me, dir), myStack, me, pCo);
 		} else if (nextOver.getPly() != null && nextOver.getPly() != me) {
 			// cell the player lands in
 			skipOverTo(getNeighbor(nextOver, dir), myStack, me, pCo);
@@ -419,11 +418,10 @@ public class MazeFrame extends JFrame implements ActionListener {
 	}
 
 	// Computes the end of a potential boost given skipped team-mate cell
-	public MazeCell boostEnd(MazeCell start, int team, Direction dir)
+	public MazeCell boostEnd(MazeCell start, Player p, Direction dir)
 	{
-		int enem = ((team - 1) ^ 1);
 		MazeCell movingCell = getNeighbor(start, dir);
-		while (movingCell != null && movingCell.getPly() != null && movingCell.getPly().ordinal() >> 1 == enem)
+		while (movingCell != null && p.isEnemyOf(movingCell.getPly()))
 			movingCell = getNeighbor(movingCell, dir);
 		return movingCell;
 	}

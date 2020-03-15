@@ -6,4 +6,8 @@ public enum Player
 	public Player teammate() {
 		return Player.values()[this.ordinal()^1];
 	}
+	public boolean isEnemyOf(Player other) {
+		if (other == null) return false;
+		return this.ordinal() >> 1 != other.ordinal() >> 1; 
+	}
 }
